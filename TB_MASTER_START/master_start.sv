@@ -26,14 +26,15 @@ input [31:0] MEM_Interval_Tp,
 input [31:0] MEM_Tblank1,
 input [31:0] MEM_Tblank2,
 
-output FLAG_SYS_TIME_UPDATE,//флаг показывающий,что по секундной метке произошла установка системного времени
+output SYS_TIME_UPDATE_OK,//флаг показывающий,что по секундной метке произошла установка системного времени
 
 output En_Iz,
 output En_Pr);
 
 logic [63:0] TIME_MASTER=0;
-logic l_En_Iz=0;
-logic l_En_Pr=0;
+logic reg_En_Iz=0;
+logic reg_En_Pr=0;
+logic reg_DDS_start;
 logic [47:0] reg_MEM_DDS_freq      =0;
 logic [47:0] reg_MEM_DDS_delta_freq=0;
 logic [31:0] reg_MEM_DDS_delta_rate=0;
@@ -46,10 +47,14 @@ logic [31:0] reg_MEM_Tblank2       =0;
 logic FLAG_SYS_TIME_UPDATE         =0;
 logic FLAG_SYS_TIME_UPDATED        =0;
 logic [3:0] frnt_T1hz=0;
-
+logic 		FLAG_START_PROCESS_CMD =0;//флаг означающий что команда начинает выполняться
+logic 		FLAG_END_PROCESS_CMD   =0;//флаг означающий что команда выполненна
 logic [31:0] temp_TIMER1=0;
+logic [31:0] temp_TIMER2=0;
+logic [31:0] temp_TIMER3=0;
+logic [31:0] temp_TIMER4=0;
 
-
+enum {off,blank1,Tizl,blank2,Tpr} state,new_state;
 
 always_ff @(posedge CLK) frnt_T1hz<={frnt_T1hz[2:0],T1hz}; //ищем фронт сигнала T1hz
 
@@ -105,13 +110,66 @@ end
 always_ff @(posedge CLK)
 if (RESET)
 begin
+FLAG_START_PROCESS_CMD<=1'b0;	
 end
 else
 begin
-	if (reg_MEM_TIME_START==)
-
+	if ((reg_MEM_TIME_START==TIME_MASTER)&&(FLAG_START_PROCESS_CMD==1'b0)) FLAG_START_PROCESS_CMD<=1'b1;
+	else
+		if (FLAG_END_PROCESS_CMD==1'b1) 								   FLAG_START_PROCESS_CMD<=1'b0;
+end
+//----------------------------------------------------------------
+//        Модуль исполнения команды
+always_ff @(posedge CLK)
+if (RESET)
+begin
 
 end
+else
+begin
+	if (state==off) 
+	begin		
+		temp_TIMER1  		<=reg_MEM_Tblank1;
+		temp_TIMER2  		<=reg_MEM_Tblank2;
+		temp_TIMER3			<=reg_MEM_Interval_Ti;
+		temp_TIMER4			<=reg_MEM_Interval_Tp;	
+		reg_En_Iz    		<=1'b0;
+		reg_En_Pr    		<=1'b0;
+		reg_DDS_start		<=1'b0;
+		FLAG_END_PROCESS_CMD<=1'b0;
+	end	else
+	if (state==blank1)
+		begin
+			temp_TIMER1<=temp_TIMER1-1'b1;
+		end else
+	if (state==Tizl)
+		begin
+			temp_TIMER2<=temp_TIMER2-1'b1;
+		end else
+	if (state==blank2)
+		begin
+			temp_TIMER3<=temp_TIMER3-1'b1;
+		end else
+	if (state==Tpr)
+		begin
+			temp_TIMER4<=temp_TIMER4-1'b1;
+		end
+end
 
+always_ff @(posedge CLK)
+	if (RESET) state<=off;
+	else       state<=new_state;
+
+
+always_comb
+begin
+	case (state)
+		   off: if (FLAG_START_PROCESS_CMD) new_state=blank1;
+		blank1: if (temp_TIMER1==0)			new_state=Tizl;
+		  Tizl: if (temp_TIMER2==0)			new_state=blank2;
+  	    blank2: if (temp_TIMER3==0)			new_state=Tpr;
+  	       Tpr: if (temp_TIMER4==0)			new_state=off;
+  	endcase
+end 
 
 endmodule
