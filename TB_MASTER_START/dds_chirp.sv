@@ -27,7 +27,7 @@ begin
 		reg_rst_n	 <=1'b0;
 		reg_clk_en	 <=1'b1;
 	end else
-	if (start)
+	if (start)//пока start = 1 идёт работа DDS , если 0 - все установки сбрасываются в ноль
 	begin
 		reg_rst_n    <=1'b1;
 		phi_dds_reg  <=accum_dds;

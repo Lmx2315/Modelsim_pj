@@ -21,6 +21,7 @@ input [47:0] MEM_DDS_delta_freq,
 input [31:0] MEM_DDS_delta_rate,
 input [47:0] MEM_TIME_START,
 input [15:0] MEM_N_impuls,
+input [ 1:0] MEM_TYPE_impulse,  //тип формируемой пачки  :0 - повторяющаяся (некогерентный),1 - когерентная (DDS не перепрограммируется)
 input [31:0] MEM_Interval_Ti,
 input [31:0] MEM_Interval_Tp,
 input [31:0] MEM_Tblank1,
@@ -40,7 +41,9 @@ logic [47:0] reg_MEM_DDS_delta_freq=0;//шаг перестройки часто
 logic [31:0] reg_MEM_DDS_delta_rate=0;//скорость перестройки частоты DDS
 logic [47:0] reg_MEM_TIME_START    =0;//время начала исполнения команды
 logic [15:0] reg_MEM_N_impuls      =0;//число одинаковых импульсов 
+logic [15:0] reg_temp_N_impuls     =0;//число одинаковых импульсов, рабочий временный регистр
 logic [31:0] reg_MEM_Interval_Ti   =0;//интервал времени для излучения
+logic [ 1:0] reg_MEM_TYPE_impulse  =0;//тип формируемой пачки  :0 - повторяющаяся ,1 - когерентная (DDS не перепрограммируется)
 logic [31:0] reg_MEM_Interval_Tp   =0;//интервал времени для приёма
 logic [31:0] reg_MEM_Tblank1       =0;//интервал времени для тишины перед излучением
 logic [31:0] reg_MEM_Tblank2       =0;//интервал времени для тишины перед приёмом
@@ -54,7 +57,7 @@ logic [31:0] temp_TIMER2=0;
 logic [31:0] temp_TIMER3=0;
 logic [31:0] temp_TIMER4=0;
 
-enum {idle,off,blank1,Tizl,blank2,Tpr,end_cycle} state,new_state;
+enum {idle,start,cycle,blank1,Tizl,blank2,Tpr,end_cycle} state,new_state;
 
 always_ff @(posedge CLK) frnt_T1hz<={frnt_T1hz[2:0],T1hz}; //ищем фронт сигнала T1hz
 
@@ -74,7 +77,7 @@ begin
 	else
 	begin
 		TIME_MASTER<=TIME_MASTER+1;							//счётчик системного времени в 1/125 мкс
-		if (frnt_T1hz[3:1]!=3'b011) FLAG_SYS_TIME_UPDATED<=0;
+		FLAG_SYS_TIME_UPDATED<=0;
 	end
 end
 //--------------------------------------------------------
@@ -100,6 +103,7 @@ reg_MEM_DDS_delta_freq<=MEM_DDS_delta_freq;
 reg_MEM_DDS_delta_rate<=MEM_DDS_delta_rate;
 reg_MEM_TIME_START 	  <=MEM_TIME_START;
 reg_MEM_N_impuls      <=MEM_N_impuls;
+reg_MEM_TYPE_impulse  <=MEM_TYPE_impulse;
 reg_MEM_Interval_Ti   <=MEM_Interval_Ti;
 reg_MEM_Interval_Tp   <=MEM_Interval_Tp;
 reg_MEM_Tblank1       <=MEM_Tblank1;
@@ -123,51 +127,57 @@ end
 always_ff @(posedge CLK)
 if (RESET)
 begin
-state<=off;
+state<=start;
 end
 else
 begin
 	    state<=new_state;
-	if (state==off) //начальное состояние стейт-машины
+
+	if (state==start) 										//начальное состояние стейт-машины
 	begin		
-		temp_TIMER1  		<=reg_MEM_Tblank1;     //переписываем управляющие регистры в рабочие переменные
-		temp_TIMER2  		<=reg_MEM_Tblank2;
-		temp_TIMER3			<=reg_MEM_Interval_Ti;
-		temp_TIMER4			<=reg_MEM_Interval_Tp;	
+
+	end	else
+	if (state==cycle)										//ожидание начала работы
+		begin
 		reg_En_Iz    		<=1'b0;
 		reg_En_Pr    		<=1'b0;
 		reg_DDS_start		<=1'b0;
-		FLAG_END_PROCESS_CMD<=1'b0;
-	end	else
-	if (state==idle)							//ожидание начала работы
-		begin
-
+		reg_temp_N_impuls   <=reg_MEM_N_impuls; 			//запоминаем сколько импульсов синтезировать
+		FLAG_END_PROCESS_CMD<=1'b0;	
 		end else
-	if (state==blank1)							//стейт машина: состояние первый бланк (бланк излучения)
+	if (state==idle)										//ожидание начала работы
+		begin
+		temp_TIMER1  		<=reg_MEM_Tblank1;  			//переписываем управляющие регистры в рабочие переменные
+		temp_TIMER2  		<=reg_MEM_Tblank2;
+		temp_TIMER3			<=reg_MEM_Interval_Ti;
+		temp_TIMER4			<=reg_MEM_Interval_Tp;
+		end else
+	if (state==blank1)										//стейт машина: состояние первый бланк (бланк излучения)
 		begin
 			temp_TIMER1<=temp_TIMER1-1'b1;
 		end else
-	if (state==Tizl)							//стейт машина: состояние интервал излучения
+	if (state==Tizl)										//стейт машина: состояние интервал излучения
 		begin
-			reg_DDS_start	<=1'b1;				//запускаем синтезатор DDS
-			reg_En_Iz  		<=1'b1;				//поднимаем флаг "излучения"
+			reg_DDS_start	<=1'b1;							//запускаем синтезатор DDS
+			reg_En_Iz  		<=1'b1;							//поднимаем флаг "излучения"
 			temp_TIMER2 	<=temp_TIMER2-1'b1;
 		end else
-	if (state==blank2)							//стейт машина: состояние второй бланк (бланк приёма)
+	if (state==blank2)																	//стейт машина: состояние второй бланк (бланк приёма)
 		begin
-			reg_DDS_start	<=1'b0;				//выключаем синтезатор DDS
-			reg_En_Iz  		<=1'b0;				//снимаем флаг  "излучения"
-			temp_TIMER3 	<=temp_TIMER3-1'b1;
+			if (reg_MEM_TYPE_impulse==0) reg_DDS_start	<=1'b0;							//выключаем синтезатор DDS если режим пачки - некогерентный!!!
+										 reg_En_Iz 		<=1'b0;							//снимаем флаг  "излучения"
+										 temp_TIMER3 	<=temp_TIMER3-1'b1;
 		end else
-	if (state==Tpr)								//стейт машина: состояние интервал приёма
+	if (state==Tpr)																		//стейт машина: состояние интервал приёма
 		begin
-			reg_En_Pr  <=1'b1;					//поднимаем флаг  "интервала приёма"
+			reg_En_Pr  <=1'b1;								//поднимаем флаг  "интервала приёма"
 			temp_TIMER4<=temp_TIMER4-1'b1;
 		end else
-	if (state==end_cycle)				 		//стейт машина: состояние - конец цикла
+	if (state==end_cycle)				 					//стейт машина: состояние - конец цикла
 		begin
-			reg_En_Pr  			<=1'b0;			//снимаем флаг  "интервала приёма"
-			FLAG_END_PROCESS_CMD<=1'b1;			//поднимаем флаг конца цикла
+			reg_En_Pr  			<=1'b0;						//снимаем флаг  "интервала приёма"
+			FLAG_END_PROCESS_CMD<=1'b1;						//поднимаем флаг конца цикла
+			reg_temp_N_impuls   <=reg_temp_N_impuls-1'b1;	//пересчитываем число оставшихся импульсов
 		end
 end
 
@@ -176,16 +186,24 @@ end
 always_comb
 begin
 	case (state)
-		   off:								new_state=idle;
-		  idle: if (FLAG_START_PROCESS_CMD)	new_state=blank1;
-		blank1: if (temp_TIMER1==0)			new_state=Tizl;
-		  Tizl: if (temp_TIMER2==0)			new_state=blank2;
-  	    blank2: if (temp_TIMER3==0)			new_state=Tpr;
+		 start:								new_state=cycle    ;
+		 cycle:	if (FLAG_START_PROCESS_CMD)	new_state=idle     ;
+		  idle: if (reg_temp_N_impuls>0)	new_state=blank1   ;
+		blank1: if (temp_TIMER1==0)			new_state=Tizl     ;
+		  Tizl: if (temp_TIMER2==0)			new_state=blank2   ;
+  	    blank2: if (temp_TIMER3==0)			new_state=Tpr      ;
   	       Tpr: if (temp_TIMER4==0)			new_state=end_cycle;
-  	 end_cycle:								new_state=off;
+  	 end_cycle:								new_state=idle     ;
   	endcase
 end 
 //-----------------------------------------------------------
 
+assign DDS_start 			= reg_DDS_start;			//сигнал управляющий встроеным в ПЛИС DDS
+assign DDS_freq 			= reg_MEM_DDS_freq;
+assign DDS_delta_freq 		= reg_MEM_DDS_delta_freq;
+assign DDS_delta_rate 		= reg_MEM_DDS_delta_rate; 
+assign SYS_TIME_UPDATE_OK	= FLAG_SYS_TIME_UPDATED;  	//event того что системное время обновлено 
+assign En_Iz 				= reg_En_Iz;				//сигнал разрешающий излучение
+assign En_Pr 				= reg_En_Pr;				//сигнал разрешающий приём
 
 endmodule
