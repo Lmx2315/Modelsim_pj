@@ -31,21 +31,21 @@ output SYS_TIME_UPDATE_OK,//флаг показывающий,что по сек
 output En_Iz,
 output En_Pr);
 
-logic [63:0] TIME_MASTER=0;
+logic [63:0] TIME_MASTER=0;			   // часы с шагом  1/125 мкс
 logic reg_En_Iz=0;
 logic reg_En_Pr=0;
 logic reg_DDS_start;
-logic [47:0] reg_MEM_DDS_freq      =0;
-logic [47:0] reg_MEM_DDS_delta_freq=0;
-logic [31:0] reg_MEM_DDS_delta_rate=0;
-logic [47:0] reg_MEM_TIME_START    =0;
-logic [15:0] reg_MEM_N_impuls      =0;
-logic [31:0] reg_MEM_Interval_Ti   =0;
-logic [31:0] reg_MEM_Interval_Tp   =0;
-logic [31:0] reg_MEM_Tblank1       =0;
-logic [31:0] reg_MEM_Tblank2       =0;
-logic FLAG_SYS_TIME_UPDATE         =0;
-logic FLAG_SYS_TIME_UPDATED        =0;
+logic [47:0] reg_MEM_DDS_freq      =0;//начальная частота DDS
+logic [47:0] reg_MEM_DDS_delta_freq=0;//шаг перестройки частоты DDS
+logic [31:0] reg_MEM_DDS_delta_rate=0;//скорость перестройки частоты DDS
+logic [47:0] reg_MEM_TIME_START    =0;//время начала исполнения команды
+logic [15:0] reg_MEM_N_impuls      =0;//число одинаковых импульсов 
+logic [31:0] reg_MEM_Interval_Ti   =0;//интервал времени для излучения
+logic [31:0] reg_MEM_Interval_Tp   =0;//интервал времени для приёма
+logic [31:0] reg_MEM_Tblank1       =0;//интервал времени для тишины перед излучением
+logic [31:0] reg_MEM_Tblank2       =0;//интервал времени для тишины перед приёмом
+logic FLAG_SYS_TIME_UPDATE         =0;//флаг - готовности к апдейту часов по секундной метке
+logic FLAG_SYS_TIME_UPDATED        =0;//флаг - исполнения синхронизации часов по секундной метки
 logic [3:0] frnt_T1hz=0;
 logic 		FLAG_START_PROCESS_CMD =0;//флаг означающий что команда начинает выполняться
 logic 		FLAG_END_PROCESS_CMD   =0;//флаг означающий что команда выполненна
@@ -54,7 +54,7 @@ logic [31:0] temp_TIMER2=0;
 logic [31:0] temp_TIMER3=0;
 logic [31:0] temp_TIMER4=0;
 
-enum {off,blank1,Tizl,blank2,Tpr} state,new_state;
+enum {idle,off,blank1,Tizl,blank2,Tpr,end_cycle} state,new_state;
 
 always_ff @(posedge CLK) frnt_T1hz<={frnt_T1hz[2:0],T1hz}; //ищем фронт сигнала T1hz
 
@@ -93,7 +93,7 @@ reg_MEM_Tblank1       <=32'hffffffff;
 reg_MEM_Tblank2       <=32'hffffffff;
 end
 else
-	if (WR_DATA)
+	if (WR_DATA)  //по сигналу записи переносим данные со входов в управляющие регистры
 begin
 reg_MEM_DDS_freq 	  <=MEM_DDS_freq;
 reg_MEM_DDS_delta_freq<=MEM_DDS_delta_freq;
@@ -123,13 +123,14 @@ end
 always_ff @(posedge CLK)
 if (RESET)
 begin
-
+state<=off;
 end
 else
 begin
-	if (state==off) 
+	    state<=new_state;
+	if (state==off) //начальное состояние стейт-машины
 	begin		
-		temp_TIMER1  		<=reg_MEM_Tblank1;
+		temp_TIMER1  		<=reg_MEM_Tblank1;     //переписываем управляющие регистры в рабочие переменные
 		temp_TIMER2  		<=reg_MEM_Tblank2;
 		temp_TIMER3			<=reg_MEM_Interval_Ti;
 		temp_TIMER4			<=reg_MEM_Interval_Tp;	
@@ -138,38 +139,53 @@ begin
 		reg_DDS_start		<=1'b0;
 		FLAG_END_PROCESS_CMD<=1'b0;
 	end	else
-	if (state==blank1)
+	if (state==idle)							//ожидание начала работы
+		begin
+
+		end else
+	if (state==blank1)							//стейт машина: состояние первый бланк (бланк излучения)
 		begin
 			temp_TIMER1<=temp_TIMER1-1'b1;
 		end else
-	if (state==Tizl)
+	if (state==Tizl)							//стейт машина: состояние интервал излучения
 		begin
-			temp_TIMER2<=temp_TIMER2-1'b1;
+			reg_DDS_start	<=1'b1;				//запускаем синтезатор DDS
+			reg_En_Iz  		<=1'b1;				//поднимаем флаг "излучения"
+			temp_TIMER2 	<=temp_TIMER2-1'b1;
 		end else
-	if (state==blank2)
+	if (state==blank2)							//стейт машина: состояние второй бланк (бланк приёма)
 		begin
-			temp_TIMER3<=temp_TIMER3-1'b1;
+			reg_DDS_start	<=1'b0;				//выключаем синтезатор DDS
+			reg_En_Iz  		<=1'b0;				//снимаем флаг  "излучения"
+			temp_TIMER3 	<=temp_TIMER3-1'b1;
 		end else
-	if (state==Tpr)
+	if (state==Tpr)								//стейт машина: состояние интервал приёма
 		begin
+			reg_En_Pr  <=1'b1;					//поднимаем флаг  "интервала приёма"
 			temp_TIMER4<=temp_TIMER4-1'b1;
+		end else
+	if (state==end_cycle)				 		//стейт машина: состояние - конец цикла
+		begin
+			reg_En_Pr  			<=1'b0;			//снимаем флаг  "интервала приёма"
+			FLAG_END_PROCESS_CMD<=1'b1;			//поднимаем флаг конца цикла
 		end
 end
 
-always_ff @(posedge CLK)
-	if (RESET) state<=off;
-	else       state<=new_state;
-
+//-------------STATE МАШИНА----------------------------------
 
 always_comb
 begin
 	case (state)
-		   off: if (FLAG_START_PROCESS_CMD) new_state=blank1;
+		   off:								new_state=idle;
+		  idle: if (FLAG_START_PROCESS_CMD)	new_state=blank1;
 		blank1: if (temp_TIMER1==0)			new_state=Tizl;
 		  Tizl: if (temp_TIMER2==0)			new_state=blank2;
   	    blank2: if (temp_TIMER3==0)			new_state=Tpr;
-  	       Tpr: if (temp_TIMER4==0)			new_state=off;
+  	       Tpr: if (temp_TIMER4==0)			new_state=end_cycle;
+  	 end_cycle:								new_state=off;
   	endcase
 end 
+//-----------------------------------------------------------
+
 
 endmodule
