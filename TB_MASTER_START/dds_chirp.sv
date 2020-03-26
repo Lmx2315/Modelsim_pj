@@ -77,7 +77,7 @@ begin
 		reg_clk_en	 <= 1'b0;
 	end
 end
-
+/*
 DDS_48_v1 dds_0 (
 		.clk         (clk_96),     		// clk.clk
 		.reset_n     (reg_rst_n),  		// rst.reset_n
@@ -89,5 +89,5 @@ DDS_48_v1 dds_0 (
 		.fcos_o      (data_Q),     		//    .fcos_o
 		.out_valid   (valid)  			//    .out_valid
 	);
-
+*/
 endmodule

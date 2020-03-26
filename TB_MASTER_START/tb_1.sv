@@ -1,3 +1,5 @@
+`timescale 1 ns / 1 ns
+
 module tb_1 ();
 
 logic clk_48 				=0;
@@ -32,10 +34,107 @@ logic 		SYS_TIME_UPDATE_OK;
 logic 		En_Iz;
 logic 		En_Pr;
 
+always #10.41666 clk_48=~clk_48;
+always # 5.20833 clk_96=~clk_96;
+
+initial
+begin
+	@(posedge clk_48)
+	FREQ 			=48'h1000000000 	 ;
+	FREQ_STEP 		=48'h100000    		 ;
+	FREQ_RATE 		=48'h100 	   		 ;
+	TIME_START 		=64'h00000000000012C0;
+	N_impuls 		=16'h1 				 ;
+	TYPE_impulse 	= 2'h0 				 ;
+	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	TIME_INIT 		=64'h0000000000000000;
+	WR 				= 1'b0 				 ;
+	SYS_TIME_UPDATE = 1'b1 				 ;
+	T1HZ 			= 1'b0 				 ;
+
+	#100;
+	@(posedge clk_48)
+
+	FREQ 			=48'h1000000000 	 ;
+	FREQ_STEP 		=48'h100000    		 ;
+	FREQ_RATE 		=48'h100 	   		 ;
+	TIME_START 		=64'h00000000000012C0;
+	N_impuls 		=16'h1 				 ;
+	TYPE_impulse 	= 2'h0 				 ;
+	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	TIME_INIT 		=64'h0000000000000000;
+	WR 				= 1'b1 				 ;
+	SYS_TIME_UPDATE = 1'b1 				 ;
+	T1HZ 			= 1'b0 				 ;
+
+	#100;
+	@(posedge clk_48)
+
+	FREQ 			=48'h1000000000 	 ;
+	FREQ_STEP 		=48'h100000    		 ;
+	FREQ_RATE 		=48'h100 	   		 ;
+	TIME_START 		=64'h00000000000012C0;
+	N_impuls 		=16'h1 				 ;
+	TYPE_impulse 	= 2'h0 				 ;
+	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	TIME_INIT 		=64'h0000000000000000;
+	WR 				= 1'b0 				 ;
+	SYS_TIME_UPDATE = 1'b1 				 ;
+	T1HZ 			= 1'b0 				 ;
+
+	#1000;
+	@(posedge clk_48)
+
+	FREQ 			=48'h1000000000 	 ;
+	FREQ_STEP 		=48'h100000    		 ;
+	FREQ_RATE 		=48'h100 	   		 ;
+	TIME_START 		=64'h00000000000012C0;
+	N_impuls 		=16'h1 				 ;
+	TYPE_impulse 	= 2'h0 				 ;
+	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	TIME_INIT 		=64'h0000000000000000;
+	WR 				= 1'b0 				 ;
+	SYS_TIME_UPDATE = 1'b1 				 ;
+	T1HZ 			= 1'b1 				 ;	
+
+	#1000;
+	@(posedge clk_48)
+
+	FREQ 			=48'h1000000000 	 ;
+	FREQ_STEP 		=48'h100000    		 ;
+	FREQ_RATE 		=48'h100 	   		 ;
+	TIME_START 		=64'h00000000000012C0;
+	N_impuls 		=16'h1 				 ;
+	TYPE_impulse 	= 2'h0 				 ;
+	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
+	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+	TIME_INIT 		=64'h0000000000000000;
+	WR 				= 1'b0 				 ;
+	SYS_TIME_UPDATE = 1'b1 				 ;
+	T1HZ 			= 1'b0 				 ;
+end
+
 
 //----------DDS тактируется 96 МГц !!!---------------------------
-dds_chirp (
-	.clk 			(clk_96),    // Clock
+
+dds_chirp 
+dds1(
+	.clk_96 		(clk_96),    // Clock
+	.clk_48 		(clk_48),
 	.DDS_freq 		(wFREQ),
 	.DDS_delta_freq (wFREQ_STEP),
 	.DDS_delta_rate (wFREQ_RATE),
@@ -46,7 +145,8 @@ dds_chirp (
 );
 
 //-------------Синхронизатор тактируется 48 МГц !!!-------------
-MASTER_START (
+MASTER_START 
+sync1(
 .DDS_freq 			(wFREQ 				),
 .DDS_delta_freq 	(wFREQ_STEP 		),
 .DDS_delta_rate 	(wFREQ_RATE 		),

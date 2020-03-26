@@ -36,7 +36,7 @@ output En_Pr);
 logic [63:0] TIME_MASTER=0;			   // часы с шагом  1/48 мкс
 logic reg_En_Iz=0;
 logic reg_En_Pr=0;
-logic reg_DDS_start;
+logic reg_DDS_start				   =0;
 logic [47:0] reg_MEM_DDS_freq      =0;//начальная частота DDS
 logic [47:0] reg_MEM_DDS_delta_freq=0;//шаг перестройки частоты DDS
 logic [31:0] reg_MEM_DDS_delta_rate=0;//скорость перестройки частоты DDS
@@ -152,7 +152,8 @@ end
 always_ff @(posedge CLK)
 if (RESET)
 begin
-state<=start;
+ 		state<=start;
+reg_DDS_start<=0;
 end
 else
 begin
