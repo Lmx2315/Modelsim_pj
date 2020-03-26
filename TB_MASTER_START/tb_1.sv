@@ -1,27 +1,44 @@
 module tb_1 ();
 
+logic clk_125=0;
+logic clk_96 =0;
+logic rst=0;
+
+logic [47:0] FREQ     =48'h0;
+logic [47:0] FREQ_STEP=48'h0;
+logic [31:0] FREQ_RATE=32'h0;
+logic [63:0] TIME_INIT=64'h0;
+
+logic [47:0] 	wFREQ;
+logic [47:0] 	wFREQ_STEP;
+logic [31:0] 	wFREQ_RATE;
+logic 			DDS_START;
+
+logic [15:0] dds_data_I;
+logic [15:0] dds_data_Q;
+logic 		 dds_valid ;
 
 
-
+//----------DDS тактируется 96 МГц !!!---------------------------
 dds_chirp (
-	.clk 			(),    // Clock
-	.DDS_freq 		(),
-	.DDS_delta_freq (),
-	.DDS_delta_rate (),
-	.start 			(),
-	.data_I 		(),
-	.data_Q 		(),
-	.valid 			()	
+	.clk 			(clk_96),    // Clock
+	.DDS_freq 		(wFREQ),
+	.DDS_delta_freq (wFREQ_STEP),
+	.DDS_delta_rate (wFREQ_RATE),
+	.start 			(DDS_START),
+	.data_I 		(data_I),
+	.data_Q 		(data_Q),
+	.valid 			(dds_valid)	
 );
 
-
+//-------------Синхронизатор тактируется 125 МГц !!!-------------
 MASTER_START (
-.DDS_freq 			(),
-.DDS_delta_freq 	(),
-.DDS_delta_rate 	(),
-.DDS_start 			(),
-.RESET 				(),
-.CLK 				(),
+.DDS_freq 			(wFREQ 		),
+.DDS_delta_freq 	(wFREQ_STEP ),
+.DDS_delta_rate 	(wFREQ_RATE ),
+.DDS_start 			(DDS_START 	),
+.RESET 				(rst),
+.CLK 				(clk_125),
 .TIME_RST 			(),
 .SYS_TIME 			(),
 .SYS_TIME_UPDATE 	(),//сигнал управления который включает готовность установки системного времени по сигналу T1hz 

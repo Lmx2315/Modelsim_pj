@@ -1,5 +1,8 @@
 module dds_chirp (
-	input clk,    // Clock
+	input clk_96,    // Clock
+	input clk_125,
+	input REQ,  	//запрос на передачу данных из 125 МГц в 96 МГц
+   output ACK,		//подтверждение что данные переданы
 	input [47:0] DDS_freq,
 	input [47:0] DDS_delta_freq,
 	input [31:0] DDS_delta_rate,
@@ -16,9 +19,37 @@ logic [ 2:0] frt_start  =0;
 logic reg_rst_n =0;
 logic reg_clk_en=0;
 
-always_ff @(posedge clk) frt_start<={frt_start[1:0],start};//ищум фронт сигнала start
 
-always_ff @(posedge clk) 
+//---------------CDC для перехода данных из 125 МГц в домен 96 МГц ------------------
+logic 		 reg_REQ 			=0;
+logic 		 reg_ACK 			=0;
+logic [ 2:0] tmp_REQ			=0;
+logic [ 2:0] tmp_ACK			=0;
+logic [47:0] tmp_DDS_freq 		=0;
+logic [47:0] tmp_DDS_delta_freq =0;
+logic [31:0] tmp_DDS_delta_rate =0;
+
+always_ff @(posedge clk_96  ) tmp_REQ<={tmp_REQ[1:0],REQ    }; //принимаем 
+always_ff @(posedge clk_125 ) tmp_ACK<={tmp_ACK[1:0],reg_ACK}; //передаём 
+
+always_ff @(posedge clk_96)
+begin
+		reg_ACK			<=tmp_REQ[2];
+	if (reg_ACK)
+	begin
+	tmp_DDS_freq 		<=DDS_freq;
+	tmp_DDS_delta_freq 	<=DDS_delta_freq;
+	tmp_DDS_delta_rate  <=DDS_delta_rate;
+	end
+end 
+
+assign ACK=tmp_ACK[2];//подтвержение получения данных, передаём источнику
+
+//----------------------------------------------------------------------------------
+
+always_ff @(posedge clk_96) frt_start<={frt_start[1:0],start};//ищем фронт сигнала start
+
+always_ff @(posedge clk_96) 
 begin 
 	if (frt_start==3'b001) //пришёл фронт сигнала start для DDS
 	begin

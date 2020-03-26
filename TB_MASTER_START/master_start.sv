@@ -7,6 +7,8 @@ output  [47:0] DDS_freq,
 output  [47:0] DDS_delta_freq,
 output  [31:0] DDS_delta_rate,
 output         DDS_start,
+output 		   REQ,			//запрос на передачу данных
+ input		   ACK,			//подтверждение принятых данных
 
 input RESET,
 input CLK,
@@ -57,6 +59,13 @@ logic [31:0] temp_TIMER2=0;
 logic [31:0] temp_TIMER3=0;
 logic [31:0] temp_TIMER4=0;
 
+logic [47:0] tmp_MEM_DDS_freq      =0;//начальная частота DDS
+logic [47:0] tmp_MEM_DDS_delta_freq=0;//шаг перестройки частоты DDS
+logic [31:0] tmp_MEM_DDS_delta_rate=0;//скорость перестройки частоты DDS
+logic 		 tmp_REQ =0;
+logic 		 FLAG_REQ=0;
+
+
 enum {idle,start,cycle,blank1,Tizl,blank2,Tpr,end_cycle} state,new_state;
 
 always_ff @(posedge CLK) frnt_T1hz<={frnt_T1hz[2:0],T1hz}; //ищем фронт сигнала T1hz
@@ -97,18 +106,40 @@ reg_MEM_Tblank2       <=32'hffffffff;
 end
 else
 	if (WR_DATA)  //по сигналу записи переносим данные со входов в управляющие регистры
+	begin
+	reg_MEM_DDS_freq 	  <=MEM_DDS_freq;
+	reg_MEM_DDS_delta_freq<=MEM_DDS_delta_freq;
+	reg_MEM_DDS_delta_rate<=MEM_DDS_delta_rate;
+	reg_MEM_TIME_START 	  <=MEM_TIME_START;
+	reg_MEM_N_impuls      <=MEM_N_impuls;
+	reg_MEM_TYPE_impulse  <=MEM_TYPE_impulse;
+	reg_MEM_Interval_Ti   <=MEM_Interval_Ti;
+	reg_MEM_Interval_Tp   <=MEM_Interval_Tp;
+	reg_MEM_Tblank1       <=MEM_Tblank1;
+	reg_MEM_Tblank2       <=MEM_Tblank2;
+	end
+
+
+//-----------модуль передачи данных через CDC в DDS (CDC находиттся в модуле dds_chirp() )
+logic [47:0] tmp_MEM_DDS_freq      =0;//начальная частота DDS
+logic [47:0] tmp_MEM_DDS_delta_freq=0;//шаг перестройки частоты DDS
+logic [31:0] tmp_MEM_DDS_delta_rate=0;//скорость перестройки частоты DDS
+logic 		 tmp_REQ=0;
+
+always_ff @(posedge CLK) 
 begin
-reg_MEM_DDS_freq 	  <=MEM_DDS_freq;
-reg_MEM_DDS_delta_freq<=MEM_DDS_delta_freq;
-reg_MEM_DDS_delta_rate<=MEM_DDS_delta_rate;
-reg_MEM_TIME_START 	  <=MEM_TIME_START;
-reg_MEM_N_impuls      <=MEM_N_impuls;
-reg_MEM_TYPE_impulse  <=MEM_TYPE_impulse;
-reg_MEM_Interval_Ti   <=MEM_Interval_Ti;
-reg_MEM_Interval_Tp   <=MEM_Interval_Tp;
-reg_MEM_Tblank1       <=MEM_Tblank1;
-reg_MEM_Tblank2       <=MEM_Tblank2;
+ if ((ACK==0)&&(FLAG_REQ==1))	//проверяем что можно передавать данные в DDS
+ begin
+	 tmp_MEM_DDS_freq 		<=reg_MEM_DDS_freq;
+	 tmp_MEM_DDS_delta_freq <=reg_MEM_DDS_delta_freq;
+	 tmp_MEM_DDS_delta_rate <=tmp_MEM_DDS_delta_rate;
+	      tmp_REQ 			<=1'b1;
+ end else 
+ 		if (FLAG_REQ==0) tmp_REQ <=1'b0;
 end
+
+assign REQ=tmp_REQ; 			//выдаём запрос на передачу данных в DDS
+
 //-----------------------------------------------------------------
 //        Модуль проверки срабатывания команды по времени
 always_ff @(posedge CLK)
@@ -133,6 +164,7 @@ else
 begin
 	    state<=new_state;
 
+
 	if (state==start) 										//начальное состояние стейт-машины
 	begin		
 
@@ -147,6 +179,7 @@ begin
 		end else
 	if (state==idle)										//ожидание начала работы
 		begin
+		   FLAG_REQ			<=1'b1;							//готовимся отослать данные в DDS
 		temp_TIMER1  		<=reg_MEM_Tblank1;  			//переписываем управляющие регистры в рабочие переменные
 		temp_TIMER2  		<=reg_MEM_Tblank2;
 		temp_TIMER3			<=reg_MEM_Interval_Ti;
@@ -175,6 +208,7 @@ begin
 		end else
 	if (state==end_cycle)				 					//стейт машина: состояние - конец цикла
 		begin
+			FLAG_REQ			<=1'b0;						//снимаем флаг запроса передачи данных в DDS
 			reg_En_Pr  			<=1'b0;						//снимаем флаг  "интервала приёма"
 			FLAG_END_PROCESS_CMD<=1'b1;						//поднимаем флаг конца цикла
 			reg_temp_N_impuls   <=reg_temp_N_impuls-1'b1;	//пересчитываем число оставшихся импульсов
@@ -197,6 +231,8 @@ begin
   	endcase
 end 
 //-----------------------------------------------------------
+
+
 
 assign DDS_start 			= reg_DDS_start;			//сигнал управляющий встроеным в ПЛИС DDS
 assign DDS_freq 			= reg_MEM_DDS_freq;
