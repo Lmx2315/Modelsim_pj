@@ -11,11 +11,10 @@ output 		   REQ,			//запрос на передачу данных
  input		   ACK,			//подтверждение принятых данных
 
 input RESET,
-input CLK,
-input TIME_RST,
-input [63:0] SYS_TIME,
-input SYS_TIME_UPDATE,//сигнал управления который включает готовность установки системного времени по сигналу T1hz 
-input T1hz,			  //сигнал секундной метки
+input CLK,					//частота работы 48 МГц !!!
+input [63:0] SYS_TIME,		//код времени который надо установить по секундной метке
+input SYS_TIME_UPDATE,		//сигнал управления который включает готовность установки системного времени по сигналу T1hz 
+input T1hz,			  		//сигнал секундной метки
 
 input 		 WR_DATA,
 input [47:0] MEM_DDS_freq,
@@ -34,7 +33,7 @@ output SYS_TIME_UPDATE_OK,//флаг показывающий,что по сек
 output En_Iz,
 output En_Pr);
 
-logic [63:0] TIME_MASTER=0;			   // часы с шагом  1/125 мкс
+logic [63:0] TIME_MASTER=0;			   // часы с шагом  1/48 мкс
 logic reg_En_Iz=0;
 logic reg_En_Pr=0;
 logic reg_DDS_start;
@@ -121,11 +120,6 @@ else
 
 
 //-----------модуль передачи данных через CDC в DDS (CDC находиттся в модуле dds_chirp() )
-logic [47:0] tmp_MEM_DDS_freq      =0;//начальная частота DDS
-logic [47:0] tmp_MEM_DDS_delta_freq=0;//шаг перестройки частоты DDS
-logic [31:0] tmp_MEM_DDS_delta_rate=0;//скорость перестройки частоты DDS
-logic 		 tmp_REQ=0;
-
 always_ff @(posedge CLK) 
 begin
  if ((ACK==0)&&(FLAG_REQ==1))	//проверяем что можно передавать данные в DDS
@@ -138,7 +132,7 @@ begin
  		if (FLAG_REQ==0) tmp_REQ <=1'b0;
 end
 
-assign REQ=tmp_REQ; 			//выдаём запрос на передачу данных в DDS
+assign REQ=tmp_REQ; 																//выдаём запрос на передачу данных в DDS
 
 //-----------------------------------------------------------------
 //        Модуль проверки срабатывания команды по времени
@@ -165,34 +159,34 @@ begin
 	    state<=new_state;
 
 
-	if (state==start) 										//начальное состояние стейт-машины
+	if (state==start) 																	//начальное состояние стейт-машины
 	begin		
 
 	end	else
-	if (state==cycle)										//ожидание начала работы
+	if (state==cycle)																	//ожидание начала работы
 		begin
 		reg_En_Iz    		<=1'b0;
 		reg_En_Pr    		<=1'b0;
 		reg_DDS_start		<=1'b0;
-		reg_temp_N_impuls   <=reg_MEM_N_impuls; 			//запоминаем сколько импульсов синтезировать
+		reg_temp_N_impuls   <=reg_MEM_N_impuls; 										//запоминаем сколько импульсов синтезировать
 		FLAG_END_PROCESS_CMD<=1'b0;	
 		end else
-	if (state==idle)										//ожидание начала работы
+	if (state==idle)																	//ожидание начала работы
 		begin
-		   FLAG_REQ			<=1'b1;							//готовимся отослать данные в DDS
-		temp_TIMER1  		<=reg_MEM_Tblank1;  			//переписываем управляющие регистры в рабочие переменные
+		   FLAG_REQ			<=1'b1;														//готовимся отослать данные в DDS
+		temp_TIMER1  		<=reg_MEM_Tblank1;  										//переписываем управляющие регистры в рабочие переменные
 		temp_TIMER2  		<=reg_MEM_Tblank2;
 		temp_TIMER3			<=reg_MEM_Interval_Ti;
 		temp_TIMER4			<=reg_MEM_Interval_Tp;
 		end else
-	if (state==blank1)										//стейт машина: состояние первый бланк (бланк излучения)
+	if (state==blank1)																	//стейт машина: состояние первый бланк (бланк излучения)
 		begin
 			temp_TIMER1<=temp_TIMER1-1'b1;
 		end else
-	if (state==Tizl)										//стейт машина: состояние интервал излучения
+	if (state==Tizl)																	//стейт машина: состояние интервал излучения
 		begin
-			reg_DDS_start	<=1'b1;							//запускаем синтезатор DDS
-			reg_En_Iz  		<=1'b1;							//поднимаем флаг "излучения"
+			reg_DDS_start	<=1'b1;														//запускаем синтезатор DDS
+			reg_En_Iz  		<=1'b1;														//поднимаем флаг "излучения"
 			temp_TIMER2 	<=temp_TIMER2-1'b1;
 		end else
 	if (state==blank2)																	//стейт машина: состояние второй бланк (бланк приёма)
@@ -203,15 +197,15 @@ begin
 		end else
 	if (state==Tpr)																		//стейт машина: состояние интервал приёма
 		begin
-			reg_En_Pr  <=1'b1;								//поднимаем флаг  "интервала приёма"
+			reg_En_Pr  <=1'b1;															//поднимаем флаг  "интервала приёма"
 			temp_TIMER4<=temp_TIMER4-1'b1;
 		end else
-	if (state==end_cycle)				 					//стейт машина: состояние - конец цикла
+	if (state==end_cycle)				 												//стейт машина: состояние - конец цикла
 		begin
-			FLAG_REQ			<=1'b0;						//снимаем флаг запроса передачи данных в DDS
-			reg_En_Pr  			<=1'b0;						//снимаем флаг  "интервала приёма"
-			FLAG_END_PROCESS_CMD<=1'b1;						//поднимаем флаг конца цикла
-			reg_temp_N_impuls   <=reg_temp_N_impuls-1'b1;	//пересчитываем число оставшихся импульсов
+			FLAG_REQ			<=1'b0;													//снимаем флаг запроса передачи данных в DDS
+			reg_En_Pr  			<=1'b0;													//снимаем флаг  "интервала приёма"
+			FLAG_END_PROCESS_CMD<=1'b1;													//поднимаем флаг конца цикла
+			reg_temp_N_impuls   <=reg_temp_N_impuls-1'b1;								//пересчитываем число оставшихся импульсов
 		end
 end
 

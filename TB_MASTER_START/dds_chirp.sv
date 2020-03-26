@@ -1,6 +1,6 @@
 module dds_chirp (
 	input clk_96,    // Clock
-	input clk_125,
+	input clk_48,
 	input REQ,  	//запрос на передачу данных из 125 МГц в 96 МГц
    output ACK,		//подтверждение что данные переданы
 	input [47:0] DDS_freq,
@@ -20,7 +20,7 @@ logic reg_rst_n =0;
 logic reg_clk_en=0;
 
 
-//---------------CDC для перехода данных из 125 МГц в домен 96 МГц ------------------
+//---------------CDC для перехода данных из 48 МГц в домен 96 МГц ------------------
 logic 		 reg_REQ 			=0;
 logic 		 reg_ACK 			=0;
 logic [ 2:0] tmp_REQ			=0;
@@ -30,7 +30,7 @@ logic [47:0] tmp_DDS_delta_freq =0;
 logic [31:0] tmp_DDS_delta_rate =0;
 
 always_ff @(posedge clk_96  ) tmp_REQ<={tmp_REQ[1:0],REQ    }; //принимаем 
-always_ff @(posedge clk_125 ) tmp_ACK<={tmp_ACK[1:0],reg_ACK}; //передаём 
+always_ff @(posedge clk_48  ) tmp_ACK<={tmp_ACK[1:0],reg_ACK}; //передаём 
 
 always_ff @(posedge clk_96)
 begin
@@ -79,7 +79,7 @@ begin
 end
 
 DDS_48_v1 dds_0 (
-		.clk         (clk),     		// clk.clk
+		.clk         (clk_96),     		// clk.clk
 		.reset_n     (reg_rst_n),  		// rst.reset_n
 		.clken       (reg_clk_en),     	//  in.clken
 		.phi_inc_i   (phi_dds_reg),   	//    .phi_inc_i  48'd43980465111040
