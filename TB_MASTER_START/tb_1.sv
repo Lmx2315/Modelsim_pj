@@ -43,7 +43,7 @@ begin
 	FREQ 			=48'h1000000000 	 ;
 	FREQ_STEP 		=48'h100000    		 ;
 	FREQ_RATE 		=48'h100 	   		 ;
-	TIME_START 		=64'h00000000000012C0;
+	TIME_START 		=64'h00000000000012C0; //пауза 100 мкс
 	N_impuls 		=16'h1 				 ;
 	TYPE_impulse 	= 2'h0 				 ;
 	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
@@ -54,6 +54,14 @@ begin
 	WR 				= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b0 				 ;
+	rst 			= 1'b0 				 ;
+
+	#30
+	@(posedge clk_48)
+	rst 			= 1'b1 				 ;
+	#30
+	@(posedge clk_48)
+	rst 			= 1'b0 				 ;
 
 	#100;
 	@(posedge clk_48)
@@ -124,7 +132,7 @@ begin
 	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
 	TIME_INIT 		=64'h0000000000000000;
 	WR 				= 1'b0 				 ;
-	SYS_TIME_UPDATE = 1'b1 				 ;
+	SYS_TIME_UPDATE = 1'b0 				 ;
 	T1HZ 			= 1'b0 				 ;
 end
 

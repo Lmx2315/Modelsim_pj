@@ -73,11 +73,11 @@ always_ff @(posedge CLK) frnt_T1hz<={frnt_T1hz[2:0],T1hz}; //ищем фронт
 always_ff @(posedge CLK)
 if (RESET)
 begin
-TIME_MASTER<=64'h0;
+
 end
 	else
 begin	
-	if ((frnt_T1hz[3:1]==3'b011)&&(FLAG_SYS_TIME_UPDATE)) 	//если FLAG_SYS_TIME_UPDATE поднят и пришла секундная метка то переустанавливаем системное время
+	if ((frnt_T1hz[3:1]==3'b011)&&(SYS_TIME_UPDATE)) 	//если FLAG_SYS_TIME_UPDATE поднят и пришла секундная метка то переустанавливаем системное время
 	begin
 		TIME_MASTER          <=SYS_TIME;					//перезаписываем системное время
 		FLAG_SYS_TIME_UPDATED<=1;							//устанавливаем флаг подтверждения что произошла переустановка системного времени!
@@ -159,7 +159,6 @@ else
 begin
 	    state<=new_state;
 
-
 	if (state==start) 																	//начальное состояние стейт-машины
 	begin		
 
@@ -176,8 +175,8 @@ begin
 		begin
 		   FLAG_REQ			<=1'b1;														//готовимся отослать данные в DDS
 		temp_TIMER1  		<=reg_MEM_Tblank1;  										//переписываем управляющие регистры в рабочие переменные
-		temp_TIMER2  		<=reg_MEM_Tblank2;
-		temp_TIMER3			<=reg_MEM_Interval_Ti;
+		temp_TIMER2  		<=reg_MEM_Interval_Ti;
+		temp_TIMER3			<=reg_MEM_Tblank2;
 		temp_TIMER4			<=reg_MEM_Interval_Tp;
 		end else
 	if (state==blank1)																	//стейт машина: состояние первый бланк (бланк излучения)
