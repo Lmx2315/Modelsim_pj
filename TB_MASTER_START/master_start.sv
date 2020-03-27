@@ -62,8 +62,9 @@ logic [31:0] temp_TIMER4=0;
 logic [47:0] tmp_MEM_DDS_freq      =0;					//начальная частота DDS
 logic [47:0] tmp_MEM_DDS_delta_freq=0;					//шаг перестройки частоты DDS
 logic [31:0] tmp_MEM_DDS_delta_rate=0;					//скорость перестройки частоты DDS
-logic 		 tmp_REQ =0;
-logic 		 FLAG_REQ=0;
+logic 		 tmp_REQ 	 	  =0;
+logic 		 FLAG_REQ	 	  =0;
+logic 		 FLAG_PROCESS_OVER=0;						//флаг что закончился процесс генерации интервалов
 
 
 enum {idle,start,cycle,blank1,Tizl,blank2,Tpr,end_cycle} state,new_state;
@@ -153,9 +154,9 @@ FLAG_START_PROCESS_CMD<=1'b0;
 end
 else
 begin
-	if ((reg_MEM_TIME_START==TIME_MASTER)&&(FLAG_START_PROCESS_CMD==1'b0)) FLAG_START_PROCESS_CMD<=1'b1;
+	if (reg_MEM_TIME_START==TIME_MASTER) FLAG_START_PROCESS_CMD<=1'b1;
 	else
-		if (FLAG_END_PROCESS_CMD==1'b1) 								   FLAG_START_PROCESS_CMD<=1'b0;
+		if (state==cycle) 				 FLAG_START_PROCESS_CMD<=1'b0;
 end
 //----------------------------------------------------------------
 //        Модуль исполнения команды
@@ -169,54 +170,54 @@ else
 begin
 	    state<=new_state;
 
-	if (state==start) 																		//начальное состояние стейт-машины
+	if (state==start) 																			//начальное состояние стейт-машины
 	begin		
-
+	//тут сидим -ждём начала работы по срабатыванию часов
 	end	else
-	if (state==cycle)																		//ожидание начала работы
+	if (state==cycle)																			//ожидание начала работы
 		begin
-		reg_temp_N_impuls   <=reg_MEM_N_impuls; 											//запоминаем сколько импульсов синтезировать
+			FLAG_REQ		<=1'b1;																//готовимся отослать данные в DDS
+		reg_temp_N_impuls   <=reg_MEM_N_impuls; 												//запоминаем сколько импульсов синтезировать
 		reg_En_Iz    		<=1'b0;
 		reg_En_Pr    		<=1'b0;
 		reg_DDS_start		<=1'b0;
 		end else
-	if (state==idle)																		//ожидание начала работы
+	if (state==idle)																			//ожидание начала работы
 		begin
-		temp_TIMER1  		<=reg_MEM_Tblank1;  											//переписываем управляющие регистры в рабочие переменные
+		temp_TIMER1  		<=reg_MEM_Tblank1;  												//переписываем управляющие регистры в рабочие переменные
 		temp_TIMER2  		<=reg_MEM_Interval_Ti;
 		temp_TIMER3			<=reg_MEM_Tblank2;
 		temp_TIMER4			<=reg_MEM_Interval_Tp;
-		FLAG_END_PROCESS_CMD<=1'b0;				
+		FLAG_END_PROCESS_CMD<=1'b0;		
+		reg_temp_N_impuls	<=reg_temp_N_impuls-1'b1;											//считаем сколько импульсов надо синтезировать			
 		end else
-	if (state==blank1)																		//стейт машина: состояние первый бланк (бланк излучения)
+	if (state==blank1)																			//стейт машина: состояние первый бланк (бланк излучения)
 		begin
-			FLAG_REQ	<=1'b1;																//готовимся отослать данные в DDS
 			temp_TIMER1 <=temp_TIMER1-1'b1;
 		end else
-	if (state==Tizl)																		//стейт машина: состояние интервал излучения
+	if (state==Tizl)																			//стейт машина: состояние интервал излучения
 		begin
-			reg_DDS_start	<=1'b1;															//запускаем синтезатор DDS
-			reg_En_Iz  		<=1'b1;															//поднимаем флаг "излучения"
+			reg_DDS_start	<=1'b1;																//запускаем синтезатор DDS
+			reg_En_Iz  		<=1'b1;																//поднимаем флаг "излучения"
 			temp_TIMER2 	<=temp_TIMER2-1'b1;
 		end else
-	if (state==blank2)																		//стейт машина: состояние второй бланк (бланк приёма)
+	if (state==blank2)																			//стейт машина: состояние второй бланк (бланк приёма)
 		begin
-			if ((reg_temp_N_impuls   ==1)||	
-			    (reg_MEM_TYPE_impulse==0)) reg_DDS_start		<=1'b0;						//выключаем синтезатор DDS если режим пачки - некогерентный!!!
-										   reg_En_Iz 			<=1'b0;						//снимаем флаг  "излучения"
-										   temp_TIMER3 	    	<=temp_TIMER3-1'b1;
-	   		if  (reg_temp_N_impuls   ==1)	FLAG_END_PROCESS_CMD<=1'b1;						//поднимаем флаг конца цикла										   
+			if ((reg_temp_N_impuls   ==0)||	
+			    (reg_MEM_TYPE_impulse==0)) reg_DDS_start		<=1'b0;							//выключаем синтезатор DDS если режим пачки - некогерентный!!!
+										   reg_En_Iz 			<=1'b0;							//снимаем флаг  "излучения"
+										   temp_TIMER3 	    	<=temp_TIMER3-1'b1;										   
 		end else
-	if (state==Tpr)																			//стейт машина: состояние интервал приёма
+	if (state==Tpr)																				//стейт машина: состояние интервал приёма
 		begin
-			reg_En_Pr  <=1'b1;																//поднимаем флаг  "интервала приёма"
+			reg_En_Pr  <=1'b1;																	//поднимаем флаг  "интервала приёма"
 			temp_TIMER4<=temp_TIMER4-1'b1;
 		end else
-	if (state==end_cycle)				 													//стейт машина: состояние - конец цикла
+	if (state==end_cycle)				 														//стейт машина: состояние - конец цикла
 		begin
-			FLAG_REQ										<=1'b0;							//снимаем флаг запроса передачи данных в DDS
-			reg_En_Pr  										<=1'b0;							//снимаем флаг  "интервала приёма"
-			reg_temp_N_impuls   							<=reg_temp_N_impuls-1'b1;		//пересчитываем число оставшихся импульсов							
+			FLAG_REQ											<=1'b0;							//снимаем флаг запроса передачи данных в DDS
+			reg_En_Pr  											<=1'b0;							//снимаем флаг  "интервала приёма"
+	   		if  (reg_temp_N_impuls   ==0)	FLAG_END_PROCESS_CMD<=1'b1;							//поднимаем флаг конца процесса синтеза пачки									
 		end
 end
 
@@ -225,14 +226,14 @@ end
 always_comb
 begin
 	case (state)
-		 start:								new_state=cycle    ;
-		 cycle:	if (FLAG_START_PROCESS_CMD)	new_state=idle     ;
+		 start: if (FLAG_START_PROCESS_CMD)	new_state=cycle    ; else new_state=start;
+		 cycle:								new_state=idle     ;
 		  idle: if (reg_MEM_N_impuls>0)		new_state=blank1   ;//проверка что задано число интервалов больше нуля
 		blank1: if (temp_TIMER1==0)			new_state=Tizl     ;
 		  Tizl: if (temp_TIMER2==0)			new_state=blank2   ;
   	    blank2: if (temp_TIMER3==0)			new_state=Tpr      ;
   	       Tpr: if (temp_TIMER4==0)			new_state=end_cycle;
-  	 end_cycle:	if (FLAG_END_PROCESS_CMD)	new_state=start    ;else new_state=idle     ;
+  	 end_cycle:	if (reg_temp_N_impuls!=0)	new_state=idle     ; else new_state=start; 
   	endcase
 end 
 //-----------------------------------------------------------
