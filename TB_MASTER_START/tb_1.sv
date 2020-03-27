@@ -34,6 +34,9 @@ logic 		SYS_TIME_UPDATE_OK;
 logic 		En_Iz;
 logic 		En_Pr;
 
+logic wREQ=0;
+logic wACK=0;
+
 always #10.41666 clk_48=~clk_48;
 always # 5.20833 clk_96=~clk_96;
 
@@ -43,9 +46,9 @@ begin
 	FREQ 			=48'h1000000000 	 ;
 	FREQ_STEP 		=48'h100000    		 ;
 	FREQ_RATE 		=48'h100 	   		 ;
-	TIME_START 		=64'h00000000000012C0; //пауза 100 мкс
-	N_impuls 		=16'h1 				 ;
-	TYPE_impulse 	= 2'h0 				 ;
+	TIME_START 		=64'h00000000000012C0;  //пауза 100 мкс
+	N_impuls 		=16'h2 				 ;  //число рабочих интервалов (импульсов излучения/приёма)
+	TYPE_impulse 	= 2'h1 				 ;  //тип пачки импульсов - когерентная(когда DDS в паузе не выключается) или нет 
 	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
 	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
 	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
@@ -66,17 +69,6 @@ begin
 	#100;
 	@(posedge clk_48)
 
-	FREQ 			=48'h1000000000 	 ;
-	FREQ_STEP 		=48'h100000    		 ;
-	FREQ_RATE 		=48'h100 	   		 ;
-	TIME_START 		=64'h00000000000012C0;
-	N_impuls 		=16'h1 				 ;
-	TYPE_impulse 	= 2'h0 				 ;
-	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	TIME_INIT 		=64'h0000000000000000;
 	WR 				= 1'b1 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b0 				 ;
@@ -84,17 +76,6 @@ begin
 	#100;
 	@(posedge clk_48)
 
-	FREQ 			=48'h1000000000 	 ;
-	FREQ_STEP 		=48'h100000    		 ;
-	FREQ_RATE 		=48'h100 	   		 ;
-	TIME_START 		=64'h00000000000012C0;
-	N_impuls 		=16'h1 				 ;
-	TYPE_impulse 	= 2'h0 				 ;
-	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	TIME_INIT 		=64'h0000000000000000;
 	WR 				= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b0 				 ;
@@ -102,38 +83,46 @@ begin
 	#1000;
 	@(posedge clk_48)
 
-	FREQ 			=48'h1000000000 	 ;
-	FREQ_STEP 		=48'h100000    		 ;
-	FREQ_RATE 		=48'h100 	   		 ;
-	TIME_START 		=64'h00000000000012C0;
-	N_impuls 		=16'h1 				 ;
-	TYPE_impulse 	= 2'h0 				 ;
-	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	TIME_INIT 		=64'h0000000000000000;
 	WR 				= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b1 				 ;	
 
 	#1000;
 	@(posedge clk_48)
+	WR 				= 1'b0 				 ;
+	SYS_TIME_UPDATE = 1'b0 				 ;
+	T1HZ 			= 1'b0 				 ;
 
-	FREQ 			=48'h1000000000 	 ;
-	FREQ_STEP 		=48'h100000    		 ;
-	FREQ_RATE 		=48'h100 	   		 ;
-	TIME_START 		=64'h00000000000012C0;
-	N_impuls 		=16'h1 				 ;
-	TYPE_impulse 	= 2'h0 				 ;
-	Interval_Ti 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
-	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
+
+//--------------------------------------------------------------------
+	#700000;
+	@(posedge clk_48)
+	FREQ 			=48'h2000000000 	 ;
+	FREQ_STEP 		=48'h200000    		 ;
+	FREQ_RATE 		=48'h200 	   		 ;
+	TIME_START 		=64'h000000000000a48e;  //782 мкс
+	N_impuls 		=16'h1 				 ;  //число рабочих интервалов (импульсов излучения/приёма)
+	TYPE_impulse 	= 2'h1 				 ;  //тип пачки импульсов - когерентная(когда DDS в паузе не выключается) или нет 
+	Interval_Ti 	=32'h2800 			 ;  //длительность 128 мкс х 48 
+	Interval_Tp 	=32'h2800 			 ;  //длительность 128 мкс х 48 
+	Tblank1 	 	=32'h280 			 ;  //длительность   8 мкс х 48 
+	Tblank2 	 	=32'h280 			 ;  //длительность   8 мкс х 48 
 	TIME_INIT 		=64'h0000000000000000;
 	WR 				= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b0 				 ;
 	T1HZ 			= 1'b0 				 ;
+	rst 			= 1'b0 				 ;
+
+	#100;
+	@(posedge clk_48)
+
+	WR 				= 1'b1 				 ;
+
+	#100;
+	@(posedge clk_48)
+
+	WR 				= 1'b0 				 ;
+
 end
 
 
@@ -141,15 +130,17 @@ end
 
 dds_chirp 
 dds1(
-	.clk_96 		(clk_96),    // Clock
-	.clk_48 		(clk_48),
-	.DDS_freq 		(wFREQ),
-	.DDS_delta_freq (wFREQ_STEP),
-	.DDS_delta_rate (wFREQ_RATE),
-	.start 			(DDS_START),
-	.data_I 		(data_I),
-	.data_Q 		(data_Q),
-	.valid 			(dds_valid)	
+	.clk_96 		(clk_96 	),    	// Clock
+	.clk_48 		(clk_48 	),
+	.REQ			(wREQ		),  	//запрос на передачу данных из 125 МГц в 96 МГц
+    .ACK			(wACK		),		//подтверждение что данные переданы
+	.DDS_freq 		(wFREQ 		),
+	.DDS_delta_freq (wFREQ_STEP ),
+	.DDS_delta_rate (wFREQ_RATE ),
+	.start 			(DDS_START 	),
+	.data_I 		(data_I 	),
+	.data_Q 		(data_Q 	),
+	.valid 			(dds_valid 	)	
 );
 
 //-------------Синхронизатор тактируется 48 МГц !!!-------------
@@ -159,6 +150,8 @@ sync1(
 .DDS_delta_freq 	(wFREQ_STEP 		),
 .DDS_delta_rate 	(wFREQ_RATE 		),
 .DDS_start 			(DDS_START 			),
+.REQ				(wREQ				),	//запрос на передачу данных
+.ACK				(wACK				),
 .RESET 				(rst 				),
 .CLK 				(clk_48 			),
 .SYS_TIME 			(TIME_INIT			),	//код времени для предустановки по сигналу T1c
