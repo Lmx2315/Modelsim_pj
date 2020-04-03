@@ -1,0 +1,11 @@
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\bin\Debug\netcoreapp3.1\TB_MASTER_START.exe
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\bin\Debug\netcoreapp3.1\TB_MASTER_START.deps.json
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\bin\Debug\netcoreapp3.1\TB_MASTER_START.runtimeconfig.json
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\bin\Debug\netcoreapp3.1\TB_MASTER_START.runtimeconfig.dev.json
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\bin\Debug\netcoreapp3.1\TB_MASTER_START.dll
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\bin\Debug\netcoreapp3.1\TB_MASTER_START.pdb
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\obj\Debug\netcoreapp3.1\TB_MASTER_START.csprojAssemblyReference.cache
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\obj\Debug\netcoreapp3.1\TB_MASTER_START.AssemblyInfoInputs.cache
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\obj\Debug\netcoreapp3.1\TB_MASTER_START.AssemblyInfo.cs
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\obj\Debug\netcoreapp3.1\TB_MASTER_START.dll
+C:\Users\Asus\Desktop\From work\072\Modelsim_pj\TB_MASTER_START\obj\Debug\netcoreapp3.1\TB_MASTER_START.pdb

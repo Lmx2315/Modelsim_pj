@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "TB_MASTER_START/1.0.0": {
+        "runtime": {
+          "TB_MASTER_START.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TB_MASTER_START/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
