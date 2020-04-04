@@ -14,6 +14,8 @@ input [31:0] Tblank2       ,
 input 		 WR 		    		 
 )
 
+parameter N_IDX=256;
+
 logic [ 47:0] 	 tmp_FREQ 		    =0;
 logic [ 47:0] 	 tmp_FREQ_STEP 	    =0;
 logic [ 31:0] 	 tmp_FREQ_RATE	    =0;
@@ -25,10 +27,11 @@ logic [ 31:0]    tmp_Interval_Tp    =0;
 logic [ 31:0]    tmp_Tblank1	    =0;
 logic [ 31:0]    tmp_Tblank2	    =0;
 logic [337:0]    data_sig           =0;
-logic [338:0] 	 w_REG_DATA         =0;//данные для записи в реестр
+logic [337:0] 	 w_REG_DATA         =0;//данные для записи в реестр
 logic [  7:0] 	 w_REG_ADDR         =0;//адрес в реестре куда можно делать свежую запись
-logic [  7:0]	 tmp_REG_ADDR		=0;
+logic [  7:0]	 tmp_REG_ADDR		=0;//
 logic 		   	 WR_REG	            =0;//сигнал записи в память реестра
+logic 			 FLAG_WORK_PROCESS	=0;//сигнал что идёт какой-то процесс
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -59,15 +62,48 @@ always_ff @(posedge CLK or negedge rst_n) begin
 	end
 end
 
-assign data_sig = {tmp_FREQ       ,tmp_FREQ_STEP  ,tmp_FREQ_RATE,
-				   tmp_TIME_START ,tmp_N_impulse  ,tmp_TYPE_impulse,
-				   tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
+assign data_sig = {tmp_TIME_START,tmp_FREQ        ,tmp_FREQ_STEP  ,tmp_FREQ_RATE ,
+				   tmp_N_impulse ,tmp_TYPE_impulse,tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
+//------------------------блок записи данных в память----------------------
+enum {idle,start,clrear,cycle,end_cycle} clr_state,clr_next_state;
+enum {clr_all,clr_data,wr_data,idle    } status; 
+
+always_comb
+ begin
+	case (clr_state)
+		 idle:clr_next_state=start;
+		start:clr_next_state=clear;
+		clear:clr_next_state=end_cycle;
+	endcase
+end
+
+
+
+always_ff @(posedge CLK) begin 
+	if(~rst_n) begin
+	FLAG_WORK_PROCESS <= 0;
+	end else 
+	if (status==clr_all) 
+	begin
+		 if (tmp_REG_ADDR<N_IDX) 
+		 	begin
+		 		tmp_REG_ADDR<=tmp_REG_ADDR+1'b1;
+		 		WR_REG     <=1'b1;
+		 		w_REG_DATA <={64'hffffffff_ffffffff,273'h0000};
+		 	end
+		 else 
+		 	begin
+		 		status<=idle;
+		 		WR_REG     <=1'b1;
+		 	end		 
+	end
+end
 
 always_ff @(posedge CLK)
 begin
 	w_REG_DATA<=data_sig;
 	WR_REG    <=1'b1;
-	w_REG_ADDR<=tmp_REG_ADDR;
+	w_REG_ADDR<=tmp_REG_ADDR;//нужен адресс записи
 end 
 
 registre_MEM	
