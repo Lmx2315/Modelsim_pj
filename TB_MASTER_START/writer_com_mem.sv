@@ -37,6 +37,7 @@ logic 		   	 WR_REG	            =0;//сигнал записи в память �
 logic 			 FLAG_WORK_PROCESS	=0;//сигнал что идёт какой-то процесс
 logic 			 FLAG_CLR_COMMAND   =0;//флаг того что надо стереть команду в памяти
 logic 			 FLAG_WR_COMMAND    =0;//флаг того что надо записать новую команду в память
+logic 			 FLAG_SEARCH_MEM 	=0;
 logic 			 FLAG_SPI_WR 		=0;//флаг того что произошла запись из spi
 logic [  2:0]	 FLAG_REG_STATUS	=0;//флаг того что найдено место в памяти для новой команды
 logic [337:0] 	 DATA_TIME_REG 		=0;//
@@ -67,10 +68,10 @@ always_ff @(posedge CLK or negedge rst_n) begin
 	tmp_Interval_Tp <=Interval_Tp;
 	tmp_Tblank1	    <=Tblank1;
 	tmp_Tblank2	    <=Tblank2;
-	FLAG_WR_COMMAND	<=1'b1;			//вызываем процедуру записи команды в память
+	FLAG_SEARCH_MEM	<=1'b1;			//вызываем процедуру записи команды в память
 	end	else
 		begin
-			FLAG_WR_COMMAND 	<=1'b0;
+			FLAG_SEARCH_MEM 	<=1'b0;
 		end
 end
 
@@ -120,7 +121,7 @@ begin
 	begin
 	FLAG_REG_OK<=0;
 	rd_REG_ADDR<=0;
-	if (FLAG_WR_COMMAND) rd_status<=search;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	if (FLAG_SEARCH_MEM) rd_status<=search;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 	end else
 	if (rd_status==search) 
 	begin
@@ -128,16 +129,21 @@ begin
 	  if (DATA_TIME_REG[337:274]!=64'hFFFF_FFFF_FFFF_FFFF) 
 	  	begin
 	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
-	  		else FLAG_REG_STATUS<=3'b011;//не найдено свободное место в памяти
+	  		else 
+	  			begin
+	  			FLAG_REG_STATUS<=3'b011;	//не найдено свободное место в памяти
+	  			rd_status 	   <=idle;
+	  			end
 	  	end else 
 	  		begin
-	  		FLAG_REG_STATUS<=3'b001;//   найдено свободное место в памяти
+	  		FLAG_REG_STATUS<=3'b001;		//   найдено свободное место в памяти
 	  		rd_status 	   <=rd_next_status;
 	  	 	end
 	end else
 	if (rd_status==end_search)
 	begin
-
+		FLAG_WR_COMMAND<=1; 			//поиск успешно завершён вызываем процедуру записи в память команды
+		w_REG_ADDR     <=rd_REG_ADDR;	//запоминаем адресс под запись новой команды
 	end
 
 end
@@ -189,8 +195,8 @@ registre_MEM
 sregistre_MEM_inst (
 	.clock 			( CLK ),
 	.data 			( w_REG_DATA ),
-	.rdaddress 		( RD_REG ),
-	.rden 			(  ),
+	.rdaddress 		( rd_REG_ADDR ),
+	.rden 			( RD_REG ),
 	.wraddress 		( tmp_REG_ADDR ),
 	.wren 			( WR_REG  ),
 	.q 				( DATA_TIME_REG )
