@@ -2,6 +2,7 @@ module wcm (
 input 		  CLK 		    ,
 input 		  rst_n 	    ,
 input 		  REQ_COMM 	    ,
+input  [63:0] TIME 			,
 input  [47:0] FREQ          ,//данные с интерфейса МК
 input  [47:0] FREQ_STEP     ,//----------------------
 input  [31:0] FREQ_RATE     ,//--------//------------ 
@@ -25,8 +26,9 @@ output [31:0] Tblank1_z     ,
 output [31:0] Tblank2_z    	 //-----//-------	 
 )
 
-parameter N_IDX=255;
-
+parameter N_IDX=255;//размер памяти в строках (N-1)
+parameter TIME_REZERV=48*8;//8 мкс запас времени
+//-------регистры для хранения команды из spi
 logic [ 47:0] 	 tmp_FREQ 		    =0;
 logic [ 47:0] 	 tmp_FREQ_STEP 	    =0;
 logic [ 31:0] 	 tmp_FREQ_RATE	    =0;
@@ -37,6 +39,18 @@ logic [ 31:0]    tmp_Interval_Ti    =0;
 logic [ 31:0]    tmp_Interval_Tp    =0;
 logic [ 31:0]    tmp_Tblank1	    =0;
 logic [ 31:0]    tmp_Tblank2	    =0;
+//-------регистры для хранения команды считаной из памяти реального времени
+logic [ 47:0] 	 mem_FREQ 		    =0;
+logic [ 47:0] 	 mem_FREQ_STEP 	    =0;
+logic [ 31:0] 	 mem_FREQ_RATE	    =0;
+logic [ 63:0]    mem_TIME_START     =0;
+logic [ 15:0]    mem_N_impulse      =0;
+logic [  1:0]    mem_TYPE_impulse   =0;
+logic [ 31:0]    mem_Interval_Ti    =0;
+logic [ 31:0]    mem_Interval_Tp    =0;
+logic [ 31:0]    mem_Tblank1	    =0;
+logic [ 31:0]    mem_Tblank2	    =0;
+//----------------------------------------
 logic [337:0]    data_sig           =0;
 logic [337:0] 	   w_REG_DATA       =0;//данные для записи в реестр
 logic [  7:0] 	   w_REG_ADDR       =0;//адрес в реестре куда можно делать свежую запись
@@ -49,9 +63,13 @@ logic 			 FLAG_WORK_PROCESS	=0;//сигнал что идёт какой-то п
 logic 			 FLAG_CLR_COMMAND   =0;//флаг того что надо стереть команду в памяти
 logic 			 FLAG_WR_COMMAND    =0;//флаг того что надо записать новую команду в память
 logic 			 FLAG_SEARCH_MEM 	=0;
+logic 			 FLAG_CMD_SEARCH    =0;//флаг что найдена команда к исполнению в следующие 8 мкс
 logic 			 FLAG_SPI_WR 		=0;//флаг того что произошла запись из spi
 logic [  2:0]	 FLAG_REG_STATUS	=0;//флаг того что найдено место в памяти для новой команды
 logic [337:0] 	 DATA_TIME_REG 		=0;//
+logic [ 63:0]    CMD_TIME			=0;//время исполнения команды
+logic [ 63:0]    reg_TIME 			=0;//тут храним текущее время
+logic [ 63:0]    tmp_TIME 			=0;//временное время, для поиска ближайшей на исполнение команды
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -86,12 +104,24 @@ always_ff @(posedge CLK or negedge rst_n) begin
 		end
 end
 
+always_ff @(posedge CLK) 
+begin
+	if(~rst_n) 
+	begin
+	reg_TIME<= 64'h0;
+	end else
+	 begin
+	 reg_TIME <= TIME ;//перезапоминаем время
+	 tmp_TIME <= reg_TIME+TIME_REZERV;
+	 end
+end
+
 assign data_sig = {tmp_TIME_START,tmp_FREQ        ,tmp_FREQ_STEP  ,tmp_FREQ_RATE ,
 				   tmp_N_impulse ,tmp_TYPE_impulse,tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
 //------------------------блок записи данных в память----------------------
-enum {idle,start,clrear,cycle,end_cycle 			  } clr_state,clr_next_state;
-enum {clr_all,clr_data,wr_data,idle    				  } status   ,next_status   ; 
-enum {search,end_search,read_data,end_read_data,idle  } rd_status,rd_next_status;
+enum {idle,start,clrear,cycle,end_cycle 			  							  } clr_state,clr_next_state;
+enum {clr_all,clr_data,wr_data,idle    				  							  } status   ,next_status   ; 
+enum {search,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
 
 always_comb
  begin
@@ -100,6 +130,8 @@ always_comb
 		   end_search:rd_next_status=idle;
 		    read_data:rd_next_status=end_read_data;
 		end_read_data:rd_next_status=idle;
+		  search_time:rd_next_status=end_search_time;
+	  end_search_time:rd_next_status=idle;
 	endcase
 end
 
@@ -155,10 +187,60 @@ begin
 	if (rd_status==end_search)
 	begin
 		FLAG_WR_COMMAND<=1; 			//поиск успешно завершён вызываем процедуру записи в память команды
-	end
+	end else
+	if (rd_status==read_data)
+	begin
+
+	end else
+	if (rd_status==end_read_data)
+	begin
+
+	end else
+	if (rd_status==search_time)
+	begin
+	if (!((DATA_TIME_REG[337:274]<tmp_TIME)&& //сравниваем время исполнения с временным временем
+	      (DATA_TIME_REG[337:274]>reg_TIME)))  //проверяем что время исполнения команды актуальное (не старое)	
+	  	begin
+	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
+	  		else 
+	  			begin
+	  			FLAG_CMD_SEARCH<=0;	//не найдена команда
+	  			rd_status 	   <=idle;
+	  			end
+	  	end else 
+	  		begin
+	  		FLAG_CMD_SEARCH<=3'b001;		//   найдена команда для исполнения
+	  		rd_status 	   <=rd_next_status;
+	  		w_REG_ADDR     <=rd_REG_ADDR;	//запоминаем адресс команды
+	  	 	end	
+	end else
+	if (rd_status==end_search_time)//сохраняем данные команды в промежуточные регисты перед выдачей
+	begin
+		{
+		mem_TIME_START  ,
+		mem_FREQ        ,
+		mem_FREQ_STEP   ,
+		mem_FREQ_RATE   ,
+	    mem_N_impulse   ,
+	    mem_TYPE_impulse,
+	    mem_Interval_Ti ,
+	    mem_Interval_Tp ,
+	    mem_Tblank1     ,
+	    mem_Tblank2}      <=DATA_TIME_REG;
+	end 
 
 end
 
+assign FREQ_z        = mem_FREQ        ;      
+assign FREQ_STEP_z   = mem_FREQ_STEP   ;
+assign FREQ_RATE_z   = mem_FREQ_RATE   ;
+assign TIME_START_z  = mem_TIME_START  ;
+assign N_impuls_z    = mem_N_impulse   ;
+assign TYPE_impulse_z= mem_TYPE_impulse;
+assign Interval_Ti_z = mem_Interval_Ti ;
+assign Interval_Tp_z = mem_Interval_Tp ;
+assign Tblank1_z     = mem_Tblank1     ;
+assign Tblank2_z     = mem_Tblank2     ;	
 
 //------------write---------------------
 always_ff @(posedge CLK) 

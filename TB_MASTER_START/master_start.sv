@@ -30,7 +30,7 @@ input [31:0] MEM_Tblank1,
 input [31:0] MEM_Tblank2,
 
 output SYS_TIME_UPDATE_OK,//флаг показывающий,что по секундной метке произошла установка системного времени
-
+output [63:0] TIME,
 output En_Iz,
 output En_Pr);
 
@@ -240,7 +240,7 @@ end
 //-----------------------------------------------------------
 
 
-
+assign TIME 				= TIME_MASTER;				//выводим во вне текущее время
 assign DDS_start 			= reg_DDS_start;			//сигнал управляющий встроеным в ПЛИС DDS
 assign DDS_freq 			= reg_MEM_DDS_freq;
 assign DDS_delta_freq 		= reg_MEM_DDS_delta_freq;
