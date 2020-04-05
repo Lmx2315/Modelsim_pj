@@ -1,17 +1,28 @@
 module wcm (
-input 		 CLK 		   ,
-input 		 rst_n 		   ,
-input [47:0] FREQ          ,
-input [47:0] FREQ_STEP     ,
-input [31:0] FREQ_RATE     , 
-input [63:0] TIME_START    ,
-input [15:0] N_impuls 	   ,
-input [ 1:0] TYPE_impulse  ,
-input [31:0] Interval_Ti   ,
-input [31:0] Interval_Tp   ,
-input [31:0] Tblank1 	   ,
-input [31:0] Tblank2       ,
-input 		 WR 		    		 
+input 		  CLK 		    ,
+input 		  rst_n 	    ,
+input 		  REQ_COMM 	    ,
+input  [47:0] FREQ          ,//данные с интерфейса МК
+input  [47:0] FREQ_STEP     ,//----------------------
+input  [31:0] FREQ_RATE     ,//--------//------------ 
+input  [63:0] TIME_START    ,
+input  [15:0] N_impuls 	    ,
+input  [ 1:0] TYPE_impulse  ,
+input  [31:0] Interval_Ti   ,
+input  [31:0] Interval_Tp   ,
+input  [31:0] Tblank1 	    ,
+input  [31:0] Tblank2       ,
+input 		 WR 		    ,
+output [47:0] FREQ_z        ,//части команды выводимые из модуля в блок синхронизации и исполнения
+output [47:0] FREQ_STEP_z   ,
+output [31:0] FREQ_RATE_z   ,
+output [63:0] TIME_START_z  ,
+output [15:0] N_impuls_z    ,
+output [ 1:0] TYPE_impulse_z,
+output [31:0] Interval_Ti_z ,
+output [31:0] Interval_Tp_z ,
+output [31:0] Tblank1_z     ,
+output [31:0] Tblank2_z    	 //-----//-------	 
 )
 
 parameter N_IDX=255;
@@ -68,7 +79,7 @@ always_ff @(posedge CLK or negedge rst_n) begin
 	tmp_Interval_Tp <=Interval_Tp;
 	tmp_Tblank1	    <=Tblank1;
 	tmp_Tblank2	    <=Tblank2;
-	FLAG_SEARCH_MEM	<=1'b1;			//вызываем процедуру записи команды в память
+	FLAG_SEARCH_MEM	<=1'b1;			//вызываем процедуру поиска места под новую команду в памяти
 	end	else
 		begin
 			FLAG_SEARCH_MEM 	<=1'b0;
@@ -138,12 +149,12 @@ begin
 	  		begin
 	  		FLAG_REG_STATUS<=3'b001;		//   найдено свободное место в памяти
 	  		rd_status 	   <=rd_next_status;
+	  		w_REG_ADDR     <=rd_REG_ADDR;	//запоминаем адресс под запись новой команды
 	  	 	end
 	end else
 	if (rd_status==end_search)
 	begin
 		FLAG_WR_COMMAND<=1; 			//поиск успешно завершён вызываем процедуру записи в память команды
-		w_REG_ADDR     <=rd_REG_ADDR;	//запоминаем адресс под запись новой команды
 	end
 
 end

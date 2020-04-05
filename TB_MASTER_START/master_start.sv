@@ -9,6 +9,7 @@ output  [31:0] DDS_delta_rate,
 output         DDS_start,
 output 		   REQ,			//запрос на передачу данных
  input		   ACK,			//подтверждение принятых данных
+output 		   REQ_COMMAND,
 
 input RESET,
 input CLK,					//частота работы 48 МГц !!!
@@ -247,5 +248,6 @@ assign DDS_delta_rate 		= reg_MEM_DDS_delta_rate;
 assign SYS_TIME_UPDATE_OK	= FLAG_SYS_TIME_UPDATED;  	//event того что системное время обновлено 
 assign En_Iz 				= reg_En_Iz;				//сигнал разрешающий излучение
 assign En_Pr 				= reg_En_Pr;				//сигнал разрешающий приём
+assign REQ_COMMAND 			= FLAG_END_PROCESS_CMD; 	//сигнал запрашивающий новую команду для исполнения, потому как старая была выполненна
 
 endmodule
