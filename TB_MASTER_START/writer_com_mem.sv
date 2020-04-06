@@ -13,7 +13,7 @@ input  [31:0] Interval_Ti   ,
 input  [31:0] Interval_Tp   ,
 input  [31:0] Tblank1 	    ,
 input  [31:0] Tblank2       ,
-input 		 WR 		    ,
+input 		       WR	    ,
 output 		  DATA_WR 		,//сигнал записи данных команды в блок синхронизации
 output [47:0] FREQ_z        ,//части команды выводимые из модуля в блок синхронизации и исполнения
 output [47:0] FREQ_STEP_z   ,
