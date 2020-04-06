@@ -7,9 +7,9 @@ output  [47:0] DDS_freq,
 output  [47:0] DDS_delta_freq,
 output  [31:0] DDS_delta_rate,
 output         DDS_start,
-output 		   REQ,			//запрос на передачу данных
+output 		   REQ,			//запрос на передачу данных в DDS
  input		   ACK,			//подтверждение принятых данных
-output 		   REQ_COMMAND,
+output 		   REQ_COMMAND, //запрос новой команды из реестра реального времени
 
 input RESET,
 input CLK,					//частота работы 48 МГц !!!

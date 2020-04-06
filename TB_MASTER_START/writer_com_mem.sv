@@ -14,6 +14,7 @@ input  [31:0] Interval_Tp   ,
 input  [31:0] Tblank1 	    ,
 input  [31:0] Tblank2       ,
 input 		 WR 		    ,
+output 		  DATA_WR 		,//сигнал записи данных команды в блок синхронизации
 output [47:0] FREQ_z        ,//части команды выводимые из модуля в блок синхронизации и исполнения
 output [47:0] FREQ_STEP_z   ,
 output [31:0] FREQ_RATE_z   ,
@@ -70,6 +71,7 @@ logic [337:0] 	 DATA_TIME_REG 		=0;//
 logic [ 63:0]    CMD_TIME			=0;//время исполнения команды
 logic [ 63:0]    reg_TIME 			=0;//тут храним текущее время
 logic [ 63:0]    tmp_TIME 			=0;//временное время, для поиска ближайшей на исполнение команды
+logic 			 reg_DATA_WR		=0;//сигнал записи данных в память синхроблока
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -153,6 +155,8 @@ always_comb
 	endcase
 end
 
+
+//-------тут всё чтение!-----------------------
 always_ff @(posedge CLK) 
 begin
 	if(~rst_n) 
@@ -164,7 +168,8 @@ begin
 	begin
 	FLAG_REG_OK<=0;
 	rd_REG_ADDR<=0;
-	if (FLAG_SEARCH_MEM) rd_status<=search;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	if (FLAG_SEARCH_MEM) rd_status<=search;   //по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	if (REQ_COMM) 		 rd_status<=read_data;//считываем новую(подготовленную) команду для синхронизатора 
 	end else
 	if (rd_status==search) 
 	begin
@@ -190,11 +195,13 @@ begin
 	end else
 	if (rd_status==read_data)
 	begin
-
+	rd_next_status<=end_read_data;
+	reg_DATA_WR   <=1;					//устанавливаем сигнал записи данных в блок синхронизации
 	end else
 	if (rd_status==end_read_data)
 	begin
-
+	rd_next_status<=idle;
+	reg_DATA_WR   <=0;
 	end else
 	if (rd_status==search_time)
 	begin
@@ -231,6 +238,7 @@ begin
 
 end
 
+assign DATA_WR       = reg_DATA_WR     ;
 assign FREQ_z        = mem_FREQ        ;      
 assign FREQ_STEP_z   = mem_FREQ_STEP   ;
 assign FREQ_RATE_z   = mem_FREQ_RATE   ;
@@ -285,7 +293,7 @@ end
  
 
 registre_MEM	
-sregistre_MEM_inst (
+registre_MEM_inst (
 	.clock 			( CLK ),
 	.data 			( w_REG_DATA ),
 	.rdaddress 		( rd_REG_ADDR ),
