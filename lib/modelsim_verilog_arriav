@@ -1,0 +1,247 @@
+Info: Changing the current directory to output directory C:/Work_murmansk/Quartus/Modelsim_pj/lib ..
+Info: Using Path C:/modeltech64_10.6d/win64 that was set in EDA Simulation Library Compiler Options
+Info: Generating commands to compile library arriav_ver ...
+Info: Generating commands to compile library arriav_hssi_ver ...
+Info: Generating commands to compile library arriav_pcie_hip_ver ...
+Info: Executing command file containing library compilation commands
+Info: Reading C:/modeltech64_10.6d/tcl/vsim/pref.tcl
+Info: # 10.6d
+Info: # do temp_simlib_comp.tmp
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:00 on Apr 08,2020
+Info: # vlog -work arriav_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/mentor/arriav_atoms_ncrypt.v 
+Info: # 
+Info: # Top level modules:
+Info: # End time: 12:41:02 on Apr 08,2020, Elapsed time: 0:00:02
+Info: # Errors: 0, Warnings: 0
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:02 on Apr 08,2020
+Info: # vlog -work arriav_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/mentor/arriav_hmi_atoms_ncrypt.v 
+Info: # 
+Info: # Top level modules:
+Info: # End time: 12:41:03 on Apr 08,2020, Elapsed time: 0:00:01
+Info: # Errors: 0, Warnings: 0
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:03 on Apr 08,2020
+Info: # vlog -work arriav_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/arriav_atoms.v 
+Info: # -- Compiling UDP ARRIAV_PRIM_DFFE
+Info: # -- Compiling UDP ARRIAV_PRIM_DFFEAS
+Info: # -- Compiling UDP ARRIAV_PRIM_DFFEAS_HIGH
+Info: # -- Compiling module arriav_dffe
+Info: # -- Compiling module arriav_mux21
+Info: # -- Compiling module arriav_mux41
+Info: # -- Compiling module arriav_and1
+Info: # -- Compiling module arriav_and16
+Info: # -- Compiling module arriav_bmux21
+Info: # -- Compiling module arriav_b17mux21
+Info: # -- Compiling module arriav_nmux21
+Info: # -- Compiling module arriav_b5mux21
+Info: # -- Compiling module arriav_ff
+Info: # -- Compiling module arriav_lcell_comb
+Info: # -- Compiling module arriav_routing_wire
+Info: # -- Compiling module arriav_ram_block
+Info: # -- Compiling module arriav_mlab_cell
+Info: # -- Compiling module arriav_io_ibuf
+Info: # -- Compiling module arriav_io_obuf
+Info: # -- Compiling module arriav_ddio_out
+Info: # -- Compiling module arriav_ddio_oe
+Info: # -- Compiling module arriav_ddio_in
+Info: # -- Compiling module arriav_io_pad
+Info: # -- Compiling module arriav_pseudo_diff_out
+Info: # -- Compiling module arriav_bias_logic
+Info: # -- Compiling module arriav_bias_generator
+Info: # -- Compiling module arriav_bias_block
+Info: # -- Compiling module arriav_clk_phase_select
+Info: # -- Compiling module arriav_clkena
+Info: # -- Compiling module arriav_clkselect
+Info: # -- Compiling module arriav_delay_chain
+Info: # -- Compiling module arriav_dll_offset_ctrl
+Info: # -- Compiling module arriav_dll
+Info: # -- Compiling module arriav_dqs_config
+Info: # -- Compiling module arriav_dqs_delay_chain
+Info: # -- Compiling module arriav_dqs_enable_ctrl
+Info: # -- Compiling module arriav_duty_cycle_adjustment
+Info: # -- Compiling module arriav_fractional_pll
+Info: # -- Compiling module arriav_half_rate_input
+Info: # -- Compiling module arriav_input_phase_alignment
+Info: # -- Compiling module arriav_io_clock_divider
+Info: # -- Compiling module arriav_io_config
+Info: # -- Compiling module arriav_leveling_delay_chain
+Info: # -- Compiling module arriav_pll_dll_output
+Info: # -- Compiling module arriav_pll_dpa_output
+Info: # -- Compiling module arriav_pll_extclk_output
+Info: # -- Compiling module arriav_pll_lvds_output
+Info: # -- Compiling module arriav_pll_output_counter
+Info: # -- Compiling module arriav_pll_reconfig
+Info: # -- Compiling module arriav_pll_refclk_select
+Info: # -- Compiling module arriav_termination_logic
+Info: # -- Compiling module arriav_termination
+Info: # -- Compiling module arriav_asmiblock
+Info: # -- Compiling module arriav_chipidblock
+Info: # -- Compiling module arriav_controller
+Info: # -- Compiling module arriav_crcblock
+Info: # -- Compiling module arriav_jtag
+Info: # -- Compiling module arriav_prblock
+Info: # -- Compiling module arriav_rublock
+Info: # -- Compiling module arriav_tsdblock
+Info: # -- Compiling module arriav_read_fifo
+Info: # -- Compiling module arriav_read_fifo_read_enable
+Info: # -- Compiling module arriav_phy_clkbuf
+Info: # -- Compiling module arriav_serdes_dpa
+Info: # -- Compiling module arriav_ir_fifo_userdes
+Info: # -- Compiling module arriav_read_fifo_read_clock_select
+Info: # -- Compiling module arriav_lfifo
+Info: # -- Compiling module arriav_vfifo
+Info: # -- Compiling module arriav_mac
+Info: # -- Compiling module arriav_mem_phy
+Info: # -- Compiling module arriav_oscillator
+Info: # -- Compiling module arriav_hps_interface_fpga2sdram
+Info: # 
+Info: # Top level modules:
+Info: # 	arriav_dffe
+Info: # 	arriav_mux41
+Info: # 	arriav_and1
+Info: # 	arriav_and16
+Info: # 	arriav_bmux21
+Info: # 	arriav_b17mux21
+Info: # 	arriav_nmux21
+Info: # 	arriav_b5mux21
+Info: # 	arriav_ff
+Info: # 	arriav_lcell_comb
+Info: # 	arriav_routing_wire
+Info: # 	arriav_ram_block
+Info: # 	arriav_mlab_cell
+Info: # 	arriav_io_ibuf
+Info: # 	arriav_io_obuf
+Info: # 	arriav_ddio_out
+Info: # 	arriav_ddio_oe
+Info: # 	arriav_ddio_in
+Info: # 	arriav_io_pad
+Info: # 	arriav_pseudo_diff_out
+Info: # 	arriav_bias_block
+Info: # 	arriav_clk_phase_select
+Info: # 	arriav_clkena
+Info: # 	arriav_clkselect
+Info: # 	arriav_delay_chain
+Info: # 	arriav_dll_offset_ctrl
+Info: # 	arriav_dll
+Info: # 	arriav_dqs_config
+Info: # 	arriav_dqs_delay_chain
+Info: # 	arriav_dqs_enable_ctrl
+Info: # 	arriav_duty_cycle_adjustment
+Info: # 	arriav_fractional_pll
+Info: # 	arriav_half_rate_input
+Info: # 	arriav_input_phase_alignment
+Info: # 	arriav_io_clock_divider
+Info: # 	arriav_io_config
+Info: # 	arriav_leveling_delay_chain
+Info: # 	arriav_pll_dll_output
+Info: # 	arriav_pll_dpa_output
+Info: # 	arriav_pll_extclk_output
+Info: # 	arriav_pll_lvds_output
+Info: # 	arriav_pll_output_counter
+Info: # 	arriav_pll_reconfig
+Info: # 	arriav_pll_refclk_select
+Info: # 	arriav_termination_logic
+Info: # 	arriav_termination
+Info: # 	arriav_asmiblock
+Info: # 	arriav_chipidblock
+Info: # 	arriav_controller
+Info: # 	arriav_crcblock
+Info: # 	arriav_jtag
+Info: # 	arriav_prblock
+Info: # 	arriav_rublock
+Info: # 	arriav_tsdblock
+Info: # 	arriav_read_fifo
+Info: # 	arriav_read_fifo_read_enable
+Info: # 	arriav_phy_clkbuf
+Info: # 	arriav_serdes_dpa
+Info: # 	arriav_ir_fifo_userdes
+Info: # 	arriav_read_fifo_read_clock_select
+Info: # 	arriav_lfifo
+Info: # 	arriav_vfifo
+Info: # 	arriav_mac
+Info: # 	arriav_mem_phy
+Info: # 	arriav_oscillator
+Info: # 	arriav_hps_interface_fpga2sdram
+Info: # End time: 12:41:04 on Apr 08,2020, Elapsed time: 0:00:01
+Info: # Errors: 0, Warnings: 0
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:04 on Apr 08,2020
+Info: # vlog -work arriav_hssi_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/mentor/arriav_hssi_atoms_ncrypt.v 
+Info: # 
+Info: # Top level modules:
+Info: # End time: 12:41:05 on Apr 08,2020, Elapsed time: 0:00:01
+Info: # Errors: 0, Warnings: 0
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:05 on Apr 08,2020
+Info: # vlog -work arriav_hssi_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/arriav_hssi_atoms.v 
+Info: # -- Compiling module arriav_hssi_8g_pcs_aggregate
+Info: # -- Compiling module arriav_hssi_8g_rx_pcs
+Info: # -- Compiling module arriav_hssi_8g_tx_pcs
+Info: # -- Compiling module arriav_hssi_common_pcs_pma_interface
+Info: # -- Compiling module arriav_hssi_common_pld_pcs_interface
+Info: # -- Compiling module arriav_hssi_pipe_gen1_2
+Info: # -- Compiling module arriav_hssi_pma_aux
+Info: # -- Compiling module arriav_hssi_pma_int
+Info: # -- Compiling module arriav_hssi_pma_rx_buf
+Info: # -- Compiling module arriav_hssi_pma_rx_deser
+Info: # -- Compiling module arriav_hssi_pma_tx_buf
+Info: # -- Compiling module arriav_hssi_pma_tx_cgb
+Info: # -- Compiling module arriav_hssi_pma_tx_ser
+Info: # -- Compiling module arriav_hssi_pma_cdr_refclk_select_mux
+Info: # -- Compiling module arriav_hssi_rx_pcs_pma_interface
+Info: # -- Compiling module arriav_hssi_rx_pld_pcs_interface
+Info: # -- Compiling module arriav_hssi_tx_pcs_pma_interface
+Info: # -- Compiling module arriav_hssi_tx_pld_pcs_interface
+Info: # -- Compiling module arriav_hssi_refclk_divider
+Info: # -- Compiling module arriav_pll_aux
+Info: # -- Compiling module arriav_channel_pll
+Info: # -- Compiling module arriav_hssi_avmm_interface
+Info: # -- Compiling module arriav_hssi_pma_hi_pmaif
+Info: # -- Compiling module arriav_hssi_pma_hi_xcvrif
+Info: # 
+Info: # Top level modules:
+Info: # 	arriav_hssi_8g_pcs_aggregate
+Info: # 	arriav_hssi_8g_rx_pcs
+Info: # 	arriav_hssi_8g_tx_pcs
+Info: # 	arriav_hssi_common_pcs_pma_interface
+Info: # 	arriav_hssi_common_pld_pcs_interface
+Info: # 	arriav_hssi_pipe_gen1_2
+Info: # 	arriav_hssi_pma_aux
+Info: # 	arriav_hssi_pma_int
+Info: # 	arriav_hssi_pma_rx_buf
+Info: # 	arriav_hssi_pma_rx_deser
+Info: # 	arriav_hssi_pma_tx_buf
+Info: # 	arriav_hssi_pma_tx_cgb
+Info: # 	arriav_hssi_pma_tx_ser
+Info: # 	arriav_hssi_pma_cdr_refclk_select_mux
+Info: # 	arriav_hssi_rx_pcs_pma_interface
+Info: # 	arriav_hssi_rx_pld_pcs_interface
+Info: # 	arriav_hssi_tx_pcs_pma_interface
+Info: # 	arriav_hssi_tx_pld_pcs_interface
+Info: # 	arriav_hssi_refclk_divider
+Info: # 	arriav_pll_aux
+Info: # 	arriav_channel_pll
+Info: # 	arriav_hssi_avmm_interface
+Info: # 	arriav_hssi_pma_hi_pmaif
+Info: # 	arriav_hssi_pma_hi_xcvrif
+Info: # End time: 12:41:05 on Apr 08,2020, Elapsed time: 0:00:00
+Info: # Errors: 0, Warnings: 0
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:06 on Apr 08,2020
+Info: # vlog -work arriav_pcie_hip_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/mentor/arriav_pcie_hip_atoms_ncrypt.v 
+Info: # 
+Info: # Top level modules:
+Info: # End time: 12:41:08 on Apr 08,2020, Elapsed time: 0:00:02
+Info: # Errors: 0, Warnings: 0
+Info: # Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+Info: # Start time: 12:41:08 on Apr 08,2020
+Info: # vlog -work arriav_pcie_hip_ver -vlog01compat c:/intelfpga/18.1/quartus/eda/sim_lib/arriav_pcie_hip_atoms.v 
+Info: # -- Compiling module arriav_hd_altpe2_hip_top
+Info: # 
+Info: # Top level modules:
+Info: # 	arriav_hd_altpe2_hip_top
+Info: # End time: 12:41:08 on Apr 08,2020, Elapsed time: 0:00:00
+Info: # Errors: 0, Warnings: 0
+Info: Successfully compiled the libraries

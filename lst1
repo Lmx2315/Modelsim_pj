@@ -1,0 +1,25 @@
+tb_1:tb_1
+	dds1:dds_chirp
+	sync1:MASTER_START
+	wcm1:wcm
+		registre_MEM_inst:mem1
+		Process #ALWAYS#76
+		Process #ALWAYS#109,158,248
+		Process #ALWAYS#126
+		Process #ALWAYS#138
+		Process #ALWAYS#147
+		Process #ASSIGN#235
+		Process #ASSIGN#236
+		Process #ASSIGN#237
+		Process #ASSIGN#238
+		Process #ASSIGN#239
+		Process #ASSIGN#240
+		Process #ASSIGN#241
+		Process #ASSIGN#242
+		Process #ASSIGN#243
+		Process #ASSIGN#244
+		Process #ASSIGN#245
+	Process #ALWAYS#58
+	Process #ALWAYS#59
+VlPackage std
+Capacity #vsim_capacity#

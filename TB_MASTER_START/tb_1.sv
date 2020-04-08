@@ -7,7 +7,7 @@ logic clk_96 				=0;
 logic rst 	 				=0;
 
 logic 		 w_REQ_COMM 	=0;
-logic [63:0] TIME 
+logic [63:0] TIME 			=0;
 logic [47:0] FREQ     		=48'h0;
 logic [47:0] FREQ_STEP 		=48'h0;
 logic [31:0] FREQ_RATE 		=32'h0;
@@ -71,8 +71,8 @@ begin
 	Interval_Tp 	=32'h1800 			 ;  //длительность 128 мкс х 48 
 	Tblank1 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
 	Tblank2 	 	=32'h180 			 ;  //длительность   8 мкс х 48 
-	TIME_INIT 		=64'h0000000000000000;
-//	WR 				= 1'b0 				 ;
+	TIME_INIT 		=64'h0000000000000000;  //сброс системного времени вноль по секундной метке
+	spi_WR			= 1'b0 				 ;  //сигнал записи данных в блок памяти
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b0 				 ;
 	rst 			= 1'b0 				 ;
@@ -82,32 +82,27 @@ begin
 	rst 			= 1'b1 				 ;
 	#30
 	@(posedge clk_48)
-	rst 			= 1'b0 				 ;
+	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)
 
-	#100;
+	#6000;
 	@(posedge clk_48)
-
-//	WR 				= 1'b1 				 ;
+	spi_WR			= 1'b1 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b0 				 ;
 
 	#100;
 	@(posedge clk_48)
-
-//	WR 				= 1'b0 				 ;
+	spi_WR			= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b0 				 ;
 
 	#1000;
 	@(posedge clk_48)
-
-//	WR 				= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b1 				 ;	
 
 	#1000;
 	@(posedge clk_48)
-//	WR 				= 1'b0 				 ;
 	SYS_TIME_UPDATE = 1'b0 				 ;
 	T1HZ 			= 1'b0 				 ;
 
@@ -163,7 +158,8 @@ sync1(
 .En_Pr 				(En_Pr 				)   //сформированый интервал Приёма
 );
 
-wcm (
+wcm 
+wcm1(						   //блок записи и чтения команд реального времени в память и из.
 .CLK 		   (clk_48),
 .rst_n 	       (~rst),
 .REQ_COMM 	   (w_REQ_COMM   ),//запрос новой команды для исполнения синхронизатором (тут вход)
@@ -172,7 +168,7 @@ wcm (
 .FREQ_STEP     (FREQ_STEP 	 ),//----------------------
 .FREQ_RATE     (FREQ_RATE 	 ),//--------//------------ 
 .TIME_START    (TIME_START 	 ),
-.N_impuls 	   (N_impuls 	 ),
+.N_impulse 	   (N_impuls 	 ),
 .TYPE_impulse  (TYPE_impulse ),
 .Interval_Ti   (Interval_Ti  ),
 .Interval_Tp   (Interval_Tp  ),
@@ -190,6 +186,6 @@ wcm (
 .Interval_Tp_z (mInterval_Tp ),
 .Tblank1_z     (mTblank1 	 ),
 .Tblank2_z     (mTblank2 	 ) //-----//-------	 
-)
+);
 
 endmodule

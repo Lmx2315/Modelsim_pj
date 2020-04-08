@@ -7,7 +7,7 @@ input  [47:0] FREQ          ,//данные с интерфейса МК
 input  [47:0] FREQ_STEP     ,//----------------------
 input  [31:0] FREQ_RATE     ,//--------//------------ 
 input  [63:0] TIME_START    ,
-input  [15:0] N_impuls 	    ,
+input  [15:0] N_impulse     ,
 input  [ 1:0] TYPE_impulse  ,
 input  [31:0] Interval_Ti   ,
 input  [31:0] Interval_Tp   ,
@@ -25,9 +25,9 @@ output [31:0] Interval_Ti_z ,
 output [31:0] Interval_Tp_z ,
 output [31:0] Tblank1_z     ,
 output [31:0] Tblank2_z    	 //-----//-------	 
-)
+);
 
-parameter N_IDX=255;//размер памяти в строках (N-1)
+parameter N_IDX      = 255;//размер памяти в строках (N-1)
 parameter TIME_REZERV=48*8;//8 мкс запас времени
 //-------регистры для хранения команды из spi
 logic [ 47:0] 	 tmp_FREQ 		    =0;
@@ -118,11 +118,9 @@ begin
 	 end
 end
 
-assign data_sig = {tmp_TIME_START,tmp_FREQ        ,tmp_FREQ_STEP  ,tmp_FREQ_RATE ,
-				   tmp_N_impulse ,tmp_TYPE_impulse,tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
 //------------------------блок записи данных в память----------------------
-enum {idle,start,clrear,cycle,end_cycle 			  							  } clr_state,clr_next_state;
-enum {clr_all,clr_data,wr_data,idle    				  							  } status   ,next_status   ; 
+enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
+enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
 enum {search,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
 
 always_comb
@@ -140,21 +138,11 @@ end
 always_comb
  begin
 	case (clr_state)
-		 idle:clr_next_state=start;
-		start:clr_next_state=clear;
-		clear:clr_next_state=end_cycle;
+		 idle_clr:clr_next_state=start;
+		    start:clr_next_state=clear;
+		    clear:clr_next_state=end_cycle;
 	endcase
 end
-
-always_comb
- begin
-	case (status)
-		 clr_all:next_status=idle;
-		clr_data:next_status=idle;
-		 wr_data:next_status=idle;
-	endcase
-end
-
 
 //-------тут всё чтение!-----------------------
 always_ff @(posedge CLK) 
@@ -162,11 +150,9 @@ begin
 	if(~rst_n) 
 	begin
 	rd_status  <=idle;
-	FLAG_REG_OK<=0;
 	end else
 	if (rd_status==idle)
 	begin
-	FLAG_REG_OK<=0;
 	rd_REG_ADDR<=0;
 	if (FLAG_SEARCH_MEM) rd_status<=search;   //по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 	if (REQ_COMM) 		 rd_status<=read_data;//считываем новую(подготовленную) команду для синхронизатора 
@@ -195,12 +181,10 @@ begin
 	end else
 	if (rd_status==read_data)
 	begin
-	rd_next_status<=end_read_data;
 	reg_DATA_WR   <=1;					//устанавливаем сигнал записи данных в блок синхронизации
 	end else
 	if (rd_status==end_read_data)
 	begin
-	rd_next_status<=idle;
 	reg_DATA_WR   <=0;
 	end else
 	if (rd_status==search_time)
@@ -251,6 +235,15 @@ assign Tblank1_z     = mem_Tblank1     ;
 assign Tblank2_z     = mem_Tblank2     ;	
 
 //------------write---------------------
+always_comb
+ begin
+	case (status)
+		 clr_all:next_status=idle_status;
+		clr_data:next_status=idle_status;
+		 wr_data:next_status=idle_status;
+	endcase
+end
+
 always_ff @(posedge CLK) 
 begin 
 	if(~rst_n) 
@@ -266,7 +259,7 @@ begin
 		 	begin
 		 		tmp_REG_ADDR<=tmp_REG_ADDR+1'b1;
 		 		WR_REG      <=1'b1;
-		 		w_REG_DATA  <={64'hffffffff_ffffffff,273'h0000};
+		 		w_REG_DATA  <={64'hffffffff_ffffffff,274'h0000};
 		 	end	 else status<=next_status;
 	end else
 	if (status==clr_data) 			//режим удаления команды
@@ -280,9 +273,11 @@ begin
 		FLAG_WORK_PROCESS<=1'b1;
 		tmp_REG_ADDR<=w_REG_ADDR;
 		WR_REG      <=1'b1;
-		w_REG_DATA  <=data_sig;
+		w_REG_DATA  <={tmp_TIME_START,tmp_FREQ        ,tmp_FREQ_STEP  ,tmp_FREQ_RATE ,
+				   	   tmp_N_impulse ,tmp_TYPE_impulse,tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
+		status<=next_status;
 	end else
-	if (status==idle)
+	if (status==idle_status)
 	begin
 				   FLAG_WORK_PROCESS<=1'b0;
 						WR_REG      <=1'b0;
@@ -292,7 +287,7 @@ begin
 end
  
 
-registre_MEM	
+mem1	
 registre_MEM_inst (
 	.clock 			( CLK ),
 	.data 			( w_REG_DATA ),
