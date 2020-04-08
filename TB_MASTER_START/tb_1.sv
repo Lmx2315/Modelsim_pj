@@ -160,32 +160,33 @@ sync1(
 
 wcm 
 wcm1(						   //блок записи и чтения команд реального времени в память и из.
-.CLK 		   (clk_48),
-.rst_n 	       (~rst),
-.REQ_COMM 	   (w_REQ_COMM   ),//запрос новой команды для исполнения синхронизатором (тут вход)
-.TIME 		   (TIME 		 ),//текущее системное время 
-.FREQ          (FREQ 		 ),//данные с интерфейса МК
-.FREQ_STEP     (FREQ_STEP 	 ),//----------------------
-.FREQ_RATE     (FREQ_RATE 	 ),//--------//------------ 
-.TIME_START    (TIME_START 	 ),
-.N_impulse 	   (N_impuls 	 ),
-.TYPE_impulse  (TYPE_impulse ),
-.Interval_Ti   (Interval_Ti  ),
-.Interval_Tp   (Interval_Tp  ),
-.Tblank1 	   (Tblank1 	 ),
-.Tblank2       (Tblank2 	 ),
-.WR 		   (spi_WR 		 ),  //сигнал записи для данных из вне в реестр реального времени
-.DATA_WR 	   (mem_WR		 ),  //сигнал записи для передачи данных в блок синхронизации
-.FREQ_z        (mFREQ 		 ),  //части команды выводимые из модуля в блок синхронизации и исполнения
-.FREQ_STEP_z   (mFREQ_STEP 	 ),
-.FREQ_RATE_z   (mFREQ_RATE 	 ),
-.TIME_START_z  (mTIME_START	 ),
-.N_impuls_z    (mN_impuls 	 ),
-.TYPE_impulse_z(mTYPE_impulse),
-.Interval_Ti_z (mInterval_Ti ),
-.Interval_Tp_z (mInterval_Tp ),
-.Tblank1_z     (mTblank1 	 ),
-.Tblank2_z     (mTblank2 	 ) //-----//-------	 
+.CLK 		    (clk_48),
+.rst_n 	        (~rst),
+.REQ_COMM 	    (w_REQ_COMM   		),//запрос новой команды для исполнения синхронизатором (тут вход)
+.TIME 		    (TIME 		 		),//текущее системное время 
+.SYS_TIME_UPDATE(SYS_TIME_UPDATE_OK	),//сигнал сообщающий о перестановке системного времени!!!
+.FREQ           (FREQ 		 		),//данные с интерфейса МК
+.FREQ_STEP      (FREQ_STEP 	 		),//----------------------
+.FREQ_RATE      (FREQ_RATE 	 		),//--------//------------ 
+.TIME_START     (TIME_START 	 	),
+.N_impulse 	    (N_impuls 	 		),
+.TYPE_impulse   (TYPE_impulse 		),
+.Interval_Ti    (Interval_Ti  		),
+.Interval_Tp    (Interval_Tp  		),
+.Tblank1 	    (Tblank1 	 		),
+.Tblank2        (Tblank2 	 		),
+.WR 		    (spi_WR 		 	),  //сигнал записи для данных из вне в реестр реального времени
+.DATA_WR 	    (mem_WR		 		),  //сигнал записи для передачи данных в блок синхронизации
+.FREQ_z         (mFREQ 		 		),  //части команды выводимые из модуля в блок синхронизации и исполнения
+.FREQ_STEP_z    (mFREQ_STEP 	 	),
+.FREQ_RATE_z    (mFREQ_RATE 	 	),
+.TIME_START_z   (mTIME_START	 	),
+.N_impuls_z     (mN_impuls 	 		),
+.TYPE_impulse_z (mTYPE_impulse		),
+.Interval_Ti_z  (mInterval_Ti 		),
+.Interval_Tp_z  (mInterval_Tp 		),
+.Tblank1_z      (mTblank1 	 		),
+.Tblank2_z      (mTblank2 	 		) //-----//-------	 
 );
 
 endmodule

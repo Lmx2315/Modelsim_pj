@@ -1,30 +1,31 @@
 module wcm (
-input 		  CLK 		    ,
-input 		  rst_n 	    ,
-input 		  REQ_COMM 	    ,
-input  [63:0] TIME 			,
-input  [47:0] FREQ          ,//данные с интерфейса МК
-input  [47:0] FREQ_STEP     ,//----------------------
-input  [31:0] FREQ_RATE     ,//--------//------------ 
-input  [63:0] TIME_START    ,
-input  [15:0] N_impulse     ,
-input  [ 1:0] TYPE_impulse  ,
-input  [31:0] Interval_Ti   ,
-input  [31:0] Interval_Tp   ,
-input  [31:0] Tblank1 	    ,
-input  [31:0] Tblank2       ,
-input 		       WR	    ,
-output 		  DATA_WR 		,//сигнал записи данных команды в блок синхронизации
-output [47:0] FREQ_z        ,//части команды выводимые из модуля в блок синхронизации и исполнения
-output [47:0] FREQ_STEP_z   ,
-output [31:0] FREQ_RATE_z   ,
-output [63:0] TIME_START_z  ,
-output [15:0] N_impuls_z    ,
-output [ 1:0] TYPE_impulse_z,
-output [31:0] Interval_Ti_z ,
-output [31:0] Interval_Tp_z ,
-output [31:0] Tblank1_z     ,
-output [31:0] Tblank2_z    	 //-----//-------	 
+input 		  CLK 		     ,
+input 		  rst_n 	     ,
+input 		  REQ_COMM 	     ,
+input  [63:0] TIME 			 ,
+input  		  SYS_TIME_UPDATE,//сигнал сообщает модулю что произошла переустановка системного времени!!!
+input  [47:0] FREQ           ,//данные с интерфейса МК
+input  [47:0] FREQ_STEP      ,//----------------------
+input  [31:0] FREQ_RATE      ,//--------//------------ 
+input  [63:0] TIME_START     ,
+input  [15:0] N_impulse      ,
+input  [ 1:0] TYPE_impulse   ,
+input  [31:0] Interval_Ti    ,
+input  [31:0] Interval_Tp    ,
+input  [31:0] Tblank1 	     ,
+input  [31:0] Tblank2        ,
+input 		       WR	     ,
+output 		  DATA_WR 		 ,//сигнал записи данных команды в блок синхронизации
+output [47:0] FREQ_z         ,//части команды выводимые из модуля в блок синхронизации и исполнения
+output [47:0] FREQ_STEP_z    ,
+output [31:0] FREQ_RATE_z    ,
+output [63:0] TIME_START_z   ,
+output [15:0] N_impuls_z     ,
+output [ 1:0] TYPE_impulse_z ,
+output [31:0] Interval_Ti_z  ,
+output [31:0] Interval_Tp_z  ,
+output [31:0] Tblank1_z      ,
+output [31:0] Tblank2_z    	  //-----//-------	 
 );
 
 parameter N_IDX      = 255;//размер памяти в строках (N-1)
@@ -72,6 +73,15 @@ logic [ 63:0]    CMD_TIME			=0;//время исполнения команды
 logic [ 63:0]    reg_TIME 			=0;//тут храним текущее время
 logic [ 63:0]    tmp_TIME 			=0;//временное время, для поиска ближайшей на исполнение команды
 logic 			 reg_DATA_WR		=0;//сигнал записи данных в память синхроблока
+logic [ 63:0]    tmp_CMD_TIME		=0;//временное хранение данных для поиска команды в реестре
+logic [  7:0] 	 tmp_CMD_ADDR 		=0;//временное хранение данных для поиска команды в реестре	
+logic 			FLAG_SYS_TIME_UPDATE=0;//флаг что было произведено переустановка часов
+logic [  2:0]   frnt1 				=0;//регистр для поиска фронта сигнала SYS_TIME_UPDATE
+
+//-----------------------------------------------------------------------------------------------------------
+enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
+enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
+enum {search,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -118,10 +128,20 @@ begin
 	 end
 end
 
-//------------------------блок записи данных в память----------------------
-enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
-enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
-enum {search,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
+always_ff @(posedge CLK) 
+begin
+	if(~rst_n) 
+	begin
+
+	end else
+	 begin
+	 frnt1<={frnt1[1:0],SYS_TIME_UPDATE};
+	 if (frnt1==3'b001) 			FLAG_SYS_TIME_UPDATE<=1;//если есть фронт сигнала переустановки времени то поднимаем флаг
+	 else 
+	 if (rd_status==search_time) 	FLAG_SYS_TIME_UPDATE<=0;//если начался процесс поиска новой команды на исполнение то снимаем флаг
+	 end
+end
+
 
 always_comb
  begin
@@ -153,13 +173,18 @@ begin
 	end else
 	if (rd_status==idle)
 	begin
-	rd_REG_ADDR<=0;
-	if (FLAG_SEARCH_MEM) rd_status<=search;   //по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
-	if (REQ_COMM) 		 rd_status<=read_data;//считываем новую(подготовленную) команду для синхронизатора 
+	FLAG_REG_STATUS	<=3'b000;
+	FLAG_CMD_SEARCH	<=0;
+	FLAG_WR_COMMAND	<=0; 
+	rd_REG_ADDR	 	<=0;
+	tmp_CMD_TIME    <=64'hffffffff_ffffffff;
+	if (FLAG_WR_COMMAND|FLAG_SYS_TIME_UPDATE)   rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	if (FLAG_SEARCH_MEM) 				   		rd_status<=search		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	if (REQ_COMM) 		 				   		rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	end else
-	if (rd_status==search) 
+	if (rd_status==search) //поиска места для записи новой команды в регистр реального времени
 	begin
-		RD_REG<=1'b1;
+						  RD_REG<=1'b1;
 	  if (DATA_TIME_REG[337:274]!=64'hFFFF_FFFF_FFFF_FFFF) 
 	  	begin
 	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
@@ -172,41 +197,50 @@ begin
 	  		begin
 	  		FLAG_REG_STATUS<=3'b001;		//   найдено свободное место в памяти
 	  		rd_status 	   <=rd_next_status;
-	  		w_REG_ADDR     <=rd_REG_ADDR;	//запоминаем адресс под запись новой команды
+	  		w_REG_ADDR     <=rd_REG_ADDR;	//   запоминаем адресс под запись новой команды
 	  	 	end
 	end else
 	if (rd_status==end_search)
 	begin
-		FLAG_WR_COMMAND<=1; 			//поиск успешно завершён вызываем процедуру записи в память команды
+		FLAG_WR_COMMAND<=1; 				//поиск успешно завершён вызываем процедуру записи в память команды
+		rd_status 	   <=rd_next_status;
 	end else
 	if (rd_status==read_data)
 	begin
-	reg_DATA_WR   <=1;					//устанавливаем сигнал записи данных в блок синхронизации
+	reg_DATA_WR    <=1;						//устанавливаем сигнал записи данных в блок синхронизации
+	rd_status 	   <=rd_next_status;
 	end else
 	if (rd_status==end_read_data)
 	begin
-	reg_DATA_WR   <=0;
+	reg_DATA_WR    <=0;
+	rd_status 	   <=rd_next_status;
 	end else
-	if (rd_status==search_time)
+	if (rd_status==search_time)				//ищем свежую команды на исполнение в регистре реального времени
 	begin
-	if (!((DATA_TIME_REG[337:274]<tmp_TIME)&& //сравниваем время исполнения с временным временем
-	      (DATA_TIME_REG[337:274]>reg_TIME)))  //проверяем что время исполнения команды актуальное (не старое)	
-	  	begin
-	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
-	  		else 
+ 		if (rd_REG_ADDR<N_IDX)  
+		begin
+			rd_REG_ADDR<=rd_REG_ADDR+1'b1;					//перебираем адреса в памяти
+			if (DATA_TIME_REG[337:274]>reg_TIME)  			//проверяем что время исполнения команды актуальное (не старое)
+			begin
+				FLAG_CMD_SEARCH<=1;							//найдена команда для исполнения
+				if (tmp_CMD_TIME> DATA_TIME_REG[337:274]) 
+				begin
+				tmp_CMD_TIME<=DATA_TIME_REG[337:274];		//запоминаем новое чемпионное время
+				tmp_CMD_ADDR<=rd_REG_ADDR;					//запоминаем новый чемпионный адрес 
+				end
+			end
+		end	else 
 	  			begin
-	  			FLAG_CMD_SEARCH<=0;	//не найдена команда
-	  			rd_status 	   <=idle;
+					if (FLAG_CMD_SEARCH) 
+					begin
+						   rd_REG_ADDR<=tmp_CMD_ADDR  ;//устанавливаем адрес чтения новой команды на исполнение
+							 rd_status<=rd_next_status;//если команда была найдена - переходим в состояние чтения
+					end	else rd_status<=idle          ;
 	  			end
-	  	end else 
-	  		begin
-	  		FLAG_CMD_SEARCH<=3'b001;		//   найдена команда для исполнения
-	  		rd_status 	   <=rd_next_status;
-	  		w_REG_ADDR     <=rd_REG_ADDR;	//запоминаем адресс команды
-	  	 	end	
 	end else
 	if (rd_status==end_search_time)//сохраняем данные команды в промежуточные регисты перед выдачей
 	begin
+	rd_status<=rd_next_status;
 		{
 		mem_TIME_START  ,
 		mem_FREQ        ,
