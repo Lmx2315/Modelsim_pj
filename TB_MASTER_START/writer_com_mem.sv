@@ -78,6 +78,7 @@ logic 			FLAG_SYS_TIME_UPDATE=0;//флаг что было произведен�
 logic [  2:0]   frnt1 				=0;//регистр для поиска фронта сигнала SYS_TIME_UPDATE
 logic 			FLAG_WR_SPI_DATA	=0;//флаг того что была запись данных с шины SPI
 logic [  2:0]   frnt2               =0;//регистр для поиска фронта сигнала SYS_TIME_UPDATE
+logic [ 63:0]   var1				=64'h0000000000000000;
 
 //-----------------------------------------------------------------------------------------------------------
 enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
@@ -173,10 +174,18 @@ always_ff @(posedge CLK)
 begin
 	if(~rst_n) 
 	begin
-	rd_status  <=idle;
+	var1			<=64'h0000000000000000;
+	FLAG_REG_STATUS	<=3'b000;
+	FLAG_CMD_SEARCH	<=0;
+	FLAG_WR_COMMAND	<=0; 
+	rd_REG_ADDR	 	<=0;
+	tmp_CMD_TIME    <=64'hffffffff_ffffffff;
+	RD_REG			<=1'b0;
+	rd_status  		<=idle;
 	end else
 	if (rd_status==idle)
 	begin
+	RD_REG<=1'b0;
 	FLAG_REG_STATUS	<=3'b000;
 	FLAG_CMD_SEARCH	<=0;
 	FLAG_WR_COMMAND	<=0; 
@@ -188,8 +197,8 @@ begin
 	end else
 	if (rd_status==search) //поиска места для записи новой команды в регистр реального времени
 	begin
-						  RD_REG<=1'b1;
-	  if (DATA_TIME_REG[337:274]!=64'h00000000_00000000) 
+	  RD_REG<=1'b1;
+	  if (DATA_TIME_REG[337:274]!=var1) 
 	  	begin
 	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
 	  		else 
@@ -289,15 +298,16 @@ begin
 	FLAG_WORK_PROCESS <= 0;
 	status            <= clr_all;
 	tmp_REG_ADDR      <= 0;
+	w_REG_DATA  	  <={64'h1000000100000000,278'h0000};
 	end else 
 	if (status==clr_all) //режим очистки памяти
 	begin
 		FLAG_WORK_PROCESS<=1'b1;
-		 if (tmp_REG_ADDR<N_IDX) 
+		 if (tmp_REG_ADDR<10) //N_IDX
 		 	begin
 		 		tmp_REG_ADDR<=tmp_REG_ADDR+1'b1;
 		 		WR_REG      <=1'b1;
-		 		w_REG_DATA  <={64'h00000000_00000000,274'h0000};
+		 		w_REG_DATA  <={64'h10000000_00000000,274'h0000};
 		 	end	 else status<=next_status;
 	end else
 	if (status==clr_data) 			//режим удаления команды
