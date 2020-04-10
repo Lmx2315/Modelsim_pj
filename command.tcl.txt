@@ -1,0 +1,3 @@
+vsim -gui -novopt -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver work.tb_1
+add wave -position end sim:/tb_1/wcm1/*
+run 100 us

@@ -83,7 +83,7 @@ logic [ 63:0]   var1				=64'h0000000000000000;
 //-----------------------------------------------------------------------------------------------------------
 enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
 enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
-enum {search,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
+enum {search_a,search_b,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -142,7 +142,7 @@ begin
 	 
 	 if (frnt2==3'b001) 			FLAG_WR_SPI_DATA<=1;	//если есть фронт сигнала записи то поднимаем флаг
 	 else 
-	 if (rd_status==search) 		FLAG_WR_SPI_DATA<=0;	//если начался процесс поиска новой команды на исполнение то снимаем флаг
+	 if (rd_status==search_a) 		FLAG_WR_SPI_DATA<=0;	//если начался процесс поиска новой команды на исполнение то снимаем флаг
 	 
 	 end
 end
@@ -151,7 +151,8 @@ end
 always_comb
  begin
 	case (rd_status)
-		       search:rd_next_status=end_search;
+		  	 search_a:rd_next_status=search_b;
+		     search_b:rd_next_status=end_search;
 		   end_search:rd_next_status=idle;
 		    read_data:rd_next_status=end_read_data;
 		end_read_data:rd_next_status=idle;
@@ -185,19 +186,23 @@ begin
 	end else
 	if (rd_status==idle)
 	begin
-	RD_REG<=1'b0;
+	RD_REG<=1'b1;
 	FLAG_REG_STATUS	<=3'b000;
 	FLAG_CMD_SEARCH	<=0;
 	FLAG_WR_COMMAND	<=0; 
 	rd_REG_ADDR	 	<=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;
 	if (FLAG_WR_COMMAND|FLAG_SYS_TIME_UPDATE)   rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
-	if (FLAG_WR_SPI_DATA) 				   		rd_status<=search		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	if (FLAG_WR_SPI_DATA) 				   		rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 	if (REQ_COMM) 		 				   		rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	end else
-	if (rd_status==search) //поиска места для записи новой команды в регистр реального времени
+	if (rd_status==search_a)//надо чтобы учесть латентность памяти MEM
 	begin
-	  RD_REG<=1'b1;
+	rd_status  <=rd_next_status;
+	rd_REG_ADDR<=rd_REG_ADDR+1'b1;
+	end
+	if (rd_status==search_b) //поиска места для записи новой команды в регистр реального времени
+	begin
 	  if (DATA_TIME_REG[337:274]!=var1) 
 	  	begin
 	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
@@ -298,7 +303,7 @@ begin
 	FLAG_WORK_PROCESS <= 0;
 	status            <= clr_all;
 	tmp_REG_ADDR      <= 0;
-	w_REG_DATA  	  <={64'h1000000100000000,278'h0000};
+	w_REG_DATA  	  <={64'h0000000000000000,274'h0000};
 	end else 
 	if (status==clr_all) //режим очистки памяти
 	begin
@@ -307,7 +312,7 @@ begin
 		 	begin
 		 		tmp_REG_ADDR<=tmp_REG_ADDR+1'b1;
 		 		WR_REG      <=1'b1;
-		 		w_REG_DATA  <={64'h10000000_00000000,274'h0000};
+		 		w_REG_DATA  <={64'h1000000000000000,274'h0000};
 		 	end	 else status<=next_status;
 	end else
 	if (status==clr_data) 			//режим удаления команды
