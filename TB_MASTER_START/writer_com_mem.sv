@@ -303,7 +303,7 @@ begin
 	FLAG_WORK_PROCESS <= 0;
 	status            <= clr_all;
 	tmp_REG_ADDR      <= 0;
-	w_REG_DATA  	  <={64'h0000000000000000,274'h0000};
+	w_REG_DATA  	  <={64'h1000000000000000,274'h0000};
 	end else 
 	if (status==clr_all) //режим очистки памяти
 	begin
