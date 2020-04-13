@@ -196,9 +196,14 @@ begin
 	t0_CMD_ADDR     <=0;
 	t1_CMD_ADDR     <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;
+	
+
+	if (REQ_COMM|FLAG_CMD_SEARCH)		   		rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
+	else
 	if (FLAG_WR_COMMAND|FLAG_SYS_TIME_UPDATE)   rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	else
 	if (FLAG_WR_SPI_DATA) 				   		rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
-	if (REQ_COMM) 		 				   		rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
+
 	end else
 	if (rd_status==search_a)					//ищем место под новую запись в память (пустую или ранее стёрттую)
 	begin

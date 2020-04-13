@@ -164,8 +164,9 @@ end
 always_ff @(posedge CLK)
 if (RESET)
 begin
- 		state<=start;
-reg_DDS_start<=0;
+ 		state		<=start;
+reg_DDS_start		<=0;
+FLAG_END_PROCESS_CMD<=1'b1;	
 end
 else
 begin
