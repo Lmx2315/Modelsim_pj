@@ -79,8 +79,11 @@ logic [  2:0]   frnt1 				=0;//регистр для поиска фронта �
 logic 			FLAG_WR_SPI_DATA	=0;//флаг того что была запись данных с шины SPI
 logic [  2:0]   frnt2               =0;//регистр для поиска фронта сигнала SYS_TIME_UPDATE
 logic [ 63:0]   var1				=64'h0000000000000000;
-
-//-----------------------------------------------------------------------------------------------------------
+logic [  1:0]   tmp_delay 			=0;//задержка для учёта латентности
+logic [  7:0]   t0_CMD_ADDR 	    =0;//адресс команды с учётом латентности
+logic [  7:0]   t1_CMD_ADDR 	    =0;//адресс команды с учётом латентности
+logic 			FLAG_SRCH			=0;//флаг того что круг поиска завершён
+ //-----------------------------------------------------------------------------------------------------------
 enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
 enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
 enum {search_a,search_b,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
@@ -156,7 +159,8 @@ always_comb
 		   end_search:rd_next_status=idle;
 		    read_data:rd_next_status=end_read_data;
 		end_read_data:rd_next_status=idle;
-		  search_time:rd_next_status=end_search_time;
+		  search_time:rd_next_status=step2_search_time;
+	step2_search_time:rd_next_status=end_search_time;
 	  end_search_time:rd_next_status=idle;
 	endcase
 end
@@ -184,7 +188,7 @@ begin
 	RD_REG			<=1'b0;
 	rd_status  		<=idle;
 	end else
-	if (rd_status==idle)
+	if (rd_status==idle  )
 	begin
 	RD_REG<=1'b1;
 	FLAG_REG_STATUS	<=3'b000;
@@ -233,28 +237,33 @@ begin
 	reg_DATA_WR    <=0;
 	rd_status 	   <=rd_next_status;
 	end else
-	if (rd_status==search_time)				//ищем свежую команды на исполнение в регистре реального времени
+	if (rd_status==search_time)								//ищем свежую команды на исполнение в регистре реального времени
 	begin
- 		if (rd_REG_ADDR<N_IDX)  
+ 		if (FLAG_SRCH==0)  									//ищем пока не пробежимся по всей памяти!!!		
 		begin
-			rd_REG_ADDR<=rd_REG_ADDR+1'b1;					//перебираем адреса в памяти
+			if(t1_CMD_ADDR==N_IDX) FLAG_SRCH<=1; 			//конец перебора памяти (задерженный адресс равен краю памяти)
+			rd_REG_ADDR<=rd_REG_ADDR+1'b1;					//перебираем адреса в памяти,число адресов должно быть кратно степени 2!!!
+			t0_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
+			t1_CMD_ADDR<=t0_CMD_ADDR;
 			if (DATA_TIME_REG[337:274]>reg_TIME)  			//проверяем что время исполнения команды актуальное (не старое)
 			begin
 				FLAG_CMD_SEARCH<=1;							//найдена команда для исполнения
 				if (tmp_CMD_TIME> DATA_TIME_REG[337:274]) 
 				begin
 				tmp_CMD_TIME<=DATA_TIME_REG[337:274];		//запоминаем новое чемпионное время
-				tmp_CMD_ADDR<=rd_REG_ADDR;					//запоминаем новый чемпионный адрес 
+				tmp_CMD_ADDR<=t1_CMD_ADDR;					//запоминаем новый чемпионный адрес 
 				end
 			end
-		end	else 
+		end	else
+				if (FLAG_CMD_SEARCH==1)
 	  			begin
-					if (FLAG_CMD_SEARCH) 
-					begin
-						   rd_REG_ADDR<=tmp_CMD_ADDR  ;//устанавливаем адрес чтения новой команды на исполнение
-							 rd_status<=rd_next_status;//если команда была найдена - переходим в состояние чтения
-					end	else rd_status<=idle          ;
-	  			end
+				   rd_REG_ADDR    <=tmp_CMD_ADDR  ;//устанавливаем адрес чтения новой команды на исполнение
+					 rd_status    <=rd_next_status;//если команда была найдена - переходим в состояние чтения
+	  			end else rd_status<=idle;		   //если поиск закончен и команда не найдена			
+	end else	
+	if (rd_status==step2_search_time)		//нужно чтобы учесть задержку чтения из памяти
+	begin
+	rd_status<=rd_next_status;
 	end else
 	if (rd_status==end_search_time)//сохраняем данные команды в промежуточные регисты перед выдачей
 	begin
@@ -303,7 +312,8 @@ begin
 	FLAG_WORK_PROCESS <= 0;
 	status            <= clr_all;
 	tmp_REG_ADDR      <= 0;
-	w_REG_DATA  	  <={64'h1000000000000000,274'h0000};
+	 WR_REG           <=1'b1;
+	  w_REG_DATA  	  <={64'h1000000000000000,274'h0000};
 	end else 
 	if (status==clr_all) //режим очистки памяти
 	begin
@@ -311,7 +321,6 @@ begin
 		 if (tmp_REG_ADDR<10) //N_IDX
 		 	begin
 		 		tmp_REG_ADDR<=tmp_REG_ADDR+1'b1;
-		 		WR_REG      <=1'b1;
 		 		w_REG_DATA  <={64'h1000000000000000,274'h0000};
 		 	end	 else status<=next_status;
 	end else
