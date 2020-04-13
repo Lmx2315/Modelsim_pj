@@ -78,7 +78,7 @@ logic 			FLAG_SYS_TIME_UPDATE=0;//флаг что было произведен�
 logic [  2:0]   frnt1 				=0;//регистр для поиска фронта сигнала SYS_TIME_UPDATE
 logic 			FLAG_WR_SPI_DATA	=0;//флаг того что была запись данных с шины SPI
 logic [  2:0]   frnt2               =0;//регистр для поиска фронта сигнала SYS_TIME_UPDATE
-logic [ 63:0]   var1				=64'h0000000000000000;
+logic [ 63:0]   var1				=64'h0000000000000000;//переменная обозначает пустое место в памяти
 logic [  1:0]   tmp_delay 			=0;//задержка для учёта латентности
 logic [  7:0]   t0_CMD_ADDR 	    =0;//адресс команды с учётом латентности
 logic [  7:0]   t1_CMD_ADDR 	    =0;//адресс команды с учётом латентности
@@ -86,7 +86,7 @@ logic 			FLAG_SRCH			=0;//флаг того что круг поиска зав�
  //-----------------------------------------------------------------------------------------------------------
 enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
 enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
-enum {search_a,search_b,end_search,read_data,end_read_data,search_time,end_search_time,idle  } rd_status,rd_next_status;
+enum {search_a,end_search,read_data,end_read_data,search_time,end_search_time,step2_search_time,idle  } rd_status,rd_next_status;
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -154,8 +154,7 @@ end
 always_comb
  begin
 	case (rd_status)
-		  	 search_a:rd_next_status=search_b;
-		     search_b:rd_next_status=end_search;
+		  	 search_a:rd_next_status=end_search;
 		   end_search:rd_next_status=idle;
 		    read_data:rd_next_status=end_read_data;
 		end_read_data:rd_next_status=idle;
@@ -195,21 +194,22 @@ begin
 	FLAG_CMD_SEARCH	<=0;
 	FLAG_WR_COMMAND	<=0; 
 	rd_REG_ADDR	 	<=0;
+	t0_CMD_ADDR     <=0;
+	t1_CMD_ADDR     <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;
 	if (FLAG_WR_COMMAND|FLAG_SYS_TIME_UPDATE)   rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
 	if (FLAG_WR_SPI_DATA) 				   		rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 	if (REQ_COMM) 		 				   		rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	end else
-	if (rd_status==search_a)//надо чтобы учесть латентность памяти MEM
+	if (rd_status==search_a)					//ищем место под новую запись в память (пустую или ранее стёрттую)
 	begin
-	rd_status  <=rd_next_status;
-	rd_REG_ADDR<=rd_REG_ADDR+1'b1;
-	end
-	if (rd_status==search_b) //поиска места для записи новой команды в регистр реального времени
-	begin
-	  if (DATA_TIME_REG[337:274]!=var1) 
+	  if (DATA_TIME_REG[337:274]!=var1) 		//конец перебора памяти (задерженный адресс равен краю памяти)
 	  	begin
-	  		if (rd_REG_ADDR<N_IDX) rd_REG_ADDR<=rd_REG_ADDR+1'b1; 
+	 		rd_REG_ADDR<=rd_REG_ADDR+1'b1;					//перебираем адреса в памяти,число адресов должно быть кратно степени 2!!!
+			t0_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
+			t1_CMD_ADDR<=t0_CMD_ADDR; 
+			
+			if (t1_CMD_ADDR==N_IDX)
 	  		else 
 	  			begin
 	  			FLAG_REG_STATUS<=3'b011;	//не найдено свободное место в памяти
@@ -219,7 +219,7 @@ begin
 	  		begin
 	  		FLAG_REG_STATUS<=3'b001;		//   найдено свободное место в памяти
 	  		rd_status 	   <=rd_next_status;
-	  		w_REG_ADDR     <=rd_REG_ADDR;	//   запоминаем адресс под запись новой команды
+	  		w_REG_ADDR     <=t1_CMD_ADDR;	//   запоминаем адресс под запись новой команды
 	  	 	end
 	end else
 	if (rd_status==end_search)
@@ -227,7 +227,7 @@ begin
 		FLAG_WR_COMMAND<=1; 				//поиск успешно завершён вызываем процедуру записи в память команды
 		rd_status 	   <=rd_next_status;
 	end else
-	if (rd_status==read_data)
+	if (rd_status==read_data)				//записываем данные в память синхромодуля
 	begin
 	reg_DATA_WR    <=1;						//устанавливаем сигнал записи данных в блок синхронизации
 	rd_status 	   <=rd_next_status;
