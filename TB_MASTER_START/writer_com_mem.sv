@@ -145,8 +145,7 @@ begin
 	 
 	 if (frnt2==3'b001) 			FLAG_WR_SPI_DATA<=1;	//если есть фронт сигнала записи то поднимаем флаг
 	 else 
-	 if (rd_status==search_a) 		FLAG_WR_SPI_DATA<=0;	//если начался процесс поиска новой команды на исполнение то снимаем флаг
-	 
+	 if (rd_status==search_a) 		FLAG_WR_SPI_DATA<=0;	//если начался процесс поиска места для новой команды в памяти	 
 	 end
 end
 
@@ -210,7 +209,6 @@ begin
 			t1_CMD_ADDR<=t0_CMD_ADDR; 
 			
 			if (t1_CMD_ADDR==N_IDX)
-	  		else 
 	  			begin
 	  			FLAG_REG_STATUS<=3'b011;	//не найдено свободное место в памяти
 	  			rd_status 	   <=idle;

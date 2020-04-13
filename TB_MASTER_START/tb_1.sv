@@ -26,16 +26,16 @@ logic [31:0] Tblank2 		=0;
 
 //----------------------------
 // вайры для между реестра и синхронизатора
-logic [47:0] mFREQ     		=48'h0;
-logic [47:0] mFREQ_STEP 	=48'h0;
-logic [31:0] mFREQ_RATE 	=32'h0;
-logic [63:0] mTIME_START	=64'h0;
-logic [15:0] mN_impuls 		=0;
-logic [ 1:0] mTYPE_impulse 	=0;
-logic [31:0] mInterval_Ti 	=0;
-logic [31:0] mInterval_Tp 	=0;
-logic [31:0] mTblank1 		=0;
-logic [31:0] mTblank2 		=0;
+logic [47:0] mFREQ     		;
+logic [47:0] mFREQ_STEP 	;
+logic [31:0] mFREQ_RATE 	;
+logic [63:0] mTIME_START	;
+logic [15:0] mN_impuls 		;
+logic [ 1:0] mTYPE_impulse 	;
+logic [31:0] mInterval_Ti 	;
+logic [31:0] mInterval_Tp 	;
+logic [31:0] mTblank1 		;
+logic [31:0] mTblank2 		;
 
 //----------------------------
 
@@ -60,7 +60,16 @@ always # 5.20833 clk_96=~clk_96;
 
 initial
 begin
+
 	@(posedge clk_48)
+	#30
+	@(posedge clk_48)
+	rst 			= 1'b1 				 ;
+	#30
+	@(posedge clk_48)
+	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)
+	
+	
 	FREQ 			=48'h1000000000 	 ;
 	FREQ_STEP 		=48'h100000    		 ;
 	FREQ_RATE 		=48'h100 	   		 ;
@@ -77,25 +86,31 @@ begin
 	T1HZ 			= 1'b0 				 ;
 	rst 			= 1'b0 				 ;
 
-	#30
-	@(posedge clk_48)
-	rst 			= 1'b1 				 ;
-	#30
-	@(posedge clk_48)
-	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)
-
 	#6000;
 	@(posedge clk_48)
-	spi_WR			= 1'b1 				 ;
-	SYS_TIME_UPDATE = 1'b1 				 ;
-	T1HZ 			= 1'b0 				 ;
-
+	SYS_TIME_UPDATE = 1'b1 				 ;  //приказ обновить время на новое!!!
+	TIME_INIT 		=64'h0000000000000000;  //собственно само новое время, установится по секундной отметке
+	
+	#10
+	@(posedge clk_48)
+	spi_WR			= 1'b1 				 ;  //записываем в память новую команду
 	#100;
 	@(posedge clk_48)
 	spi_WR			= 1'b0 				 ;
-	SYS_TIME_UPDATE = 1'b1 				 ;
-	T1HZ 			= 1'b0 				 ;
 
+	#1000
+	@(posedge clk_48)
+	TIME_START 		=64'h00000000000022C0; //новая команда с теми же параметрами DDS что и раньше
+	
+	#10
+	@(posedge clk_48)
+	spi_WR			= 1'b1 				 ;  //записываем в память новую команду
+	#100;
+	@(posedge clk_48)
+	spi_WR			= 1'b0 				 ;	
+
+
+//--------------приходит секундная метка--------------------
 	#1000;
 	@(posedge clk_48)
 	SYS_TIME_UPDATE = 1'b1 				 ;
@@ -143,16 +158,16 @@ sync1(
 .TIME 				(TIME 				),
 .T1hz 				(T1HZ 				),	//сигнал секундной метки
 .WR_DATA 			(mem_WR 			),  //сигнал записи данных в синхронизатор
-.MEM_DDS_freq 		(FREQ 				),  //данные команды из реестра реального времени
-.MEM_DDS_delta_freq (FREQ_STEP  		),  //данные команды из реестра реального времени
-.MEM_DDS_delta_rate (FREQ_RATE 			),  //данные команды из реестра реального времени
-.MEM_TIME_START 	(TIME_START 		),  //данные команды из реестра реального времени
-.MEM_N_impuls 		(N_impuls 			),  //данные команды из реестра реального времени
-.MEM_TYPE_impulse 	(TYPE_impulse   	),  //тип формируемой пачки  :0 - повторяющаяся (некогерентный),1 - когерентная (DDS не перепрограммируется)
-.MEM_Interval_Ti 	(Interval_Ti 		),  //данные команды из реестра реального времени
-.MEM_Interval_Tp 	(Interval_Tp 		),  //данные команды из реестра реального времени
-.MEM_Tblank1		(Tblank1 			),  //данные команды из реестра реального времени
-.MEM_Tblank2 		(Tblank2 			),  //данные команды из реестра реального времени
+.MEM_DDS_freq 		(mFREQ 				),  //данные команды из реестра реального времени
+.MEM_DDS_delta_freq (mFREQ_STEP  		),  //данные команды из реестра реального времени
+.MEM_DDS_delta_rate (mFREQ_RATE			),  //данные команды из реестра реального времени
+.MEM_TIME_START 	(mTIME_START 		),  //данные команды из реестра реального времени
+.MEM_N_impuls 		(mN_impuls 			),  //данные команды из реестра реального времени
+.MEM_TYPE_impulse 	(mTYPE_impulse   	),  //тип формируемой пачки  :0 - повторяющаяся (некогерентный),1 - когерентная (DDS не перепрограммируется)
+.MEM_Interval_Ti 	(mInterval_Ti 		),  //данные команды из реестра реального времени
+.MEM_Interval_Tp 	(mInterval_Tp 		),  //данные команды из реестра реального времени
+.MEM_Tblank1		(mTblank1 			),  //данные команды из реестра реального времени
+.MEM_Tblank2 		(mTblank2 			),  //данные команды из реестра реального времени
 .SYS_TIME_UPDATE_OK (SYS_TIME_UPDATE_OK ),	//флаг показывающий,что по секундной метке произошла установка системного времени
 .En_Iz 				(En_Iz 				),  //сформированый интервал Излучения
 .En_Pr 				(En_Pr 				)   //сформированый интервал Приёма
