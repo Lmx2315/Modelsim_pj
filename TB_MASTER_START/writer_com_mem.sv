@@ -196,21 +196,23 @@ begin
 	end else
 	if (rd_status==idle  )
 	begin
+	
 	RD_REG			<=1'b1;
 	FLAG_SRCH		<=0;
 	FLAG_REG_STATUS	<=3'b000;
 	FLAG_CMD_SEARCH	<=0;
 	FLAG_WR_COMMAND	<=0; 
+	FLAG_CLR_COMMAND<=0;
 	rd_REG_ADDR	 	<=0;
 	t0_CMD_ADDR     <=0;
 	t1_CMD_ADDR     <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;	
 
-	if ( FLAG_CMD_SEARCH)	   		    rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
+	if ( FLAG_CMD_SEARCH)	   		    							rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	else
-	if ((FLAG_REG_STATUS==1)|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	if ( FLAG_WR_COMMAND|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
 	else
-	if ( FLAG_WR_SPI_DATA) 				   		    rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	if ( FLAG_WR_SPI_DATA) 				   		    				rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 
 	end else
 	if (rd_status==search_a)					//ищем место под новую запись в память (пустую или ранее стёрттую)
@@ -235,13 +237,14 @@ begin
 	end else
 	if (rd_status==end_search)
 	begin
-		FLAG_WR_COMMAND<=1; 				//поиск успешно завершён вызываем процедуру записи в память команды
-		rd_status 	   <=rd_next_status;
+	FLAG_WR_COMMAND<=1; 				//поиск успешно завершён вызываем процедуру записи в память команды
+	rd_status 	   <=rd_next_status;
 	end else
 	if (rd_status==read_data)				//записываем данные в память синхромодуля
 	begin
 	reg_DATA_WR    <=1;						//устанавливаем сигнал записи данных в блок синхронизации
 	rd_status 	   <=rd_next_status;
+	clr_REG_ADDR   <=tmp_CMD_ADDR;			//запоминаем текущий адрес команды в реестре для удаления после выполнения
 	end else
 	if (rd_status==end_read_data)
 	begin
@@ -253,7 +256,7 @@ begin
  		if (FLAG_SRCH==0)  									//ищем пока не пробежимся по всей памяти!!!		
 		begin
 			if(t1_CMD_ADDR==N_IDX) FLAG_SRCH<=1; 			//конец перебора памяти (задерженный адресс равен краю памяти)
-			rd_REG_ADDR<=rd_REG_ADDR+1'b1;					//перебираем адреса в памяти,число адресов должно быть кратно степени 2!!!
+			rd_REG_ADDR<=rd_REG_ADDR +1'b1;					//перебираем адреса в памяти,число адресов должно быть кратно степени 2!!!
 			t0_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
 			t1_CMD_ADDR<=t0_CMD_ADDR;
 			if (DATA_TIME_REG[337:274]>reg_TIME)  			//проверяем что время исполнения команды актуальное (не старое)
@@ -274,11 +277,13 @@ begin
 	end else	
 	if (rd_status==step2_search_time)		//нужно чтобы учесть задержку чтения из памяти
 	begin
+	if (FLAG_REQ_COMM) FLAG_CLR_COMMAND<=1; //если была выполнна предыдущая команда - то стираем её из памяти
 	rd_status<=rd_next_status;
 	end else
 	if (rd_status==step3_search_time)		//нужно чтобы учесть задержку чтения из памяти
 	begin
-	rd_status<=rd_next_status;
+	FLAG_CLR_COMMAND<=0;
+	rd_status		<=rd_next_status;
 	end else
 	if (rd_status==end_search_time)//сохраняем данные команды в промежуточные регисты перед выдачей
 	begin
@@ -342,8 +347,10 @@ begin
 	if (status==clr_data) 			//режим удаления команды
 	begin
 		FLAG_WORK_PROCESS<=1'b1;
-		tmp_REG_ADDR<=clr_REG_ADDR; //записываем адресс удаляемой строки из памяти
-		WR_REG      <=1'b1;
+		tmp_REG_ADDR	 <=clr_REG_ADDR; //записываем адресс удаляемой строки из памяти
+		WR_REG      	 <=1'b1;
+		w_REG_DATA       <={64'h0000000000000000,274'h0000};//все нули во временной области-очистка!
+		status			 <=next_status;
 	end else
 	if (status==wr_data) 			//режим записи командного слова в память
 	begin
