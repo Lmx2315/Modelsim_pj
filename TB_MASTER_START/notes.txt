@@ -1,0 +1,4 @@
+vsim -gui work.tb_1 -novopt -L C:/Users/lmx2315/Desktop/work/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Users/lmx2315/Desktop/work/Modelsim_pj/lib/verilog_libs/altera_ver
+add wave -position end sim:/tb_1/wcm1/*
+add wave -position end sim:/tb_1/sync1/*
+run 1000 us

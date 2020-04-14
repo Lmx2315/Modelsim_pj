@@ -60,15 +60,13 @@ always # 5.20833 clk_96=~clk_96;
 
 initial
 begin
-
 	@(posedge clk_48)
-	#30
+	#0
 	@(posedge clk_48)
 	rst 			= 1'b1 				 ;
 	#30
 	@(posedge clk_48)
 	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)
-	
 	
 	FREQ 			=48'h1000000000 	 ;
 	FREQ_STEP 		=48'h100000    		 ;
@@ -84,7 +82,7 @@ begin
 	spi_WR			= 1'b0 				 ;  //сигнал записи данных в блок памяти
 	SYS_TIME_UPDATE = 1'b0 				 ;
 	T1HZ 			= 1'b0 				 ;
-	rst 			= 1'b0 				 ;
+
 
 	#6000;
 	@(posedge clk_48)
@@ -98,7 +96,7 @@ begin
 	@(posedge clk_48)
 	spi_WR			= 1'b0 				 ;
 
-	#1000
+	#50000
 	@(posedge clk_48)
 	TIME_START 		=64'h00000000000022C0; //новая команда с теми же параметрами DDS что и раньше
 	
@@ -111,12 +109,12 @@ begin
 
 
 //--------------приходит секундная метка--------------------
-	#1000;
+	#10000;
 	@(posedge clk_48)
 	SYS_TIME_UPDATE = 1'b1 				 ;
 	T1HZ 			= 1'b1 				 ;	
 
-	#1000;
+	#10000;
 	@(posedge clk_48)
 	SYS_TIME_UPDATE = 1'b0 				 ;
 	T1HZ 			= 1'b0 				 ;
