@@ -3,4 +3,4 @@ add wave -position end sim:/tb_1/wcm1/*
 add wave -position insertpoint  \
 sim:/tb_1/wcm1/registre_MEM_inst/altsyncram_component/m_default/altsyncram_inst/mem_data
 add wave -position end sim:/tb_1/sync1/*
-run 5000 us
+run 10000 us
