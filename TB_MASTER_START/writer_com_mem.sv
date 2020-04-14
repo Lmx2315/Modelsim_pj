@@ -206,9 +206,9 @@ begin
 	t1_CMD_ADDR     <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;	
 
-	if ( FLAG_REQ_COMM|FLAG_CMD_SEARCH)	   		    rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
+	if ( FLAG_CMD_SEARCH)	   		    rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	else
-	if ((FLAG_REG_STATUS==1)|FLAG_SYS_TIME_UPDATE)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	if ((FLAG_REG_STATUS==1)|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
 	else
 	if ( FLAG_WR_SPI_DATA) 				   		    rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 
