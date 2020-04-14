@@ -85,6 +85,7 @@ logic [  7:0]   t0_CMD_ADDR 	    =0;//адресс команды с учёто�
 logic [  7:0]   t1_CMD_ADDR 	    =0;//адресс команды с учётом латентности
 logic 			FLAG_SRCH			=0;//флаг того что круг поиска завершён
 logic 			FLAG_REQ_COMM 		=0;//флаг запроса по сигналу REQ_COMM
+logic 			FLAG_NEW_CMD_WR 	=0;//флаг начала поиска новой команды на исполнение, после записи в реестр
  //-----------------------------------------------------------------------------------------------------------
 enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
 enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
@@ -206,11 +207,12 @@ begin
 	rd_REG_ADDR	 	<=0;
 	t0_CMD_ADDR     <=0;
 	t1_CMD_ADDR     <=0;
+	tmp_CMD_ADDR    <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;	
 
 	if ( FLAG_CMD_SEARCH)	   		    							rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	else
-	if ( FLAG_WR_COMMAND|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	if ( FLAG_NEW_CMD_WR|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
 	else
 	if ( FLAG_WR_SPI_DATA) 				   		    				rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
 
@@ -329,6 +331,7 @@ always_ff @(posedge CLK)
 begin 
 	if(~rst_n) 
 	begin
+	FLAG_NEW_CMD_WR   <= 0;
 	FLAG_WORK_PROCESS <= 0;
 	status            <= clr_all;
 	tmp_REG_ADDR      <= 0;
@@ -354,6 +357,7 @@ begin
 	end else
 	if (status==wr_data) 			//режим записи командного слова в память
 	begin
+		FLAG_NEW_CMD_WR  <=1'b1;    //по  этому флагу обновляем поиск по текущей команде на исполнение
 		FLAG_WORK_PROCESS<=1'b1;
 		tmp_REG_ADDR<=w_REG_ADDR;
 		WR_REG      <=1'b1;
@@ -365,8 +369,9 @@ begin
 	begin
 				   FLAG_WORK_PROCESS<=1'b0;
 						WR_REG      <=1'b0;
-		if (FLAG_CLR_COMMAND) status<=clr_data;else
-		if (FLAG_WR_COMMAND ) status<=wr_data ;
+		if (FLAG_CLR_COMMAND) 					status<=clr_data;else
+		if (FLAG_WR_COMMAND ) 					status<=wr_data ;
+		if (rd_status==search_time)	FLAG_NEW_CMD_WR   <= 0;
 	end 
 end
  
