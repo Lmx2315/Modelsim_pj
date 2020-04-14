@@ -57,7 +57,7 @@ logic [337:0]    data_sig           =0;
 logic [337:0] 	   w_REG_DATA       =0;//данные для записи в реестр
 logic [  7:0] 	   w_REG_ADDR       =0;//адрес в реестре куда можно делать свежую запись
 logic [  7:0]     rd_REG_ADDR       =0;//адрес в реестре для чтения
-logic [  7:0]	 tmp_REG_ADDR		=0;//
+logic [  7:0]	 tmp_REG_ADDR		=0;//адрес записи в реестр
 logic [  7:0]    clr_REG_ADDR 		=0;//адресс под очистку
 logic 			 RD_REG 			=0;
 logic 		   	 WR_REG	            =0;//сигнал записи в память реестра
@@ -88,7 +88,7 @@ logic 			FLAG_REQ_COMM 		=0;//флаг запроса по сигналу REQ_CO
  //-----------------------------------------------------------------------------------------------------------
 enum {idle_clr,start,clear,cycle,end_cycle			  							  } clr_state,clr_next_state;
 enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
-enum {search_a,end_search,read_data,end_read_data,search_time,end_search_time,step2_search_time,idle  } rd_status,rd_next_status;
+enum {search_a,end_search,read_data,end_read_data,search_time,end_search_time,step2_search_time,step3_search_time,idle  } rd_status,rd_next_status;
 
 always_ff @(posedge CLK or negedge rst_n) begin 
 	if(~rst_n) 
@@ -165,7 +165,8 @@ always_comb
 		    read_data:rd_next_status=end_read_data;
 		end_read_data:rd_next_status=idle;
 		  search_time:rd_next_status=step2_search_time;
-	step2_search_time:rd_next_status=end_search_time;
+	step2_search_time:rd_next_status=step3_search_time;
+	step3_search_time:rd_next_status=end_search_time;
 	  end_search_time:rd_next_status=idle;
 	endcase
 end
@@ -272,6 +273,10 @@ begin
 	  			end else rd_status<=idle;		   //если поиск закончен и команда не найдена			
 	end else	
 	if (rd_status==step2_search_time)		//нужно чтобы учесть задержку чтения из памяти
+	begin
+	rd_status<=rd_next_status;
+	end else
+	if (rd_status==step3_search_time)		//нужно чтобы учесть задержку чтения из памяти
 	begin
 	rd_status<=rd_next_status;
 	end else
