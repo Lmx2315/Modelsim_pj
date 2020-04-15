@@ -1,0 +1,22 @@
+Wed Apr 15 14:51:55 AST 2020
+Trace back: C:/intelfpga/18.1/quartus/eda/sim_lib/altera_mf.v not found.
+    while executing
+"vsimwidgets::Srcedit::HandleDrivers [lindex $sigList 0] $d_or_r"
+    (procedure "_showDFReadersDrivers" line 41)
+    invoked from within
+"_showDFReadersDrivers drivers .main_pane.wave.interior.cs.body.pw.wf 1"
+    ("eval" body line 1)
+    invoked from within
+"eval _showDFReadersDrivers "drivers" $winname $classic $args"
+    (procedure "Wave::ShowDFDrivers" line 2)
+    invoked from within
+"Wave::ShowDFDrivers $top 1"
+    (procedure "Wave::1Up" line 27)
+    invoked from within
+"Wave::1Up $widget $x $y"
+    (procedure "Wave::SelectUp" line 4)
+    invoked from within
+"Wave::SelectUp	 .main_pane.wave.interior.cs.body.pw.wf.grid.row0,wave.data 673 318 1131 437 "
+    (command bound to event)
+  <2:D:/modeltech64_10.6d/win64/tk8.6/bgerror.tcl:106: ::tkerror {C:/intelfpga/18.1/quartus/eda/sim_lib/altera_mf.v not found.}
+  <1:eval:1: ::tk::dialog::error::bgerror {C:/intelfpga/18.1/quartus/eda/sim_lib/altera_mf.v not found.}

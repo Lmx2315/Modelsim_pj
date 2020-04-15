@@ -28,7 +28,7 @@ output [31:0] Tblank1_z      ,
 output [31:0] Tblank2_z    	  //-----//-------	 
 );
 
-parameter N_IDX      = 255;//размер памяти в строках (N-1)
+parameter N_IDX      = 8;//размер памяти в строках (N-1)
 parameter TIME_REZERV=48*8;//8 мкс запас времени
 //-------регистры для хранения команды из spi
 logic [ 47:0] 	 tmp_FREQ 		    =0;
@@ -209,13 +209,13 @@ begin
 	t1_CMD_ADDR     <=0;
 	tmp_CMD_ADDR    <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;	
-
+	
+	if ( FLAG_WR_SPI_DATA) 				   		    				rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
+	else
 	if ( FLAG_CMD_SEARCH)	   		    							rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	else
 	if ( FLAG_NEW_CMD_WR|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
-	else
-	if ( FLAG_WR_SPI_DATA) 				   		    				rd_status<=search_a		;//по сигналу приёма по spi данных - начинаем поиск свободной строки в памяти
-
+	
 	end else
 	if (rd_status==search_a)					//ищем место под новую запись в память (пустую или ранее стёрттую)
 	begin
@@ -246,7 +246,6 @@ begin
 	begin
 	reg_DATA_WR    <=1;						//устанавливаем сигнал записи данных в блок синхронизации
 	rd_status 	   <=rd_next_status;
-	clr_REG_ADDR   <=tmp_CMD_ADDR;			//запоминаем текущий адрес команды в реестре для удаления после выполнения
 	end else
 	if (rd_status==end_read_data)
 	begin
@@ -273,6 +272,7 @@ begin
 		end	else
 				if (FLAG_CMD_SEARCH==1)
 	  			begin
+				   clr_REG_ADDR   <=tmp_CMD_ADDR;			//запоминаем текущий адрес команды в реестре для удаления после выполнения
 				   rd_REG_ADDR    <=tmp_CMD_ADDR  ;//устанавливаем адрес чтения новой команды на исполнение
 					 rd_status    <=rd_next_status;//если команда была найдена - переходим в состояние чтения
 	  			end else rd_status<=idle;		   //если поиск закончен и команда не найдена			
@@ -336,15 +336,15 @@ begin
 	status            <= clr_all;
 	tmp_REG_ADDR      <= 0;
 	 WR_REG           <=1'b1;
-	  w_REG_DATA  	  <={64'h1000000000000000,274'h0000};
+	  w_REG_DATA  	  <={64'h0000000000000000,274'h0000};
 	end else 
 	if (status==clr_all) //режим очистки памяти
 	begin
 		FLAG_WORK_PROCESS<=1'b1;
-		 if (tmp_REG_ADDR<10) //N_IDX
+		 if (tmp_REG_ADDR<N_IDX) //
 		 	begin
 		 		tmp_REG_ADDR<=tmp_REG_ADDR+1'b1;
-		 		w_REG_DATA  <={64'h1000000000000000,274'h0000};
+		 		w_REG_DATA  <={64'h0000000000000000,274'h0000};
 		 	end	 else status<=next_status;
 	end else
 	if (status==clr_data) 			//режим удаления команды
