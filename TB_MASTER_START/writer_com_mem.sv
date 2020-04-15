@@ -305,6 +305,7 @@ begin
 
 end
 
+
 assign DATA_WR       = reg_DATA_WR     ;
 assign FREQ_z        = mem_FREQ        ;      
 assign FREQ_STEP_z   = mem_FREQ_STEP   ;
