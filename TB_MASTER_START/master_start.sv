@@ -55,6 +55,7 @@ logic [3:0] frnt_T1hz			   =0;					//секундная метка уже пер
 logic [3:0] frnt_Time_update	   =0;					//сигнал требующий привязки внутренних часов в секундной метке и установки по ней системного времени
 logic 		FLAG_START_PROCESS_CMD =0;					//флаг означающий что команда начинает выполняться
 logic 		FLAG_END_PROCESS_CMD   =0;					//флаг означающий что команда выполненна
+logic       FLAG_REQ 			   =0;
 logic [31:0] temp_TIMER1=0;
 logic [31:0] temp_TIMER2=0;
 logic [31:0] temp_TIMER3=0;
@@ -64,7 +65,7 @@ logic [47:0] tmp_MEM_DDS_freq      =0;					//начальная частота D
 logic [47:0] tmp_MEM_DDS_delta_freq=0;					//шаг перестройки частоты DDS
 logic [31:0] tmp_MEM_DDS_delta_rate=0;					//скорость перестройки частоты DDS
 logic 		 tmp_REQ 	 	  =0;
-logic 		 FLAG_REQ	 	  =0;
+logic 		 FLAG_REQ_CMD_REG =0;						//флаг запроса новой команды из реестра
 logic 		 FLAG_PROCESS_OVER=0;						//флаг что закончился процесс генерации интервалов
 
 
@@ -168,6 +169,7 @@ begin
  		state		<=start;
 reg_DDS_start		<=0;
 FLAG_END_PROCESS_CMD<=1'b1;	
+FLAG_REQ_CMD_REG    <=0;
 end
 else
 begin
@@ -176,9 +178,11 @@ begin
 	if (state==start) 																			//начальное состояние стейт-машины
 	begin		
 	//тут сидим -ждём начала работы по срабатыванию часов
+	FLAG_REQ_CMD_REG    <=0;
 	end	else
 	if (state==cycle)																			//ожидание начала работы
 		begin
+		    FLAG_REQ_CMD_REG<=1;
 			FLAG_REQ		<=1'b1;																//готовимся отослать данные в DDS
 		reg_temp_N_impuls   <=reg_MEM_N_impuls; 												//запоминаем сколько импульсов синтезировать
 		reg_En_Iz    		<=1'b0;
@@ -192,7 +196,7 @@ begin
 		temp_TIMER3			<=reg_MEM_Tblank2;
 		temp_TIMER4			<=reg_MEM_Interval_Tp;
 		FLAG_END_PROCESS_CMD<=1'b0;		
-		reg_temp_N_impuls	<=reg_temp_N_impuls-1'b1;											//считаем сколько импульсов надо синтезировать			
+		if (reg_temp_N_impuls>0) reg_temp_N_impuls	<=reg_temp_N_impuls-1'b1;											//считаем сколько импульсов надо синтезировать			
 		end else
 	if (state==blank1)																			//стейт машина: состояние первый бланк (бланк излучения)
 		begin
@@ -231,7 +235,7 @@ begin
 	case (state)
 		 start: if (FLAG_START_PROCESS_CMD)	new_state=cycle    ; else new_state=start;
 		 cycle:								new_state=idle     ;
-		  idle: if (reg_MEM_N_impuls>0)		new_state=blank1   ;//проверка что задано число интервалов больше нуля
+		  idle: if (reg_MEM_N_impuls>0)		new_state=blank1   ; else new_state=end_cycle;//проверка что задано число интервалов больше нуля
 		blank1: if (temp_TIMER1==0)			new_state=Tizl     ;
 		  Tizl: if (temp_TIMER2==0)			new_state=blank2   ;
   	    blank2: if (temp_TIMER3==0)			new_state=Tpr      ;
@@ -250,6 +254,6 @@ assign DDS_delta_rate 		= reg_MEM_DDS_delta_rate;
 assign SYS_TIME_UPDATE_OK	= FLAG_SYS_TIME_UPDATED;  	//event того что системное время обновлено 
 assign En_Iz 				= reg_En_Iz;				//сигнал разрешающий излучение
 assign En_Pr 				= reg_En_Pr;				//сигнал разрешающий приём
-assign REQ_COMMAND 			= FLAG_END_PROCESS_CMD; 	//сигнал запрашивающий новую команду для исполнения, потому как старая была выполненна
+assign REQ_COMMAND 			= FLAG_REQ_CMD_REG; 		//сигнал запрашивающий новую команду для исполнения, потому как старая была выполненна
 
 endmodule
