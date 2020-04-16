@@ -1,6 +1,7 @@
+vlog -reportprogress 300 -work work C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_1.sv
 vsim -gui work.tb_1 -novopt -L C:/Users/lmx2315/Desktop/work/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Users/lmx2315/Desktop/work/Modelsim_pj/lib/verilog_libs/altera_ver
 add wave -position end sim:/tb_1/wcm1/*
 add wave -position insertpoint  \
 sim:/tb_1/wcm1/registre_MEM_inst/altsyncram_component/m_default/altsyncram_inst/mem_data
 add wave -position end sim:/tb_1/sync1/*
-run 10000 us
+run 20000 us
