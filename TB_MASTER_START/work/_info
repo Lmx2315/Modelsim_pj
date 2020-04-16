@@ -9,52 +9,52 @@ z2
 cModel Technology
 dC:/Users/Asus/Desktop/From work/072/Modelsim_pj/TB_MASTER_START
 vDDS_48_v1
-Z0 !s110 1586948092
+!s110 1587047935
 !i10b 1
 !s100 X?;3N]F8An4zH4IJbTnMj1
 ICGSWjRUA8L2>jNAgLO47f0
-Z1 VDg1SIo80bB@j0V0VzS_@n1
-Z2 dC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START
-Z3 w1585921987
+Z0 VDg1SIo80bB@j0V0VzS_@n1
+Z1 dC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START
+Z2 w1585921987
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1.v
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1.v
 L0 6
-Z4 OL;L;10.6d;65
+Z3 OL;L;10.6d;65
 r1
 !s85 0
 31
-!s108 1586948087.000000
+!s108 1587047935.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1.v|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1.v|
 !i113 0
-Z5 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
-Z6 tCvgOpt 0
+Z4 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z5 tCvgOpt 0
 n@d@d@s_48_v1
 vDDS_48_v1_nco_ii_0
-R0
+!s110 1587047934
 !i10b 1
 !s100 fcb5kbF:QLB[OCmQHbN^Z0
 IOmmB?9?WAaUeY>N8NLgI32
+R0
 R1
 R2
-R3
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1_nco_ii_0.v
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1_nco_ii_0.v
 L0 23
-R4
+R3
 r1
 !s85 0
 31
-!s108 1586948090.000000
+!s108 1587047934.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1_nco_ii_0.v|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DDS_48_v1_nco_ii_0.v|
 !i113 0
+R4
 R5
-R6
 n@d@d@s_48_v1_nco_ii_0
 vdds_chirp
-Z7 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
-R1
+Z6 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+R0
 r1
 !s85 0
 31
@@ -63,21 +63,21 @@ r1
 IX74;W>h34K]zbC6>Lj<Ff3
 !s105 dds_chirp_sv_unit
 S1
+R1
 R2
-R3
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/dds_chirp.sv
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/dds_chirp.sv
 L0 1
-R4
-!s108 1586948086.000000
+R3
+!s108 1587047932.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/dds_chirp.sv|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/dds_chirp.sv|
 !i113 0
+R4
 R5
-R6
 vMASTER_START
-R7
-R1
+R6
+R0
 r1
 !s85 0
 31
@@ -86,82 +86,82 @@ r1
 ILAjMQ1b1jo3X^7]KbUWIB1
 !s105 master_start_sv_unit
 S1
-R2
+R1
 w1586965961
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/master_start.sv
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/master_start.sv
 L0 5
-R4
-Z8 !s108 1587034215.000000
+R3
+!s108 1587047930.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/master_start.sv|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/master_start.sv|
 !i113 0
+R4
 R5
-R6
 n@m@a@s@t@e@r_@s@t@a@r@t
 vmem1
-R1
+R0
 r1
 !s85 0
 31
 !i10b 1
 !s100 @mf]E`[7[6Eo^0j`WRZN62
 Iz3^gMm:T[eH=i8D^U4NJ=2
-R2
+R1
 w1586847692
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/mem1.v
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/mem1.v
 L0 39
-R4
-R8
+R3
+!s108 1587047926.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/mem1.v|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/mem1.v|
 !i113 0
+R4
 R5
-R6
 vtb_1
-R7
-R1
+R6
+R0
 r1
 !s85 0
 31
 !i10b 1
-!s100 zBWWhHV_SQ<P]4XB1?AP`3
-I:GCWRKCEW:FY^Ske473JF2
+!s100 z>O]jkcAWdZfzRbhlgTCG0
+I2FhBFg@9UIF]VN@FRTize2
 !s105 tb_1_sv_unit
 S1
-R2
-w1587042666
+R1
+w1587048776
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_1.sv
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_1.sv
 L0 3
-R4
-!s108 1587042697.000000
+R3
+!s108 1587050444.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_1.sv|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_1.sv|
 !i113 0
+R4
 R5
-R6
 vwcm
-R7
-R1
+R6
+R0
 r1
 !s85 0
 31
 !i10b 1
-!s100 R6ejh8P^_YQ3Geke38g222
-IfXRgf38j7Rz4ZD]__I7?U2
+!s100 D6f63`Hm6zh0cHlO]PD`X2
+IG<iFb:Ul52]mz31QZZDZB2
 !s105 writer_com_mem_sv_unit
 S1
-R2
-w1587042350
+R1
+w1587050422
 8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv
 FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv
 L0 1
-R4
-!s108 1587042684.000000
+R3
+!s108 1587050435.000000
 !s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv|
 !s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv|
 !i113 0
+R4
 R5
-R6

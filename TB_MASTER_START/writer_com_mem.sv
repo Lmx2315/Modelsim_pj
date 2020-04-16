@@ -216,7 +216,11 @@ begin
 	else
 	if ( FLAG_CMD_SEARCH)	   		    							rd_status<=read_data	;//считываем новую(подготовленную) команду для синхронизатора 
 	else
-	if ( FLAG_NEW_CMD_WR|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)	    rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	if ( FLAG_NEW_CMD_WR|FLAG_SYS_TIME_UPDATE|FLAG_REQ_COMM)
+	begin
+								rd_status<=search_time	;//начинаем поиск ближайшей по времени команды на исполнение
+	if (FLAG_REQ_COMM)	 FLAG_CLR_COMMAND<=1;			 //если была выполнна предыдущая команда - то стираем её из памяти
+	end
 	
 	end else
 	if (rd_status==search_a)					//ищем место под новую запись в память (пустую или ранее стёрттую)
@@ -241,13 +245,13 @@ begin
 	end else
 	if (rd_status==end_search)
 	begin
-	FLAG_WR_COMMAND<=1; 				//поиск успешно завершён вызываем процедуру записи в память команды
+	FLAG_WR_COMMAND<=1; 					//поиск успешно завершён вызываем процедуру записи в память команды
 	rd_status 	   <=rd_next_status;
 	end else
 	if (rd_status==read_data)				//записываем данные в память синхромодуля
 	begin
-	reg_DATA_WR    <=1;						//устанавливаем сигнал записи данных в блок синхронизации
-	rd_status 	   <=rd_next_status;
+	reg_DATA_WR     <=1;					//устанавливаем сигнал записи данных в блок синхронизации
+	rd_status 	    <=rd_next_status;
 	end else
 	if (rd_status==end_read_data)
 	begin
@@ -255,7 +259,7 @@ begin
 	rd_status 	   <=rd_next_status;
 	end else
 	if (rd_status==search_time)								//ищем свежую команды на исполнение в регистре реального времени
-	begin
+	begin		
  		if (FLAG_SRCH==0)  									//ищем пока не пробежимся по всей памяти!!!		
 		begin
 			if(t1_CMD_ADDR==N_IDX) FLAG_SRCH<=1; 			//конец перебора памяти (задерженный адресс равен краю памяти)
@@ -285,7 +289,6 @@ begin
 	end else	
 	if (rd_status==step2_search_time)		//нужно чтобы учесть задержку чтения из памяти
 	begin
-	if (FLAG_REQ_COMM) FLAG_CLR_COMMAND<=1; //если была выполнна предыдущая команда - то стираем её из памяти
 	rd_status<=rd_next_status;
 	end else
 	if (rd_status==step3_search_time)		//нужно чтобы учесть задержку чтения из памяти
