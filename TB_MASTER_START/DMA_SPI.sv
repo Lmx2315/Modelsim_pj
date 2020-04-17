@@ -1,3 +1,13 @@
+//---------------------------------------------------------------
+//автор СС ОАО НПК НИИДАР
+//
+//
+//модуль приёма 51 байта данных из МК по SPI (через мк-ный DMA)
+//Прием данных работает на частоте SPI МК и переводится в домен CLK ПЛИС
+//когда МК посылает како-то время отличное от нуля - устанавливается флаг синхронизации с
+//секундной меткой.
+//---------------------------------------------------------------
+`timescale 1 ns / 1 ns
 module DMA_SPI (
 	input clk,    // Clock
 	input clk_en, // Clock Enable
@@ -37,9 +47,11 @@ logic [ 31:0]    tmp_Tblank2	    =0;
 logic [407:0]  REG_SPI=0;//асинхронный регистр
 logic [407:0]  REG_CLK=0;//синхронный регистр
 
-logic [ 3:0] frnt_CS   		 =0;
-logic 		 FLAG_SPI_DATA_OK=0;
-logic 		 FLAG_SPI_WR     =0;
+logic [ 3:0] frnt_CS   		     =0;
+logic 		 FLAG_SPI_DATA_OK    =0;
+logic 		 FLAG_SPI_WR         =0;
+logic 		 FLAG_SYS_TIME_UPDATE=0;
+logic [ 7:0] timer               =0;
 
 //------синхронный приём на частоте SPI----------
 always_ff @(posedge SCLK) 
@@ -64,21 +76,33 @@ always_ff @(posedge clk)
 begin
 	if (FLAG_SPI_DATA_OK) 	
 		begin
-			         REG_CLK<=REG_SPI;
-				 FLAG_SPI_WR<=1;	
-		end else FLAG_SPI_WR<=0;
+		if (REG_SPI!=64'h0) 
+			begin 
+				FLAG_SYS_TIME_UPDATE<=1; 
+				timer<=128;//задержка снятия флага синхронизации системного времени
+			end
+		REG_CLK	   <=REG_SPI;
+		FLAG_SPI_WR<=1;	
+		end	else
+		begin
+		FLAG_SPI_WR<=0;
+		if (timer>0) timer<=timer-1; 
+		else FLAG_SYS_TIME_UPDATE<=0; 
+		end
 end
 
-assign 		    TIME=REG_CLK[407:344];
-assign 		    FREQ=REG_CLK[343:296];
-assign     FREQ_STEP=REG_CLK[295:248];
-assign     FREQ_RATE=REG_CLK[247:216];
-assign    TIME_START=REG_CLK[215:152];
-assign     N_impulse=REG_CLK[151:136];
-assign  TYPE_impulse=REG_CLK[135:128];
-assign   Interval_Ti=REG_CLK[127: 96];
-assign   Interval_Tp=REG_CLK[ 95: 64];
-assign   tmp_Tblank1=REG_CLK[ 63: 32];
-assign   tmp_Tblank2=REG_CLK[ 31:  0];
+assign 		       TIME=REG_CLK[407:344];
+assign 		       FREQ=REG_CLK[343:296];
+assign        FREQ_STEP=REG_CLK[295:248];
+assign        FREQ_RATE=REG_CLK[247:216];
+assign       TIME_START=REG_CLK[215:152];
+assign        N_impulse=REG_CLK[151:136];
+assign     TYPE_impulse=REG_CLK[135:128];
+assign      Interval_Ti=REG_CLK[127: 96];
+assign      Interval_Tp=REG_CLK[ 95: 64];
+assign          Tblank1=REG_CLK[ 63: 32];
+assign          Tblank2=REG_CLK[ 31:  0];
+assign 		     SPI_WR=FLAG_SPI_WR;
+assign 	SYS_TIME_UPDATE=FLAG_SYS_TIME_UPDATE;		
 
 endmodule

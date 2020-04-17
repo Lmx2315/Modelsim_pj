@@ -75,6 +75,31 @@ R3
 !i113 0
 R4
 R5
+vDMA_SPI
+R6
+!s110 1587138221
+!i10b 1
+!s100 ddPKKbefQ?iP<Slzn:iM92
+I:9Hd7>P=K[4=_@b1bb<F?0
+R0
+!s105 DMA_SPI_sv_unit
+S1
+R1
+w1587138136
+8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv
+FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv
+L0 11
+R3
+r1
+!s85 0
+31
+!s108 1587138221.000000
+!s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv|
+!s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv|
+!i113 0
+R4
+R5
+n@d@m@a_@s@p@i
 vMASTER_START
 R6
 R0
@@ -142,6 +167,31 @@ R3
 !i113 0
 R4
 R5
+vtb_DMA_SPI
+R6
+!s110 1587138218
+!i10b 1
+!s100 L]eDPJiaS78]R8<=<4Go22
+IK25g<A:V`K?YZe4E6E;]n0
+R0
+!s105 tb_DMA_SPI_sv_unit
+S1
+R1
+w1587138202
+8C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_DMA_SPI.sv
+FC:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_DMA_SPI.sv
+L0 13
+R3
+r1
+!s85 0
+31
+!s108 1587138218.000000
+!s107 C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_DMA_SPI.sv|
+!s90 -reportprogress|300|-work|work|C:/Users/lmx2315/Desktop/work/Modelsim_pj/TB_MASTER_START/tb_DMA_SPI.sv|
+!i113 0
+R4
+R5
+ntb_@d@m@a_@s@p@i
 vwcm
 R6
 R0
