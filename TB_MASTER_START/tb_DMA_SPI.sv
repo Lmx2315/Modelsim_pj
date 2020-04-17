@@ -29,7 +29,7 @@ always #10         SCLK=~SCLK;
 	end
 
 	logic		clk_en			=1;
-	logic        MOSI 			=1;
+	logic        MOSI 			=0;
 	logic        CS   			=1;
 	logic [63:0] TIME 			=0;
 	logic        SYS_TIME_UPDATE;
@@ -73,7 +73,7 @@ always #10         SCLK=~SCLK;
 	initial 
 	begin
 
-	TIME        =64'h0;
+	TIME        =64'h8000000000000001;
 	FREQ        =48'h1;
 	FREQ_STEP   =48'h2;
 	FREQ_RATE   =32'h3;
@@ -91,15 +91,14 @@ always #10         SCLK=~SCLK;
 
 
 	#1000
-	CS=0;
-	repeat(408)
+	@(negedge SCLK);
+	repeat(408+1)
 	begin
-	@(negedge SCLK);	
+	@(negedge SCLK);
+	CS=0;	
 	MOSI    <=data_reg[407];
     data_reg<=data_reg<<1;
     end
-
-    #100
     CS=1;
 
 
