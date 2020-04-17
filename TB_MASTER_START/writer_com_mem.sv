@@ -9,7 +9,7 @@ input  [47:0] FREQ_STEP      ,//----------------------
 input  [31:0] FREQ_RATE      ,//--------//------------ 
 input  [63:0] TIME_START     ,
 input  [15:0] N_impulse      ,
-input  [ 1:0] TYPE_impulse   ,
+input  [ 7:0] TYPE_impulse   ,
 input  [31:0] Interval_Ti    ,
 input  [31:0] Interval_Tp    ,
 input  [31:0] Tblank1 	     ,
@@ -36,7 +36,7 @@ logic [ 47:0] 	 tmp_FREQ_STEP 	    =0;
 logic [ 31:0] 	 tmp_FREQ_RATE	    =0;
 logic [ 63:0]    tmp_TIME_START     =0;
 logic [ 15:0]    tmp_N_impulse      =0;
-logic [  1:0]    tmp_TYPE_impulse   =0;
+logic [  7:0]    tmp_TYPE_impulse   =0;
 logic [ 31:0]    tmp_Interval_Ti    =0;
 logic [ 31:0]    tmp_Interval_Tp    =0;
 logic [ 31:0]    tmp_Tblank1	    =0;
@@ -372,7 +372,7 @@ begin
 		tmp_REG_ADDR<=w_REG_ADDR;
 		WR_REG      <=1'b1;
 		w_REG_DATA  <={tmp_TIME_START,tmp_FREQ        ,tmp_FREQ_STEP  ,tmp_FREQ_RATE ,
-				   	   tmp_N_impulse ,tmp_TYPE_impulse,tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
+				   	   tmp_N_impulse ,tmp_TYPE_impulse[1:0],tmp_Interval_Ti,tmp_Interval_Tp,tmp_Tblank1,tmp_Tblank2};
 		status<=next_status;
 	end else
 	if (status==idle_status)
