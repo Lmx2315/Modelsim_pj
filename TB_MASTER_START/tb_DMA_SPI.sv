@@ -19,7 +19,7 @@ logic SCLK					=0;
 
 	// clock
 always #10.41666 clk_48=~clk_48;
-always #10         SCLK=~SCLK;
+always #20         SCLK=~SCLK;
 
 	// reset
 	initial begin
