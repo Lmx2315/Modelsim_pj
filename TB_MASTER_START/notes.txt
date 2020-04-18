@@ -17,7 +17,7 @@ run 15 us
 
 //---------------------------------------------------
 vsim -gui work.tb_DMA_SPI -novopt
-add wave -position insertpoint sim:/tb_DMA_SPI/inst_send_to_uart/*
-add wave -position insertpoint sim:/tb_DMA_SPI/inst_async_transmitter/*
-add wave -position insertpoint sim:/tb_DMA_SPI/inst_DMA_SPI/*
+add wave -position insertpoint sim:/tb_DMA_SPI/u1/*
+add wave -position insertpoint sim:/tb_DMA_SPI/tx1/*
+add wave -position insertpoint sim:/tb_DMA_SPI/spi1/*
 run 100 us

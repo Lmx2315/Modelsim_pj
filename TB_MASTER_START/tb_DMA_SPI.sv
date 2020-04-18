@@ -102,15 +102,15 @@ async_transmitter #(
 			.TIME            (tmp_TIME),
 			.SYS_TIME_UPDATE (),
 			.FREQ            (tmp_FREQ),
-			.FREQ_STEP       (),
-			.FREQ_RATE       (),
-			.TIME_START      (),
-			.N_impulse       (),
-			.TYPE_impulse    (),
-			.Interval_Ti     (),
-			.Interval_Tp     (),
-			.Tblank1         (),
-			.Tblank2         (),
+			.FREQ_STEP       (tmp_FREQ_STEP),
+			.FREQ_RATE       (tmp_FREQ_RATE),
+			.TIME_START      (tmp_TIME_START),
+			.N_impulse       (tmp_N_impulse),
+			.TYPE_impulse    (tmp_TYPE_impulse),
+			.Interval_Ti     (tmp_Interval_Ti),
+			.Interval_Tp     (tmp_Interval_Tp),
+			.Tblank1         (tmp_Tblank1),
+			.Tblank2         (tmp_Tblank2),
 //----------------------------------------------
 			.SPI_WR          (SPI_WR)
 		);
@@ -118,7 +118,7 @@ async_transmitter #(
 	initial 
 	begin
 
-	TIME        =64'h8000000000000001;
+	TIME        =64'h80000000000000F1;
 	FREQ        =48'h1;
 	FREQ_STEP   =48'h2;
 	FREQ_RATE   =32'h3;

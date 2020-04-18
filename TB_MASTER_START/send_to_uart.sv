@@ -38,8 +38,8 @@ begin
 	begin
 		if (BUSY==0)
 		begin
-		      MEM<=MEM<<8;
-		FLAG_SEND<=1;	
+		if (FLAG_SEND==0)  MEM<=MEM<<8;
+		    FLAG_SEND<=1;	
 		if (N_sch>0) N_sch<=N_sch-1'b1; else FLAG_WORK<=0;
 		end 
 			else FLAG_SEND<=0;	
