@@ -170,6 +170,7 @@ always_comb
 	step2_search_time:rd_next_status=step3_search_time;
 	step3_search_time:rd_next_status=end_search_time;
 	  end_search_time:rd_next_status=idle;
+	         default :rd_next_status=idle;
 	endcase
 end
 
@@ -179,6 +180,7 @@ always_comb
 		 idle_clr:clr_next_state=start;
 		    start:clr_next_state=clear;
 		    clear:clr_next_state=end_cycle;
+		  default:clr_next_state=end_cycle;
 	endcase
 end
 
@@ -334,6 +336,7 @@ always_comb
 		 clr_all:next_status=idle_status;
 		clr_data:next_status=idle_status;
 		 wr_data:next_status=idle_status;
+		 default:next_status=idle_status;
 	endcase
 end
 

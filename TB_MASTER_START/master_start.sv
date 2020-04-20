@@ -1,8 +1,9 @@
 /////////////////////////////////////////////////////////////////////////////
 // Copyright 2020 SS  
 ////////////////////////////////////////////////////////////////////////////
+`timescale 1 ns / 1 ns
 
-module MASTER_START (
+module master_start (
 output  [47:0] DDS_freq,
 output  [47:0] DDS_delta_freq,
 output  [31:0] DDS_delta_rate,
@@ -109,7 +110,7 @@ if (RESET)
 begin
 reg_MEM_DDS_freq 	  <=64'hffffffffffffffff;
 reg_MEM_DDS_delta_freq<=64'hffffffffffffffff;
-reg_MEM_DDS_delta_rate<=32'hffffffffffffffff;
+reg_MEM_DDS_delta_rate<=32'hffffffff;
 reg_MEM_TIME_START 	  <=64'hffffffffffffffff;
 reg_MEM_N_impuls      <=16'hffff;
 reg_MEM_Interval_Ti   <=32'hffffffff;
@@ -233,14 +234,14 @@ end
 always_comb
 begin
 	case (state)
-		 start: if (FLAG_START_PROCESS_CMD)	new_state=cycle    ; else new_state=start;
-		 cycle:								new_state=idle     ;
-		  idle: if (reg_MEM_N_impuls>0)		new_state=blank1   ; else new_state=end_cycle;//проверка что задано число интервалов больше нуля
-		blank1: if (temp_TIMER1==0)			new_state=Tizl     ;
-		  Tizl: if (temp_TIMER2==0)			new_state=blank2   ;
-  	    blank2: if (temp_TIMER3==0)			new_state=Tpr      ;
-  	       Tpr: if (temp_TIMER4==0)			new_state=end_cycle;
-  	 end_cycle:	if (reg_temp_N_impuls!=0)	new_state=idle     ; else new_state=start; 
+		 start: if (FLAG_START_PROCESS_CMD==1)	new_state=cycle    ; else new_state=start;  	
+		 cycle:									new_state=idle     ;							
+		  idle: if (reg_MEM_N_impuls>0)			new_state=blank1   ; else new_state=end_cycle;	//проверка что задано число интервалов больше нуля
+		blank1: if (temp_TIMER1==0)				new_state=Tizl     ; else new_state=blank1;							
+		  Tizl: if (temp_TIMER2==0)				new_state=blank2   ; else new_state=Tizl;								
+  	    blank2: if (temp_TIMER3==0)				new_state=Tpr      ; else new_state=blank2;							
+  	       Tpr: if (temp_TIMER4==0)				new_state=end_cycle; else new_state=Tpr;							
+  	 end_cycle:	if (reg_temp_N_impuls!=0)		new_state=idle     ; else new_state=start;												
   	endcase
 end 
 //-----------------------------------------------------------
