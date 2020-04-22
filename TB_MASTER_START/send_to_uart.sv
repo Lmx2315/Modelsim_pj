@@ -40,7 +40,7 @@ begin
 		begin
 		if (FLAG_SEND==0)  MEM<=MEM<<8;
 		    FLAG_SEND<=1;	
-		if (N_sch>0) N_sch<=N_sch-1'b1; else FLAG_WORK<=0;
+		if (N_sch>0) N_sch<=N_sch-1'b1; else begin FLAG_WORK<=0; FLAG_SEND<=0;end
 		end 
 			else FLAG_SEND<=0;	
 	end
