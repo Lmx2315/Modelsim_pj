@@ -20,4 +20,4 @@ vsim -gui work.tb_DMA_SPI -novopt
 add wave -position insertpoint sim:/tb_DMA_SPI/u1/*
 add wave -position insertpoint sim:/tb_DMA_SPI/tx1/*
 add wave -position insertpoint sim:/tb_DMA_SPI/spi1/*
-run 100 us
+run 50000 us

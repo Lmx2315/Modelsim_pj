@@ -118,17 +118,17 @@ async_transmitter #(
 	initial 
 	begin
 
-	TIME        =64'h80000000000000F1;
-	FREQ        =48'h1;
-	FREQ_STEP   =48'h2;
-	FREQ_RATE   =32'h3;
-	TIME_START  =64'h4;
-	N_impulse   =16'h1;
-	TYPE_impulse= 8'h0;
-	Interval_Ti =32'h5;
-	Interval_Tp =32'h6;
-	Tblank1     =32'h7;
-	Tblank2     =32'h8;
+	TIME        =64'h0000000000000001;
+	FREQ        =48'h280000000000;
+	FREQ_STEP   =48'h0000002cbd3f;
+	FREQ_RATE   =32'h00000001;
+	TIME_START  =64'h0000000002dc6c00;
+	N_impulse   =16'h2710;
+	TYPE_impulse= 8'h00;
+	Interval_Ti =32'h00493e00;
+	Interval_Tp =32'h00493e00;
+	Tblank1     =32'h000001e0;
+	Tblank2     =32'h000001e0;
 
 	#10
 	data_reg    ={TIME,FREQ,FREQ_STEP,FREQ_RATE,TIME_START,N_impulse,
