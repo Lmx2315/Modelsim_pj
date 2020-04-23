@@ -213,7 +213,7 @@ dds1(
 );
 
 //-------------Синхронизатор тактируется 48 МГц !!!-------------
-MASTER_START 
+master_start 
 sync1(
 .DDS_freq 			(wFREQ 				),
 .DDS_delta_freq 	(wFREQ_STEP 		),
