@@ -9,7 +9,7 @@ z2
 cModel Technology
 dC:/Users/Asus/Desktop/From work/072/Modelsim_pj/TB_MASTER_START
 vASSERTION_ERROR
-Z0 !s110 1587652212
+Z0 !s110 1587740380
 !i10b 1
 !s100 gCjPa7V8PmG73Wekhga2N1
 I6Tm76]OI==DMR[L<;j@4^3
@@ -23,7 +23,7 @@ Z6 OL;L;10.6d;65
 r1
 !s85 0
 31
-Z7 !s108 1587652212.000000
+Z7 !s108 1587740379.000000
 Z8 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/uart.v|
 Z9 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/uart.v|
 !i113 0
@@ -117,7 +117,7 @@ R10
 R11
 n@d@d@s_48_v1
 vDDS_48_v1_nco_ii_0
-!s110 1587652206
+!s110 1587740387
 !i10b 1
 !s100 fcb5kbF:QLB[OCmQHbN^Z0
 I8X19LUfHgo`hgM74HBR=>3
@@ -131,7 +131,7 @@ R6
 r1
 !s85 0
 31
-!s108 1587652206.000000
+!s108 1587740387.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/DDS_48_v1_nco_ii_0.v|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/DDS_48_v1_nco_ii_0.v|
 !i113 0
@@ -155,7 +155,7 @@ w1585229946
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/dds_chirp.sv
 L0 1
 R6
-Z15 !s108 1587652207.000000
+!s108 1587740386.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/dds_chirp.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/dds_chirp.sv|
 !i113 0
@@ -163,52 +163,29 @@ R10
 R11
 vDMA_SPI
 R14
-R1
-r1
-!s85 0
-31
+!s110 1587740839
 !i10b 1
-!s100 ddPKKbefQ?iP<Slzn:iM92
-I5`3og@Elh]Uhl6dFW=XfR2
+!s100 BjIQ_AcJT;02`zh@LLYPZ0
+Ifb]MljIhddl69j:Rn77S?0
+R1
 !s105 DMA_SPI_sv_unit
 S1
 R2
-R3
+w1587735471
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv
 L0 11
 R6
-!s108 1587558341.000000
+r1
+!s85 0
+31
+!s108 1587740839.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/DMA_SPI.sv|
 !i113 0
 R10
 R11
 n@d@m@a_@s@p@i
-vmaster_start
-R14
-!s110 1587652207
-!i10b 1
-!s100 _I6d6^KQg_Xei7RN1;T1[1
-Ibl[HM[;ADdlU`bG16VV[k0
-R1
-Z16 !s105 master_start_sv_unit
-S1
-R2
-w1587545774
-8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv
-FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv
-L0 6
-R6
-r1
-!s85 0
-31
-R15
-!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv|
-!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv|
-!i113 0
-R10
-R11
 vMASTER_START
 R14
 R1
@@ -218,7 +195,7 @@ r1
 !i10b 1
 !s100 UOJ63UKS8HFHQldO50cbX0
 IjZCXNhhj2an9b:;hA2S]c2
-R16
+Z15 !s105 master_start_sv_unit
 S1
 R13
 w1587400237
@@ -233,22 +210,44 @@ R6
 R10
 R11
 n@m@a@s@t@e@r_@s@t@a@r@t
+vmaster_start
+R14
+R1
+r1
+!s85 0
+31
+!i10b 1
+!s100 1gYbz@MOI9^16HDWDESXF3
+IaLmYU0]@36k1jblfB<79X1
+R15
+S1
+R2
+w1587735753
+8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv
+FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv
+L0 6
+R6
+!s108 1587740838.000000
+!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv|
+!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/master_start.sv|
+!i113 0
+R10
+R11
 vmem1
-Z17 !s110 1587652208
+R1
+r1
+!s85 0
+31
 !i10b 1
 !s100 @mf]E`[7[6Eo^0j`WRZN62
 Ik:[MV0bCaMljnbWE71z0S3
-R1
 R2
 w1586339845
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/mem1.v
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/mem1.v
 L0 39
 R6
-r1
-!s85 0
-31
-Z18 !s108 1587652208.000000
+!s108 1587740384.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/mem1.v|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/mem1.v|
 !i113 0
@@ -256,7 +255,7 @@ R10
 R11
 vsend_to_uart
 R14
-R17
+!s110 1587740840
 !i10b 1
 !s100 Yghe3]BAhQ_L?caQABZ_z2
 IfXV7`WPfz3KQo7_8L@iXX1
@@ -272,7 +271,7 @@ R6
 r1
 !s85 0
 31
-R18
+!s108 1587740840.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/send_to_uart.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/send_to_uart.sv|
 !i113 0
@@ -285,17 +284,17 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 z>O]jkcAWdZfzRbhlgTCG0
-IldW<3ag<XnKZ@8fZjZQSb1
+!s100 hd@V]^cFY1>QIcDVdSe;m1
+IK[bVOBnG2@?@N4I_>D]:G2
 !s105 tb_1_sv_unit
 S1
 R2
-R3
+w1587741408
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_1.sv
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_1.sv
 L0 3
 R6
-!s108 1587652209.000000
+!s108 1587741428.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_1.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_1.sv|
 !i113 0
@@ -303,7 +302,7 @@ R10
 R11
 vtb_DMA_SPI
 R14
-!s110 1587652210
+!s110 1587740381
 !i10b 1
 !s100 zAEX8EH<d<ig@]N86oKG41
 IEj;YbG6FMYg<eb[@H<fc[1
@@ -319,7 +318,7 @@ R6
 r1
 !s85 0
 31
-!s108 1587652210.000000
+!s108 1587740381.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_DMA_SPI.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_DMA_SPI.sv|
 !i113 0
@@ -328,7 +327,7 @@ R11
 ntb_@d@m@a_@s@p@i
 vtest_t1hz
 R14
-!s110 1587652211
+R0
 !i10b 1
 !s100 9kIl;4n8229^IH4LdJUW<3
 Ia`j4aU@@VLChZl`B4:RS?0
@@ -344,7 +343,7 @@ R6
 r1
 !s85 0
 31
-!s108 1587652211.000000
+!s108 1587740380.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/test_t1hz.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/test_t1hz.sv|
 !i113 0
@@ -352,23 +351,22 @@ R10
 R11
 vwcm
 R14
-R0
-!i10b 1
-!s100 0M4oSDdW;AEjaoY^E0DT42
-IZJnoZJZ_BB;8SB>bO1gJ`1
 R1
+r1
+!s85 0
+31
+!i10b 1
+!s100 O^:Lj=2a3gV[P=gNV2TO62
+IPQ@ekDQ2`WFKmHe@IKKo<0
 !s105 writer_com_mem_sv_unit
 S1
 R2
-w1587545778
+w1587735807
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv
 L0 1
 R6
-r1
-!s85 0
-31
-R7
+!s108 1587740378.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/writer_com_mem.sv|
 !i113 0

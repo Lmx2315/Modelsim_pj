@@ -1,6 +1,9 @@
 Симуляция синхронизатора:
 
-
+vsim -gui work.tb_1 -novopt -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_ver
+add wave -position end sim:/tb_1/sync1/*
+add wave -position end sim:/tb_1/wcm1/*
+run 10000 us
 
 //----------------------------------------------------
 vsim -gui work.tb_DMA_SPI -novopt
