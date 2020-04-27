@@ -107,8 +107,8 @@ end
 always_ff @(posedge CLK)
 if (RESET)
 begin
-reg_MEM_DDS_freq 	  <=47'hffffffffffff;
-reg_MEM_DDS_delta_freq<=47'hffffffffffff;
+reg_MEM_DDS_freq 	  <=48'hffffffffffff;
+reg_MEM_DDS_delta_freq<=48'hffffffffffff;
 reg_MEM_DDS_delta_rate<=32'hffffffff;
 reg_MEM_TIME_START 	  <=64'hffffffffffffffff;
 reg_MEM_N_impuls      <=16'hffff;
@@ -153,8 +153,7 @@ assign REQ=tmp_REQ; 																//выдаём запрос на перед�
 always_ff @(posedge CLK)
 if (RESET)
 begin
-FLAG_START_PROCESS_CMD<=1'b0;
-	
+FLAG_START_PROCESS_CMD<=1'b0;	
 end
 else
 begin
@@ -174,16 +173,17 @@ FLAG_END_PROCESS_CMD<=1'b1;
 FLAG_REQ_CMD_REG    <=0;
 end
 else
-begin
-	    state<=new_state;
+begin	    
 	if (state==start) 																			//начальное состояние стейт-машины
 	begin
+	if (FLAG_START_PROCESS_CMD==1) state<=cycle;
 	step_tst<=1;	
 	//тут сидим -ждём начала работы по срабатыванию часов
 	FLAG_REQ_CMD_REG    <=0;
 	end	else
 	if (state==cycle)																			//ожидание начала работы
 		begin
+		state<=idle;
 		step_tst<=2;
 		    FLAG_REQ_CMD_REG<=1;
 			FLAG_REQ		<=1'b1;																//готовимся отослать данные в DDS
@@ -200,11 +200,16 @@ begin
 		temp_TIMER3			<=reg_MEM_Tblank2;
 		temp_TIMER4			<=reg_MEM_Interval_Tp;
 		FLAG_END_PROCESS_CMD<=1'b0;		
-		if (reg_temp_N_impuls>0) reg_temp_N_impuls	<=reg_temp_N_impuls-1'b1;											//считаем сколько импульсов надо синтезировать			
+		if (reg_temp_N_impuls>0) 
+			begin
+			reg_temp_N_impuls	<=reg_temp_N_impuls-1'b1;											//считаем сколько импульсов надо синтезировать			
+			         state<=blank1;
+			end else state<=end_cycle;
 		end else
 	if (state==blank1)																			//стейт машина: состояние первый бланк (бланк излучения)
 		begin
 		step_tst<=4;
+		if (temp_TIMER1==0) state<=Tizl;
 			temp_TIMER1 <=temp_TIMER1-1'b1;
 		end else
 	if (state==Tizl)																			//стейт машина: состояние интервал излучения
@@ -212,10 +217,12 @@ begin
 		step_tst<=5;
 			reg_DDS_start	<=1'b1;																//запускаем синтезатор DDS
 			reg_En_Iz  		<=1'b1;																//поднимаем флаг "излучения"
+			if (temp_TIMER2==0) state<=blank2;
 			temp_TIMER2 	<=temp_TIMER2-1'b1;
 		end else
 	if (state==blank2)																			//стейт машина: состояние второй бланк (бланк приёма)
 		begin
+		if (temp_TIMER3==0) state<=Tpr;
 		step_tst<=6;
 			if ((reg_temp_N_impuls   ==0)||	
 			    (reg_MEM_TYPE_impulse==0)) reg_DDS_start		<=1'b0;							//выключаем синтезатор DDS если режим пачки - некогерентный!!!
@@ -224,6 +231,7 @@ begin
 		end else
 	if (state==Tpr)																				//стейт машина: состояние интервал приёма
 		begin
+		if (temp_TIMER4==0) state<=end_cycle;
 		step_tst<=7;
 			reg_En_Pr  <=1'b1;																	//поднимаем флаг  "интервала приёма"
 			temp_TIMER4<=temp_TIMER4-1'b1;
@@ -233,25 +241,14 @@ begin
 		step_tst<=8;
 			FLAG_REQ											<=1'b0;							//снимаем флаг запроса передачи данных в DDS
 			reg_En_Pr  											<=1'b0;							//снимаем флаг  "интервала приёма"
-	   		if  (reg_temp_N_impuls   ==0)	FLAG_END_PROCESS_CMD<=1'b1;							//поднимаем флаг конца процесса синтеза пачки									
+	   		if  (reg_temp_N_impuls   ==0)
+			begin
+			FLAG_END_PROCESS_CMD<=1'b1;															//поднимаем флаг конца процесса синтеза пачки									
+					 state<=start;
+			end else state<=idle;
 		end
 end
 
-//-------------STATE МАШИНА----------------------------------
-
-always_comb
-begin
-	case (state)
-		 start: if (FLAG_START_PROCESS_CMD==1)	new_state=cycle    ; else new_state=start;  	
-		 cycle:									new_state=idle     ;							
-		  idle: if (reg_MEM_N_impuls>0)			new_state=blank1   ; else new_state=end_cycle;	//проверка что задано число интервалов больше нуля
-		blank1: if (temp_TIMER1==0)				new_state=Tizl     ; else new_state=blank1;							
-		  Tizl: if (temp_TIMER2==0)				new_state=blank2   ; else new_state=Tizl;								
-  	    blank2: if (temp_TIMER3==0)				new_state=Tpr      ; else new_state=blank2;							
-  	       Tpr: if (temp_TIMER4==0)				new_state=end_cycle; else new_state=Tpr;							
-  	 end_cycle:	if (reg_temp_N_impuls!=0)		new_state=idle     ; else new_state=start;												
-  	endcase
-end 
 //-----------------------------------------------------------
 
 assign TEST 				={reg_MEM_TIME_START[55:0],step_tst};

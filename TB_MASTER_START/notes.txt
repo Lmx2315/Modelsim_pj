@@ -1,4 +1,6 @@
 —имул€ци€ синхронизатора:
+в тестбенче надо прописывать не тольк запись очередной пачки но и врем€ старта пачки на исполнение!!!
+
 
 vsim -gui work.tb_1 -novopt -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_ver
 add wave -position end sim:/tb_1/sync1/*
