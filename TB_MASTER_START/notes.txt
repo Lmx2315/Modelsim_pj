@@ -23,3 +23,11 @@ add wave -position insertpoint sim:/tb_DMA_SPI/u1/*
 add wave -position insertpoint sim:/tb_DMA_SPI/tx1/*
 add wave -position insertpoint sim:/tb_DMA_SPI/spi1/*
 run 50000 us
+
+//---------------------------------------------------------
+tb_2
+
+vsim -gui -novopt -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_ver work.tb_2
+add wave -position end sim:/tb_2/sync1/*
+add wave -position end sim:/tb_2/wcm1/*
+run 15000 us

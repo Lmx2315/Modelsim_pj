@@ -69,7 +69,7 @@ logic 		 tmp_REQ 	 	  =0;
 logic 		 FLAG_REQ_CMD_REG =0;						//флаг запроса новой команды из реестра
 logic [7:0]  step_tst=0;
 
-enum {idle,start,cycle,blank1,Tizl,blank2,Tpr,end_cycle} state,new_state;
+enum {idle,start,cycle,blank1,Tizl,blank2,Tpr,end_cycle} state;
 
 always_ff @(posedge CLK) frnt_T1hz       <={frnt_T1hz       [2:0],T1hz           }; //ищем фронт сигнала T1hz
 always_ff @(posedge CLK) frnt_Time_update<={frnt_Time_update[2:0],SYS_TIME_UPDATE}; //ищем фронт сигнала SYS_TIME_UPDATE
@@ -157,7 +157,7 @@ FLAG_START_PROCESS_CMD<=1'b0;
 end
 else
 begin
-	if (reg_MEM_TIME_START==TIME_MASTER) FLAG_START_PROCESS_CMD<=1'b1;
+	if (TIME_MASTER==reg_MEM_TIME_START) FLAG_START_PROCESS_CMD<=1'b1;//
 	else
 		if (state==cycle) 				 FLAG_START_PROCESS_CMD<=1'b0;
 end
@@ -171,14 +171,17 @@ step_tst<=0;
 reg_DDS_start		<=0;
 FLAG_END_PROCESS_CMD<=1'b1;	
 FLAG_REQ_CMD_REG    <=0;
+reg_En_Iz    		<=1'b0;
+reg_En_Pr    		<=1'b0;
 end
 else
+if (FLAG_SYS_TIME_UPDATED==1)//работаем только если системное время обновлено!!!
 begin	    
 	if (state==start) 																			//начальное состояние стейт-машины
 	begin
 	if (FLAG_START_PROCESS_CMD==1) state<=cycle;
 	step_tst<=1;	
-	//тут сидим -ждём начала работы по срабатыванию часов
+															//тут сидим -ждём начала работы по срабатыванию часов
 	FLAG_REQ_CMD_REG    <=0;
 	end	else
 	if (state==cycle)																			//ожидание начала работы
@@ -247,7 +250,19 @@ begin
 					 state<=start;
 			end else state<=idle;
 		end
+end 
+else
+begin
+	step_tst<=9;
+ 	state				<=start;
+	reg_DDS_start		<=0;
+	FLAG_END_PROCESS_CMD<=1'b1;	
+	FLAG_REQ_CMD_REG    <=0;
+	reg_En_Iz    		<=1'b0;
+	reg_En_Pr    		<=1'b0;
 end
+
+
 
 //-----------------------------------------------------------
 
