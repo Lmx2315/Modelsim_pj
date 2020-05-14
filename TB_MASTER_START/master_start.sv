@@ -124,12 +124,12 @@ else
 	reg_MEM_DDS_delta_freq<=MEM_DDS_delta_freq;
 	reg_MEM_DDS_delta_rate<=MEM_DDS_delta_rate;
 	reg_MEM_TIME_START 	  <=MEM_TIME_START;
-	reg_MEM_N_impuls      <=MEM_N_impuls;
-	reg_MEM_TYPE_impulse  <=MEM_TYPE_impulse;
-	reg_MEM_Interval_Ti   <=MEM_Interval_Ti;
-	reg_MEM_Interval_Tp   <=MEM_Interval_Tp;
-	reg_MEM_Tblank1       <=MEM_Tblank1;
-	reg_MEM_Tblank2       <=MEM_Tblank2;
+	reg_MEM_N_impuls      <=MEM_N_impuls;//
+	reg_MEM_TYPE_impulse  <=MEM_TYPE_impulse;//
+	reg_MEM_Interval_Ti   <=MEM_Interval_Ti;//
+	reg_MEM_Interval_Tp   <=MEM_Interval_Tp;//
+	reg_MEM_Tblank1       <=MEM_Tblank1;//
+	reg_MEM_Tblank2       <=MEM_Tblank2;//
 	end
 
 
@@ -266,7 +266,7 @@ end
 
 //-----------------------------------------------------------
 
-assign TEST 				={reg_MEM_TIME_START[55:0],step_tst};
+assign TEST 				={reg_MEM_TIME_START[47:0],reg_MEM_N_impuls};//{reg_MEM_TIME_START[55:0],step_tst}
 assign TIME 				= TIME_MASTER;				//выводим во вне текущее время
 assign DDS_start 			= reg_DDS_start;			//сигнал управляющий встроеным в ПЛИС DDS
 assign DDS_freq 			= tmp_MEM_DDS_freq;

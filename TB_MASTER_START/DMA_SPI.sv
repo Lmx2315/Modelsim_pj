@@ -65,7 +65,7 @@ always_ff @(posedge clk)
 begin
 	if (FLAG_SPI_DATA_OK) 	
 		begin
-		if (REG_SPI!=64'h0) 
+		if (REG_SPI[407:344]!=64'h0) //если пришло время переустановки часов отличное от нуля - то готовимся к пересинхронизации по секундной метке!!!
 			begin 
 				FLAG_SYS_TIME_UPDATE<=1; 
 				timer<=128;//задержка снятия флага синхронизации системного времени
@@ -75,7 +75,7 @@ begin
 		end	else
 		begin
 		FLAG_SPI_WR<=0;
-		if (timer>0) timer<=timer-1; 
+		if (timer>8'h0) timer<=timer-1; 
 		else FLAG_SYS_TIME_UPDATE<=0; 
 		end
 end

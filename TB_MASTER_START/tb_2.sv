@@ -146,6 +146,8 @@ wcm1(						  		  //блок записи и чтения команд реаль
 .Interval_Tp_z  (mInterval_Tp 		),
 .Tblank1_z      (mTblank1 	 		),
 .Tblank2_z      (mTblank2 	 		), //-----//-------	
+.FLAG_CMD_SEARCH_FAULT(				),	//если в "1" то в памяти не найдено новой команды на исполнение, по этому сигналу подгружаются новые данные в память !!!
+.SCH_BUSY_REG_MEM_port(             ),	//тут выводим количество занятых строк памяти - чтобы отслеживать утечку
 .TEST 			() 
 );		
 //-------------Синхронизатор тактируется 48 МГц !!!-------------
@@ -192,12 +194,11 @@ sync1(
 	@(posedge clk_48)
 	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)
 
-
 	sTIME        =64'h0000000000000001;//инициализация времени
 	sFREQ        =48'h280000000000;
 	sFREQ_STEP   =48'h0000002cbd3f;
 	sFREQ_RATE   =32'h00000001;
-	sTIME_START  =64'd00000000480000;//старт через 1 мс
+	sTIME_START  =64'd00000000480000;//старт через 10 мс
 	sN_impulse   =16'd10;
 	sTYPE_impulse= 8'h00;
 	sInterval_Ti =32'd4800;//100 us
@@ -208,16 +209,6 @@ sync1(
 	#1000
 	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
 	sTYPE_impulse,sInterval_Ti,sInterval_Tp,sTblank1,sTblank2};
-
-//--------------приходит секундная метка--------------------
-	#1000;
-	@(posedge clk_48)
-	T1HZ 			= 1'b1 				 ;	
-
-	#1000;
-	@(posedge clk_48)
-	T1HZ 			= 1'b0 				 ;
-//----------------------------------------------------------
 
 	#1000000
 	@(negedge SCLK);
@@ -230,15 +221,41 @@ sync1(
     end
     CS=1;
 
+	#4000000
 //--------------приходит секундная метка--------------------
 	#1000;
 	@(posedge clk_48)
 	T1HZ 			= 1'b1 				 ;	
 
-	#1000;
+	#10000;
 	@(posedge clk_48)
 	T1HZ 			= 1'b0 				 ;
-//----------------------------------------------------------		
+//----------------------------------------------------------	
+
+	#18000000
+	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
+	sTYPE_impulse,sInterval_Ti,sInterval_Tp,sTblank1,sTblank2};
+
+	#1000000
+	@(negedge SCLK);
+	repeat(408+1)
+	begin
+	@(negedge SCLK);
+	CS=0;	
+	MOSI    <=data_reg[407];
+    data_reg<=data_reg<<1;
+    end
+    CS=1;
+	
+//--------------приходит секундная метка--------------------
+	#1000000;
+	@(posedge clk_48)
+	T1HZ 			= 1'b1 				 ;	
+
+	#10000;
+	@(posedge clk_48)
+	T1HZ 			= 1'b0 				 ;
+//----------------------------------------------------------
 
 	//	$finish;
 	end
