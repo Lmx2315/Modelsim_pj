@@ -16,9 +16,9 @@ logic clk_96 				=0;
 logic rst	 				=0;
 logic SCLK					=0;
 
-	// clock
-always #10.41666 clk_48=~clk_48;
-always #20         SCLK=~SCLK;
+	// clock 10.41666667
+always #10		  clk_48=~clk_48;
+always #20          SCLK=~SCLK;
 	
 	logic [63:0] wTIME 			;
 	logic 		 T1HZ 			=0;
@@ -87,6 +87,7 @@ logic 		wEn_Pr;
 
 logic wREQ=0;
 logic wACK=0;
+logic RSR_WCW=0;
 //---------------------------------
 	assign test_data={tmp_TIME       ,tmp_FREQ     ,tmp_FREQ_STEP   ,tmp_FREQ_RATE  ,
 					  tmp_TIME_START ,tmp_N_impulse,tmp_TYPE_impulse,tmp_Interval_Ti,
@@ -114,13 +115,14 @@ logic wACK=0;
 			.Tblank1         (tmp_Tblank1),
 			.Tblank2         (tmp_Tblank2),
 //----------------------------------------------
-			.SPI_WR          (SPI_WR)
+			.SPI_WR          (SPI_WR),
+			.RESET_WCW       (RSR_WCW)
 		);
 		
 wcm 
 wcm1(						  		  //блок записи и чтения команд реального времени в память и из.
 .CLK 		    (clk_48),
-.rst_n 	        (~rst),
+.rst_n 	        (~RSR_WCW           ),//rst
 .REQ_COMM 	    (w_REQ_COMM   		),//запрос новой команды для исполнения синхронизатором (тут вход)
 .TIME 		    (wTIME 		 		),//текущее системное время 
 .SYS_TIME_UPDATE(SYS_TIME_UPDATE_OK	),//сигнал сообщающий о перестановке системного времени!!!
@@ -148,7 +150,7 @@ wcm1(						  		  //блок записи и чтения команд реаль
 .Tblank2_z      (mTblank2 	 		), //-----//-------	
 .FLAG_CMD_SEARCH_FAULT(				),	//если в "1" то в памяти не найдено новой команды на исполнение, по этому сигналу подгружаются новые данные в память !!!
 .SCH_BUSY_REG_MEM_port(             ),	//тут выводим количество занятых строк памяти - чтобы отслеживать утечку
-.TEST 			() 
+.TEST 			(					) 
 );		
 //-------------Синхронизатор тактируется 48 МГц !!!-------------
 master_start 
@@ -165,6 +167,7 @@ sync1(
 .SYS_TIME 			(tmp_TIME			),	//код времени для предустановки по сигналу T1c
 .SYS_TIME_UPDATE 	(sSYS_TIME_UPDATE 	),	//сигнал управления который включает готовность установки системного времени по сигналу T1hz 
 .TIME 				(wTIME 				),
+.TEST 				(			        ),	
 .T1hz 				(T1HZ 				),	//сигнал секундной метки
 .WR_DATA 			(mem_WR 			),  //сигнал записи данных в синхронизатор
 .MEM_DDS_freq 		(mFREQ 				),  //данные команды из реестра реального времени
@@ -184,27 +187,40 @@ sync1(
 
 	initial 
 	begin
-	
-	#1000
+	#100
 	@(posedge clk_48)
-	#0
+	rst 			= 1'b0 				 ;
+	#100
 	@(posedge clk_48)
 	rst 			= 1'b1 				 ;
 	#300
 	@(posedge clk_48)
-	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)
+	rst 			= 1'b0 				 ;  // очистка буфера памяти реального времени из 256 элементов идёт 6 мкс!!! (48 мгц clk)	
+
+//--------------приходит секундная метка--------------------
+	#1000;
+	@(posedge clk_48)
+	T1HZ 			= 1'b1 				 ;	
+
+	#1000;
+	@(posedge clk_48)
+	T1HZ 			= 1'b0 				 ;
+//----------------------------------------------------------	
+	
+	#1000000
+	@(posedge clk_48)
 
 	sTIME        =64'h0000000000000001;//инициализация времени
 	sFREQ        =48'h280000000000;
 	sFREQ_STEP   =48'h0000002cbd3f;
 	sFREQ_RATE   =32'h00000001;
-	sTIME_START  =64'd00000000480000;//старт через 10 мс
-	sN_impulse   =16'd10;
+	sTIME_START  =64'd50000;//старт через 10 мс
+	sN_impulse   =16'd1;
 	sTYPE_impulse= 8'h00;
-	sInterval_Ti =32'd4800;//100 us
-	sInterval_Tp =32'd4800;
-	sTblank1     =32'd480;//10 us
-	sTblank2     =32'd480;
+	sInterval_Ti =32'd10;//100 us
+	sInterval_Tp =32'd5;
+	sTblank1     =32'd10;//10 us
+	sTblank2     =32'd5;
 
 	#1000
 	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
@@ -233,6 +249,9 @@ sync1(
 //----------------------------------------------------------	
 
 	#18000000
+	sTIME        =64'h0000000000000000;//инициализация времени
+	sTIME_START  =64'd24000000;//старт через ... мс
+	
 	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
 	sTYPE_impulse,sInterval_Ti,sInterval_Tp,sTblank1,sTblank2};
 
@@ -246,19 +265,29 @@ sync1(
     data_reg<=data_reg<<1;
     end
     CS=1;
+//-------------------------------------------------------------	
+	#1000000
+	sTIME        =64'h0000000000000000;//инициализация времени
+	sTIME_START  =64'd48000000;//старт через ... мс
 	
-//--------------приходит секундная метка--------------------
-	#1000000;
-	@(posedge clk_48)
-	T1HZ 			= 1'b1 				 ;	
+	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
+	sTYPE_impulse,sInterval_Ti,sInterval_Tp,sTblank1,sTblank2};
 
-	#10000;
-	@(posedge clk_48)
-	T1HZ 			= 1'b0 				 ;
-//----------------------------------------------------------
+	#1000000
+	@(negedge SCLK);
+	repeat(408+1)
+	begin
+	@(negedge SCLK);
+	CS=0;	
+	MOSI    <=data_reg[407];
+    data_reg<=data_reg<<1;
+    end
+    CS=1;	
+	
 
 	//	$finish;
 	end
+	
 
 	// dump wave
 	initial begin

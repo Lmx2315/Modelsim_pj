@@ -30,4 +30,5 @@ tb_2
 vsim -gui -novopt -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_ver work.tb_2
 add wave -position end sim:/tb_2/sync1/*
 add wave -position end sim:/tb_2/wcm1/*
-run 30000 us
+add wave -position end sim:/tb_2/spi1/*
+run 40000 us
