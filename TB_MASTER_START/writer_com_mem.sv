@@ -31,7 +31,7 @@ output [15:0] SCH_BUSY_REG_MEM_port,	//тут выводим количеств�
 output [31:0] TEST 			 
 );
 
-parameter N_IDX      =255;//размер памяти в строках (N-1)
+parameter N_IDX      =63;//размер памяти в строках (N-1)
 parameter TIME_REZERV=48*8;//8 мкс запас времени
 //-------регистры для хранения команды из spi
 logic [ 47:0] 	 tmp_FREQ 		    =0;
@@ -71,6 +71,8 @@ logic 			 FLAG_CMD_SEARCH    =0;//флаг что найдена команда 
 
 logic [  2:0]	 FLAG_REG_STATUS	=0;//флаг того что найдено место в памяти для новой команды
 logic [337:0] 	 DATA_TIME_REG 		=0;//
+logic [ 63:0]    mem_TIME           =0;
+logic [273:0]    mem_DATA 			=0;
 
 logic [ 63:0]    reg_TIME 			=0;//тут храним текущее время
 
@@ -86,6 +88,7 @@ logic [ 63:0]   var1				=64'h0000000000000000;//переменная обозн�
 
 logic [  7:0]   t0_CMD_ADDR 	    =0;//адресс команды с учётом латентности
 logic [  7:0]   t1_CMD_ADDR 	    =0;//адресс команды с учётом латентности
+logic [  7:0]   tz_CMD_ADDR 	    =0;//адресс команды с учётом латентности
 logic 			FLAG_SRCH			=0;//флаг того что круг поиска завершён
 logic 			FLAG_REQ_COMM 		=0;//флаг запроса по сигналу REQ_COMM
 logic 			FLAG_NEW_CMD_WR 	=0;//флаг начала поиска новой команды на исполнение, после записи в реестр
@@ -93,7 +96,7 @@ logic 			FLAG_SRCH_FAULT		=0;//флаг неудачного поиска нов
 logic [ 15:0]   SCH_BUSY_REG_MEM    =0;//счётчик занятых ячеек памяти  - чтобы контролировать утечку памяти
  //-----------------------------------------------------------------------------------------------------------
 enum {clr_all,clr_data,wr_data,idle_status			  							  } status   ,next_status   ; 
-enum {search_a,end_search,read_data,end_read_data,search_time,end_search_time,step2_search_time,step3_search_time,idle  } rd_status,rd_next_status;
+enum {search_a,end_search,read_data,end_read_data,search_time,end_search_time,step2_search_time,stepX_search_time,step3_search_time,idle  } rd_status,rd_next_status;
 
 always_ff @(posedge CLK) 
 begin 
@@ -170,7 +173,8 @@ always_comb
 		    read_data:rd_next_status=end_read_data;
 		end_read_data:rd_next_status=idle;
 		  search_time:rd_next_status=step2_search_time;
-	step2_search_time:rd_next_status=step3_search_time;
+	step2_search_time:rd_next_status=stepX_search_time;
+	stepX_search_time:rd_next_status=step3_search_time;
 	step3_search_time:rd_next_status=end_search_time;
 	  end_search_time:rd_next_status=idle;
 	         default :rd_next_status=idle;
@@ -205,6 +209,7 @@ begin
 	rd_REG_ADDR	 	<=0;
 	t0_CMD_ADDR     <=0;
 	t1_CMD_ADDR     <=0;
+	tz_CMD_ADDR     <=0;
 	tmp_CMD_ADDR    <=0;
 	tmp_CMD_TIME    <=64'hffffffff_ffffffff;	
 	
@@ -221,10 +226,12 @@ begin
 	end else
 	if (rd_status==search_a)								//ищем место под новую запись в память (пустую или ранее стёртую)
 	begin
-	  if (DATA_TIME_REG[337:274]!=var1) 					//проверяем запись в реестре на "стёртость"
+	
+	  if (mem_TIME!=var1) 									//проверяем запись в реестре на "стёртость"
 	  	begin
 	 		rd_REG_ADDR<=rd_REG_ADDR+1'b1;					//перебираем адреса в памяти,число адресов должно быть кратно степени 2!!!
-			t0_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
+			tz_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
+			t0_CMD_ADDR<=tz_CMD_ADDR;
 			t1_CMD_ADDR<=t0_CMD_ADDR; 
 			SCH_BUSY_REG_MEM<=SCH_BUSY_REG_MEM+1;
 			if (t1_CMD_ADDR==N_IDX)
@@ -260,14 +267,15 @@ begin
 		begin
 			if(t1_CMD_ADDR==N_IDX) FLAG_SRCH<=1; 			//конец перебора памяти (задерженный адресс равен краю памяти)
 			rd_REG_ADDR<=rd_REG_ADDR +1'b1;					//перебираем адреса в памяти,число адресов должно быть кратно степени 2!!!
-			t0_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
+			tz_CMD_ADDR<=rd_REG_ADDR;						//учитываем латентность памяти, для адреса команды
+			t0_CMD_ADDR<=tz_CMD_ADDR;
 			t1_CMD_ADDR<=t0_CMD_ADDR;
-			if (DATA_TIME_REG[337:274]>reg_TIME)  			//проверяем что время исполнения команды актуальное (не старое)
+			if (mem_TIME>reg_TIME)  			//проверяем что время исполнения команды актуальное (не старое)
 			begin
 				FLAG_CMD_SEARCH<=1;							//найдена команда для исполнения
-				if (tmp_CMD_TIME> DATA_TIME_REG[337:274]) 
+				if (tmp_CMD_TIME> mem_TIME) 
 				begin
-				tmp_CMD_TIME<=DATA_TIME_REG[337:274];		//запоминаем новое чемпионное время
+				tmp_CMD_TIME<=mem_TIME;		//запоминаем новое чемпионное время
 				tmp_CMD_ADDR<=t1_CMD_ADDR;					//запоминаем новый чемпионный адрес 
 				end
 			end
@@ -289,6 +297,10 @@ begin
 	begin
 	rd_status<=rd_next_status;
 	end else
+	if (rd_status==stepX_search_time)						//нужно чтобы учесть задержку чтения из памяти
+	begin
+	rd_status<=rd_next_status;
+	end else
 	if (rd_status==step3_search_time)						//нужно чтобы учесть задержку чтения из памяти
 	begin
 	FLAG_CLR_COMMAND<=0;
@@ -298,7 +310,6 @@ begin
 	begin
 	rd_status<=rd_next_status;
 		{
-		mem_TIME_START  ,
 		mem_FREQ        ,
 		mem_FREQ_STEP   ,
 		mem_FREQ_RATE   ,
@@ -307,10 +318,13 @@ begin
 	    mem_Interval_Ti ,
 	    mem_Interval_Tp ,
 	    mem_Tblank1     ,
-	    mem_Tblank2}      <=DATA_TIME_REG;
+	    mem_Tblank2}      <=mem_DATA;
+	       mem_TIME_START <=mem_TIME;
 	end 
 
 end
+
+
 
 assign TEST 		 		 = {29'h0,FLAG_REG_STATUS};
 assign DATA_WR       		 = reg_DATA_WR     ;
@@ -386,8 +400,13 @@ begin
 	end 
 end
  
+always_ff @(posedge CLK) 
+begin
+mem_TIME<=DATA_TIME_REG[337:274];//отдельно запоминаем данные
+mem_DATA<=DATA_TIME_REG[273:  0];
+end
 
-mem1	//256 строк по 338 бит
+mem1	//64 строк по 338 бит
 registre_MEM_inst (
 	.clock 			( CLK ),
 	.data 			( w_REG_DATA ),

@@ -215,10 +215,10 @@ sync1(
 	sFREQ_STEP   =48'h0000002cbd3f;
 	sFREQ_RATE   =32'h00000001;
 	sTIME_START  =64'd50000;//старт через 10 мс
-	sN_impulse   =16'd1;
+	sN_impulse   =16'd10;
 	sTYPE_impulse= 8'h00;
-	sInterval_Ti =32'd10;//100 us
-	sInterval_Tp =32'd5;
+	sInterval_Ti =32'd100;//1000 us
+	sInterval_Tp =32'd100;
 	sTblank1     =32'd10;//10 us
 	sTblank2     =32'd5;
 
@@ -250,7 +250,7 @@ sync1(
 
 	#18000000
 	sTIME        =64'h0000000000000000;//инициализация времени
-	sTIME_START  =64'd24000000;//старт через ... мс
+	sTIME_START  =64'd24000;//старт через ... мс
 	
 	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
 	sTYPE_impulse,sInterval_Ti,sInterval_Tp,sTblank1,sTblank2};
@@ -268,7 +268,7 @@ sync1(
 //-------------------------------------------------------------	
 	#1000000
 	sTIME        =64'h0000000000000000;//инициализация времени
-	sTIME_START  =64'd48000000;//старт через ... мс
+	sTIME_START  =64'd48000;//старт через ... мс
 	
 	data_reg    ={sTIME,sFREQ,sFREQ_STEP,sFREQ_RATE,sTIME_START,sN_impulse,
 	sTYPE_impulse,sInterval_Ti,sInterval_Tp,sTblank1,sTblank2};
