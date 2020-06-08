@@ -32,3 +32,10 @@ add wave -position end sim:/tb_2/sync1/*
 add wave -position end sim:/tb_2/wcm1/*
 add wave -position end sim:/tb_2/spi1/*
 run 40000 us
+
+//---------------------------------------------------------------
+tb_crc_form
+
+vsim -gui work.tb_crc_form -novopt
+add wave -position end sim:/tb_crc_form/inst_crc_form/*
+run 100 us
