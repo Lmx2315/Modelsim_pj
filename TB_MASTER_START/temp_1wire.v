@@ -95,22 +95,23 @@ begin
 	
 	if (FLAG_STATE==0) 
 	begin
-	if (WIRE_State!=COMMAND) WIRE_State<=WIRE_Next;
-	else
-	if  ((DATA_STATE==END_TS)&&(WIRE_State==COMMAND))  WIRE_State<=WIRE_Next;//закончили передавать команду
-	
-	    FLAG_STATE<=1;
+	if (WIRE_State!=COMMAND) WIRE_State<=WIRE_Next;		
+	FLAG_STATE<=1;
 	end 
-	else
-	if (FLAG_STATE==1) FLAG_STATE<=2;
-	else
-	if (FLAG_STATE==2) FLAG_STATE<=3;
-	else
-	if (FLAG_STATE==3) FLAG_STATE<=4;
-	else
-	if (FLAG_STATE==4) FLAG_STATE<=5;
-	else
-	if (timer1==0)     FLAG_STATE<=0;
+		else
+			if (FLAG_STATE==1) FLAG_STATE<=2;
+				else
+					if (FLAG_STATE==2) FLAG_STATE<=3;
+						else
+							if (FLAG_STATE==3) 
+							begin
+							if  ((DATA_STATE==END_TS)&&(WIRE_State==COMMAND))  WIRE_State<=WIRE_Next;//закончили передавать команду
+							FLAG_STATE<=4;
+							end
+								else
+								if (FLAG_STATE==4) FLAG_STATE<=5;
+									else
+										if (timer1==0)     FLAG_STATE<=0;
 	
 	
 	if (WIRE_State==INIT)
@@ -198,7 +199,7 @@ begin
 case (DATA_STATE)
 		 IDLE_TS:DATA_NEXT=START_TS;
 		START_TS:DATA_NEXT=WRITE_TS;
-		WRITE_TS:if (SCH_CMD!=0) DATA_NEXT=START_TS; else DATA_STATE<=END_TS;
+		WRITE_TS:if (SCH_CMD!=1) DATA_NEXT=START_TS; else DATA_NEXT<=END_TS;
 		default :DATA_NEXT=IDLE_TS;
 endcase
 end	
