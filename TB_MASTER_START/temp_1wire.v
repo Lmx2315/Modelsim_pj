@@ -14,7 +14,7 @@ parameter  FCLK   = 125;
 localparam PPULSE = 60;
 localparam CMD_length=8+1;
 
-enum {INIT,ROM_COMM,FUNC_COMM,RESET_PULSE,WAIT_DS,PRESENCE_PULSE,COMMAND,IDLE}    WIRE_State,WIRE_Next;
+enum {INIT,ROM_COMM,FUNC_COMM,RESET_PULSE,WAIT_DS,PRESENCE_PULSE,COMMAND,CMD_8hCC,CMD_8h44,CHOOSE,IDLE}    WIRE_State,WIRE_Next,WIRE_Pointer;
 enum {IDLE_TS,START_TS,WRITE_TS,END_TS} DATA_STATE,DATA_NEXT;
 
 wire data_i;			//вход с шины   1-wire
@@ -114,6 +114,16 @@ begin
 										if (timer1==0)     FLAG_STATE<=0;
 	
 	
+	if (WIRE_State==CMD_8hCC)
+	begin
+	delay         <=1;
+	COMMAND_ROM   <=8'hCC;
+	end else
+	if (WIRE_State==CMD_8h44)
+	begin
+	delay         <=1;
+	COMMAND_ROM   <=8'h44;
+	end else
 	if (WIRE_State==INIT)
 	begin
 	delay         <=1;
@@ -189,7 +199,10 @@ case (WIRE_State)
 		RESET_PULSE		:WIRE_Next=WAIT_DS;
 		WAIT_DS	   		:WIRE_Next=PRESENCE_PULSE;
 		PRESENCE_PULSE	:if (presence_pulse>PPULSE) WIRE_Next=COMMAND;	else  WIRE_Next=IDLE;					
-		COMMAND			:WIRE_Next=IDLE;	
+		COMMAND			:WIRE_Next=WIRE_Pointer;
+		CMD_8h44		:WIRE_Next=COMMAND;	
+		CMD_8hCC		:WIRE_Next=COMMAND;
+		CHOOSE			:WIRE_Next=COMMAND;
 		default 		:WIRE_Next=IDLE;
 endcase
 end		
