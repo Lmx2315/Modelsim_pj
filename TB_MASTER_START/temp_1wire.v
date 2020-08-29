@@ -70,8 +70,7 @@ else
 			begin
 			if (FLAG_STATE==3) timer1<=delay;//для установки состояний
 			end else
-			if (FLAG_STATE==4) timer1<=delay;//для передачи даных
-			
+			if (FLAG_STATE==4) timer1<=delay;//для передачи даных			
 		timer2<=0;
 		end
 
@@ -90,7 +89,17 @@ DATA_STATE<=IDLE_TS;
 end
 else
 begin
+
+	if (FLAG_STATE!=5) FLAG_STATE<=FLAG_STATE+1; else if (timer1==0) FLAG_STATE<=0;
 	
+	if (FLAG_STATE==0) 
+	begin
+		if (WIRE_State!=COMMAND) 							WIRE_State<=WIRE_Next;	
+	end
+		else
+		if  ((DATA_STATE==END_TS)&&(WIRE_State==COMMAND))  	WIRE_State<=WIRE_Next;
+
+/*	
 	if (FLAG_STATE==0) 
 	begin
 	if (WIRE_State!=COMMAND) WIRE_State<=WIRE_Next;		
@@ -107,10 +116,14 @@ begin
 							FLAG_STATE<=4;
 							end
 								else
-								if (FLAG_STATE==4) FLAG_STATE<=5;
+								if (FLAG_STATE==4) 
+								begin
+								FLAG_STATE<=5;
+						
+								end
 									else
 										if (timer1==0)     FLAG_STATE<=0;
-	
+*/	
 	
 	if (WIRE_State==DQ_LINE_HOLD)
 	begin
@@ -122,19 +135,21 @@ begin
 	delay         <=1;
 	SCH_CMD       <=DATA_length;
 	WIRE_Pointer  <=READ_TEMP;//какое состояние следующее
+	SCH_CMD       <=CMD_length;
 	COMMAND_ROM   <=8'hBE;
 	end else
 	if (WIRE_State==CMD_8hCC)
 	begin
 	delay         <=1;
 	WIRE_Pointer  <=WIRE_Var;//какое состояние следующее
-	WIRE_Var      <=CMD_8hBE;//команда чтения scratchpad-a
 	COMMAND_ROM   <=8'hCC;
 	end else
 	if (WIRE_State==CMD_8h44)
 	begin
 	delay         <=1;
+	COMMAND_ROM   <=8'h44;
 	WIRE_Pointer  <=DQ_LINE_HOLD;//какое состояние следующее
+	WIRE_Var      <=CMD_8hBE;//команда чтения scratchpad-a
 	end else
 	if (WIRE_State==INIT)
 	begin
