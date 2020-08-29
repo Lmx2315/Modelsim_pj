@@ -1,5 +1,5 @@
-vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/temp_1wire.v
-vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_TEMP_WIRE.v
+vlog -reportprogress 300 -work work C:/Work/Modelsim_pj/TB_MASTER_START/temp_1wire.v
+vlog -reportprogress 300 -work work C:/Work/Modelsim_pj/TB_MASTER_START/tb_TEMP_WIRE.v
 
 vsim -gui -novopt work.tb_TEMP_wire
 add wave -position end sim:/tb_TEMP_wire/dut1/*
