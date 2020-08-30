@@ -5,4 +5,4 @@ vsim -gui -novopt work.tb_TEMP_wire
 add wave -position end sim:/tb_TEMP_wire/dut1/*
 add wave -position end sim:/tb_TEMP_wire/*
 
-run 4000 us
+run 8000 us

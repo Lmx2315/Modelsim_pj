@@ -26,7 +26,8 @@ begin
 	TMP_SIG=0;
 	#200000
 	TMP_SIG=1;
-	
+
+/*	
 	#6000000
 	@(posedge clk_125)
 	#0
@@ -39,7 +40,7 @@ begin
 	TMP_SIG=0;
 	#200000
 	TMP_SIG=1;
-	
+*/	
 end
 
 always_ff @(posedge TMP_OE or negedge TMP_OE)

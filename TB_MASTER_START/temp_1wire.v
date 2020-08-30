@@ -31,8 +31,9 @@ logic [ 7:0] COMMAND_ROM=8'hCC;
 logic 		 BIT_OUT=0;
 logic [ 7:0] SCH_CMD=0;
 logic [ 3:0] FLAG_STATE=0;
-logic [ 3:0] N_STAGE=0;
+logic [ 3:0]   N_STAGE=0;
 logic [15:0] TEMP_DATA=0;
+logic [ 1:0] FLAG_IMP=0;
 
 logic reg_data_o    =0;
 logic reg_out_enable=0;
@@ -66,11 +67,12 @@ if ((tick_us)&&(timer1>0))
 else
 	if (timer1==0) //нужно ввести задержку в такт!!!
 		begin
-		if (WIRE_State!=COMMAND) 
+		if ((WIRE_State!=COMMAND)&&(WIRE_State!=READ_TEMP)) 
 			begin
 			if (FLAG_STATE==3) timer1<=delay;//для установки состояний
-			end else
-			if (FLAG_STATE==4) timer1<=delay;//для передачи даных			
+			end 
+			else
+				if ((FLAG_STATE==4)&&(DATA_STATE!=IDLE_TS))     timer1<=delay;//для передачи данных			
 		timer2<=0;
 		end
 
@@ -94,48 +96,23 @@ begin
 	
 	if (FLAG_STATE==0) 
 	begin
-		if (WIRE_State!=COMMAND) 							WIRE_State<=WIRE_Next;	
+		if  ((WIRE_State!=COMMAND)&&(WIRE_State!=READ_TEMP))    WIRE_State<=WIRE_Next;	else
+//		if  ((DATA_STATE==IDLE_TS)&&((WIRE_State==COMMAND)||(WIRE_State==READ_TEMP)))  	WIRE_State<=WIRE_Next;	
+		if  ((DATA_STATE==IDLE_TS)&&((WIRE_State==COMMAND))  	WIRE_State<=WIRE_Next;
 	end
-		else
-		if  ((DATA_STATE==END_TS)&&(WIRE_State==COMMAND))  	WIRE_State<=WIRE_Next;
-
-/*	
-	if (FLAG_STATE==0) 
-	begin
-	if (WIRE_State!=COMMAND) WIRE_State<=WIRE_Next;		
-	FLAG_STATE<=1;
-	end 
-		else
-			if (FLAG_STATE==1) FLAG_STATE<=2;
-				else
-					if (FLAG_STATE==2) FLAG_STATE<=3;
-						else
-							if (FLAG_STATE==3) 
-							begin
-							if  ((DATA_STATE==END_TS)&&(WIRE_State==COMMAND))  WIRE_State<=WIRE_Next;//закончили передавать команду
-							FLAG_STATE<=4;
-							end
-								else
-								if (FLAG_STATE==4) 
-								begin
-								FLAG_STATE<=5;
-						
-								end
-									else
-										if (timer1==0)     FLAG_STATE<=0;
-*/	
 	
 	if (WIRE_State==DQ_LINE_HOLD)
 	begin
 	delay         <=200;     //проверяем линию DQ 200 us
 	WIRE_Pointer  <=CMD_8h44;//какое состояние следующее
+	reg_out_enable<=1;
+	reg_data_o    <=1;
 	end else
 	if (WIRE_State==CMD_8hBE)
 	begin
 	delay         <=1;
 	SCH_CMD       <=DATA_length;
 	WIRE_Pointer  <=READ_TEMP;//какое состояние следующее
-	SCH_CMD       <=CMD_length;
 	COMMAND_ROM   <=8'hBE;
 	end else
 	if (WIRE_State==CMD_8hCC)
@@ -181,6 +158,7 @@ begin
 
 		if  (DATA_STATE==START_TS)
 		begin
+
 		if (FLAG_STATE==4) 
 			begin
 			SCH_CMD<=SCH_CMD-1;
