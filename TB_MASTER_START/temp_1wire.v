@@ -40,6 +40,7 @@ logic [ 1:0] FLAG_IMP=0;
 logic reg_data_o    =0;
 logic reg_out_enable=0;
 logic reg_data_i    =0;
+logic reg_done 		=0;
 
 //------------------часы---------------------
 always_ff @(posedge clk)
@@ -63,7 +64,7 @@ end
 always_ff @(posedge clk)
 if ((tick_us)&&(timer1>0)) 
 	begin
-	timer1<=timer1-1;
+	if (WIRE_State!=IDLE) timer1<=timer1-1; else timer1<=0;
 	timer2<=timer2+1;
 	end
 else
@@ -71,7 +72,7 @@ else
 		begin
 		if ((WIRE_State!=COMMAND)&&(WIRE_State!=READ_TEMP)) 
 			begin
-			if (FLAG_STATE==3) timer1<=delay;//для установки состояний
+			if ((FLAG_STATE==3)&&(WIRE_State!=IDLE)) timer1<=delay;//для установки состояний
 			end 
 			else
 				if ((FLAG_STATE==4)&&(DATA_STATE!=IDLE_TS))     timer1<=delay;//для передачи данных			
@@ -86,11 +87,12 @@ if (rst)
 begin
 WIRE_Var   <=CMD_8h44;//сначало посылаем команду "измерение температуры"
 FLAG_STATE <=0;
-delay	   <=0;
+delay      <=480;
 WIRE_State <=INIT;
 DATA_STATE <=IDLE_TS;
    SCH_CMD <=CMD_length; //счётчик числа бит в команде
    SCH_DATA<=DATA_length;//счётчик числа бит в данных
+   reg_done<=0;
 end
 else
 begin
@@ -215,6 +217,7 @@ begin
 		begin
 		   tmp_data  <=TEMP_DATA;
 		   DATA_STATE<=IDLE_TS;
+		   reg_done  <=1;
 		end
 	end else
 	if (WIRE_State==IDLE)
@@ -246,9 +249,9 @@ always_comb
 begin
 case (DATA_STATE)
 		 IDLE_TS:DATA_NEXT=START_TS;
-		START_TS:if (WIRE_State==COMMAND) DATA_NEXT=WRITE_TS; else if (WIRE_State==READ_TEMP) DATA_NEXT=READ_TS;
-		WRITE_TS:if (SCH_CMD !=1) DATA_NEXT=START_TS; else DATA_NEXT<=END_TS;
-		READ_TS :if (SCH_DATA!=1) DATA_NEXT=START_TS; else DATA_NEXT<=END_TS;
+		START_TS:if (WIRE_State==COMMAND) DATA_NEXT=WRITE_TS; else DATA_NEXT=READ_TS;
+		WRITE_TS:if (SCH_CMD !=1) DATA_NEXT=START_TS; 		  else DATA_NEXT<=END_TS;
+		READ_TS :if (SCH_DATA!=1) DATA_NEXT=START_TS; 		  else DATA_NEXT<=END_TS;
 		default :DATA_NEXT=IDLE_TS;
 endcase
 end	
@@ -256,7 +259,7 @@ end
 assign data_i	 =tmp_in;//TEMP_DQ;//tmp_in
 assign tmp_out   =reg_data_o;
 assign tmp_oe    =reg_out_enable;
-assign done      =1;
+assign done      =reg_done;
 assign T_data    =tmp_data;
 assign TEMP_DQ   =(reg_out_enable)?reg_data_o:1'bz;
 

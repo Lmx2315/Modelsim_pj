@@ -433,17 +433,17 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 7;IlfcKSWYfcm@nWz1m>h0
-IHSLA?Me2Y^THeZjM:56=b0
+!s100 bTQT4I1;J2bX;Sm;9lWmP1
+I7YC[bdM^T@O[f5iHj]IWC0
 R20
 S1
 R6
-w1598864530
+w1598881920
 R21
 R22
 L0 3
 R10
-Z25 !s108 1598864544.000000
+Z25 !s108 1598884404.000000
 R23
 R24
 !i113 0
@@ -457,12 +457,12 @@ r1
 !s85 0
 31
 !i10b 1
-!s100 YSNk8FC0@5J@lnCEFRI`[1
-IPgk`mkn>Rha[BQ0jCKdBf1
+!s100 aZkZ;ekiOT0_SReiWTkQl1
+IkFk8`WjzL_EMfWh>NR[XP0
 !s105 temp_1wire_v_unit
 S1
 R6
-w1598864326
+w1598884391
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/temp_1wire.v
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/temp_1wire.v
 L0 1

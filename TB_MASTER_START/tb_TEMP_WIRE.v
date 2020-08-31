@@ -52,6 +52,7 @@ always_ff @(posedge TMP_OE or negedge TMP_OE)
 if (TMP_OE) e1<=0;
 else        e1<=1;
 
+
 temp_1wire
 dut1(
 .clk       (clk_125),	//тактирование
