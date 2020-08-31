@@ -4,7 +4,7 @@ module tb_TEMP_wire ();
 
 logic clk_125 =0;
 logic rst=0;
-logic  TMP_SIG=1;
+logic TMP_SIG=1;
 logic TMP_OE;
 logic [31:0] timer0=200*125;
 
@@ -26,9 +26,14 @@ begin
 	TMP_SIG=0;
 	#200000
 	TMP_SIG=1;
+	#5207000
+	TMP_SIG=0;
+	#52000
+	TMP_SIG=1;
+	
 
-/*	
-	#6000000
+
+	#10000000
 	@(posedge clk_125)
 	#0
 	@(posedge clk_125)
@@ -40,7 +45,7 @@ begin
 	TMP_SIG=0;
 	#200000
 	TMP_SIG=1;
-*/	
+	
 end
 
 always_ff @(posedge TMP_OE or negedge TMP_OE)
@@ -54,9 +59,9 @@ dut1(
 .done      (),			//сигнал готовности результата
 .T_data    (),          //результат
 .tmp_oe	   (TMP_OE),	//тестовый сигнал - говорит о направлении работы TEMP_DQ
-.tmp_out   (TMP_SIG),
+.tmp_out   (),
 .tmp_in    (TMP_SIG),
-.TEMP_DQ   ()			//бинаправленный вывод
+.TEMP_DQ   ()	//бинаправленный вывод
 );
 
 endmodule

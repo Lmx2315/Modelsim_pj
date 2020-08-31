@@ -3,7 +3,7 @@ module temp_1wire(
 input  wire clk,			 //тактирование
 input  wire rst,			 //сброс модуля
 output wire done,			 //сигнал готовности результата
-output wire [15:0] T_data,//результат
+output wire [71:0] T_data,//результат
 output wire tmp_oe,          //временный сигнал,для отладки 
 output wire tmp_out,         //временный сигнал,для отладки 
 input  wire tmp_in,          //временный сигнал,для отладки 
@@ -13,15 +13,16 @@ inout  wire TEMP_DQ
 parameter  FCLK   = 125;
 localparam PPULSE = 60;
 localparam CMD_length = 8+1;
-localparam DATA_length=16+1;
+localparam DATA_length=72+1;//9 байт данных из скрайтчпада
 
 enum {INIT,ROM_COMM,FUNC_COMM,RESET_PULSE,WAIT_DS,PRESENCE_PULSE,COMMAND,CMD_8hCC,CMD_8h44,CMD_8hBE,READ_TEMP,DQ_LINE_HOLD,IDLE}    WIRE_Var,WIRE_State,WIRE_Next,WIRE_Pointer;
-enum {IDLE_TS,START_TS,WRITE_TS,END_TS} DATA_STATE,DATA_NEXT;
+enum {IDLE_TS,START_TS,WRITE_TS,READ_TS,END_TS} DATA_STATE,DATA_NEXT;
 
 wire data_i;			//вход с шины   1-wire
 
 logic tick_us=0;
-logic [15:0] tmp_data=0;
+logic [DATA_length-2:0] tmp_data=0;
+logic [DATA_length-2:0] TEMP_DATA=0;
 logic [31:0] timer0=0;
 logic [31:0] timer1=0;
 logic [31:0] timer2=0;
@@ -30,9 +31,10 @@ logic [31:0] presence_pulse=0;
 logic [ 7:0] COMMAND_ROM=8'hCC;
 logic 		 BIT_OUT=0;
 logic [ 7:0] SCH_CMD=0;
+logic [ 7:0] SCH_DATA=0;
 logic [ 3:0] FLAG_STATE=0;
 logic [ 3:0]   N_STAGE=0;
-logic [15:0] TEMP_DATA=0;
+
 logic [ 1:0] FLAG_IMP=0;
 
 logic reg_data_o    =0;
@@ -82,12 +84,13 @@ else
 always_ff @(posedge clk)
 if (rst) 
 begin
-WIRE_Var  <=CMD_8h44;//сначало посылаем команду "измерение температуры"
-FLAG_STATE<=0;
-delay	  <=0;
-WIRE_State<=INIT;
-DATA_STATE<=IDLE_TS;
-   SCH_CMD<=CMD_length;//счётчик числа бит в команде
+WIRE_Var   <=CMD_8h44;//сначало посылаем команду "измерение температуры"
+FLAG_STATE <=0;
+delay	   <=0;
+WIRE_State <=INIT;
+DATA_STATE <=IDLE_TS;
+   SCH_CMD <=CMD_length; //счётчик числа бит в команде
+   SCH_DATA<=DATA_length;//счётчик числа бит в данных
 end
 else
 begin
@@ -97,8 +100,8 @@ begin
 	if (FLAG_STATE==0) 
 	begin
 		if  ((WIRE_State!=COMMAND)&&(WIRE_State!=READ_TEMP))    WIRE_State<=WIRE_Next;	else
-//		if  ((DATA_STATE==IDLE_TS)&&((WIRE_State==COMMAND)||(WIRE_State==READ_TEMP)))  	WIRE_State<=WIRE_Next;	
-		if  ((DATA_STATE==IDLE_TS)&&((WIRE_State==COMMAND))  	WIRE_State<=WIRE_Next;
+		if  ((DATA_STATE==IDLE_TS)&&((WIRE_State==COMMAND)||(WIRE_State==READ_TEMP)))  	WIRE_State<=WIRE_Next;	
+//		if  ((DATA_STATE==IDLE_TS)&&(WIRE_State==COMMAND))  	WIRE_State<=WIRE_Next;
 	end
 	
 	if (WIRE_State==DQ_LINE_HOLD)
@@ -111,7 +114,6 @@ begin
 	if (WIRE_State==CMD_8hBE)
 	begin
 	delay         <=1;
-	SCH_CMD       <=DATA_length;
 	WIRE_Pointer  <=READ_TEMP;//какое состояние следующее
 	COMMAND_ROM   <=8'hBE;
 	end else
@@ -165,13 +167,13 @@ begin
 			COMMAND_ROM<=COMMAND_ROM>>1;//отсылаем побитно начиная с младшего
 			BIT_OUT<=COMMAND_ROM[0];
 			end
-		delay 		  <=12;//длительность интервала
+		delay 		  <=14;//длительность интервала
 		reg_out_enable<=1;
 		reg_data_o    <=0;
 		end else
 		if (DATA_STATE==WRITE_TS)
 		begin
-		delay 		  <=90;			//длительность интервала
+		delay 		  <=100;			//длительность интервала
 		if (BIT_OUT==0)
 			begin
 			reg_out_enable<=1;
@@ -190,24 +192,24 @@ begin
 	end else
 	if (WIRE_State==READ_TEMP)
 	begin
-		if ((SCH_CMD!=0)&&(FLAG_STATE==2)) DATA_STATE<=DATA_NEXT; 
+		if ((SCH_DATA!=0)&&(FLAG_STATE==2)) DATA_STATE<=DATA_NEXT; 
 
 		if  (DATA_STATE==START_TS)
 		begin
 		if (FLAG_STATE==4) 
 			begin
-			SCH_CMD  <=SCH_CMD-1;
+			SCH_DATA <=SCH_DATA-1;
 			TEMP_DATA<=TEMP_DATA>>1;
 			end
-		delay 		  <=2;//длительность интервала
+		delay 		  <=14;//длительность интервала
 		reg_out_enable<=1;
 		reg_data_o    <=0;
 		end else
-		if (DATA_STATE==WRITE_TS)
+		if (DATA_STATE==READ_TS)
 		begin
 		reg_out_enable<=0; //освобождаем линию для слейва, чтобы прочитать что он там будет передавать
 		delay 		  <=45;//длительность интервала
-		TEMP_DATA[15] <=tmp_in;	
+		TEMP_DATA[DATA_length-2] <=tmp_in;	
 		end else
 		if (DATA_STATE==END_TS)
 		begin
@@ -244,13 +246,14 @@ always_comb
 begin
 case (DATA_STATE)
 		 IDLE_TS:DATA_NEXT=START_TS;
-		START_TS:DATA_NEXT=WRITE_TS;
-		WRITE_TS:if (SCH_CMD!=1) DATA_NEXT=START_TS; else DATA_NEXT<=END_TS;
+		START_TS:if (WIRE_State==COMMAND) DATA_NEXT=WRITE_TS; else if (WIRE_State==READ_TEMP) DATA_NEXT=READ_TS;
+		WRITE_TS:if (SCH_CMD !=1) DATA_NEXT=START_TS; else DATA_NEXT<=END_TS;
+		READ_TS :if (SCH_DATA!=1) DATA_NEXT=START_TS; else DATA_NEXT<=END_TS;
 		default :DATA_NEXT=IDLE_TS;
 endcase
 end	
 
-assign data_i	 =tmp_in;//TEMP_DQ;//
+assign data_i	 =tmp_in;//TEMP_DQ;//tmp_in
 assign tmp_out   =reg_data_o;
 assign tmp_oe    =reg_out_enable;
 assign done      =1;
