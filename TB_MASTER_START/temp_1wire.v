@@ -16,7 +16,7 @@ localparam CMD_length = 8+1;
 localparam DATA_length=72+1;//9 байт данных из скрайтчпада
 
 enum {INIT,ROM_COMM,FUNC_COMM,RESET_PULSE,WAIT_DS,PRESENCE_PULSE,COMMAND,CMD_8hCC,CMD_8h44,CMD_8hBE,READ_TEMP,DQ_LINE_HOLD,IDLE}    WIRE_Var,WIRE_State,WIRE_Next,WIRE_Pointer;
-enum {IDLE_TS,START_TS,WRITE_TS,READ_TS,END_TS} DATA_STATE,DATA_NEXT;
+enum {IDLE_TS,START_TS,PAUSE_TS,WRITE_TS,READ_TS,END_TS} DATA_STATE,DATA_NEXT;
 
 wire data_i;			//вход с шины   1-wire
 
@@ -186,6 +186,12 @@ begin
 			reg_data_o    <=1;
 			end		
 		end else
+		if (DATA_STATE==PAUSE_TS)
+		begin
+		delay 		  <=1;			//длительность интервала
+		reg_out_enable<=1;
+		reg_data_o    <=1;
+		end else
 		if (DATA_STATE==END_TS)
 		begin
 		   SCH_CMD<=CMD_length;//счётчик числа бит в команде
@@ -203,15 +209,21 @@ begin
 			SCH_DATA <=SCH_DATA-1;
 			TEMP_DATA<=TEMP_DATA>>1;
 			end
-		delay 		  <=14;//длительность интервала
+		delay 		  <=4;//длительность интервала
 		reg_out_enable<=1;
 		reg_data_o    <=0;
 		end else
 		if (DATA_STATE==READ_TS)
 		begin
 		reg_out_enable<=0; //освобождаем линию для слейва, чтобы прочитать что он там будет передавать
-		delay 		  <=45;//длительность интервала
-		TEMP_DATA[DATA_length-2] <=tmp_in;	
+		delay 		  <=41;//длительность интервала
+		if (timer1>35) TEMP_DATA[DATA_length-2] <=tmp_in;	
+		end else
+		if (DATA_STATE==PAUSE_TS)
+		begin
+		delay 		  <=1;			//длительность интервала
+		reg_out_enable<=1;
+		reg_data_o    <=1;
 		end else
 		if (DATA_STATE==END_TS)
 		begin
@@ -250,8 +262,9 @@ begin
 case (DATA_STATE)
 		 IDLE_TS:DATA_NEXT=START_TS;
 		START_TS:if (WIRE_State==COMMAND) DATA_NEXT=WRITE_TS; else DATA_NEXT=READ_TS;
-		WRITE_TS:if (SCH_CMD !=1) DATA_NEXT=START_TS; 		  else DATA_NEXT<=END_TS;
-		READ_TS :if (SCH_DATA!=1) DATA_NEXT=START_TS; 		  else DATA_NEXT<=END_TS;
+		WRITE_TS:if (SCH_CMD !=1)         DATA_NEXT=PAUSE_TS; else DATA_NEXT=END_TS;
+		 READ_TS:if (SCH_DATA!=1)         DATA_NEXT=PAUSE_TS; else DATA_NEXT=END_TS;
+		PAUSE_TS:                         DATA_NEXT=START_TS;		
 		default :DATA_NEXT=IDLE_TS;
 endcase
 end	
