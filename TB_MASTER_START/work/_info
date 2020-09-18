@@ -522,6 +522,29 @@ R27
 R14
 R15
 ntest_@u@d@p
+vtst_osc
+R2
+R4
+r1
+!s85 0
+31
+!i10b 1
+!s100 @NL1kIQ@^AmFJQM^SS14[3
+I=JUklI`iVLRO`_oPj5C;?2
+!s105 test_osc_sv_unit
+S1
+R6
+w1599055683
+8C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/test_osc.sv
+FC:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/test_osc.sv
+L0 1
+R10
+!s108 1599055686.000000
+!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/test_osc.sv|
+!s90 -##implicit##push_minusfile_path##|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/vlog.opt|-##implicit##pop_minusfile_path##|-reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/test_osc.sv|
+!i113 0
+R14
+R15
 vwcm
 R2
 R4
