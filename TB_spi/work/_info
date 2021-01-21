@@ -1,0 +1,100 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi
+vBlock_read_spi
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+r1
+!s85 0
+31
+!i10b 1
+!s100 VA0<5OzASUzVRK=iMK6H51
+I;;:U0a42^fMgmoJ@<^@SB0
+R0
+w1611239493
+8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_read_spi.v
+FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_read_spi.v
+L0 5
+Z2 OL;L;10.6d;65
+!s108 1611239502.000000
+!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_read_spi.v|
+!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_read_spi.v|
+!i113 0
+Z3 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z4 tCvgOpt 0
+n@block_read_spi
+vBlock_write_spi
+R1
+r1
+!s85 0
+31
+!i10b 1
+!s100 hoQV78mhN;in;9YQD1;a62
+I846cF[TD=hi7a@X5A^dD]0
+R0
+w1611240799
+8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v
+FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v
+L0 25
+R2
+Z5 !s108 1611241809.000000
+!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v|
+!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v|
+!i113 0
+R3
+R4
+n@block_write_spi
+vtb_Block_read_spi
+Z6 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+R1
+r1
+!s85 0
+31
+!i10b 1
+!s100 Qk4k:ACEFYF<ZJ^cDXQ8d1
+I3>Wa^2J_@g=4;km4DZS1N1
+Z7 !s105 tb_Block_write_spi_sv_unit
+S1
+R0
+w1611241202
+Z8 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv
+Z9 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv
+L0 4
+R2
+!s108 1611241225.000000
+Z10 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv|
+Z11 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv|
+!i113 0
+R3
+R4
+ntb_@block_read_spi
+vtb_Block_write_spi
+R6
+R1
+r1
+!s85 0
+31
+!i10b 1
+!s100 ZD7JC@hiJbQWAYjTHOg@:1
+I>J9^YiBW4j_2f1HeQS7n]2
+R7
+S1
+R0
+w1611241794
+R8
+R9
+L0 4
+R2
+R5
+R10
+R11
+!i113 0
+R3
+R4
+ntb_@block_write_spi

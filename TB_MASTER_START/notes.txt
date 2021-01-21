@@ -39,3 +39,13 @@ tb_crc_form
 vsim -gui work.tb_crc_form -novopt
 add wave -position end sim:/tb_crc_form/inst_crc_form/*
 run 100 us
+
+//------------------------------------------------------------------------
+tb_cntr_sync_sv
+
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/CNTR_SYNC.sv
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_MASTER_START/tb_cntr_sync.sv
+vsim -gui -novopt work.tb_cntr_module
+add wave -position end sim:/tb_cntr_module/*
+add wave -position end sim:/tb_cntr_module/inst_cntr_module/*
+run 10 ms
