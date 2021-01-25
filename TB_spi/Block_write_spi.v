@@ -76,6 +76,7 @@ if (rst)
 							begin 
 							sch<=0;
 							if (data_in[6:0]==param_adr) begin flag<=1;end//проверка адресата
+							else start<=0;
 							r_w <=data_in[7]; 
 							end 		
 					end

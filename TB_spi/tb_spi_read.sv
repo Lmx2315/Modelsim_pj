@@ -1,7 +1,7 @@
 
 `timescale 1ns/1ps
 
-module tb_Block_read_spi_v2 (); /* this is automatically generated */
+module tb_spi_read (); /* this is automatically generated */
 
 	// clock
 	logic clk;
@@ -28,22 +28,23 @@ module tb_Block_read_spi_v2 (); /* this is automatically generated */
 	logic            mosi;
 	logic            miso;
 	logic            cs;
+	logic            clr;
 	logic [Nbit-1:0] inport;
 	int 	         adr;
 
-	Block_read_spi_v2 #(
+	spi_read #(
 			.Nbit(Nbit),
 			.param_adr(param_adr)
-		) inst_Block_read_spi (
+		) inst_spi_read (
 			.clk    (clk),
 			.sclk   (sclk),
 			.mosi   (mosi),
 			.miso   (miso),
 			.cs     (cs),
-			.rst    (~srstb),
-			.clr    (),
+			.clr    (clr),
 			.inport (inport)
 		);
+
 
 	task init();
 		sclk   <= '0;

@@ -2,7 +2,7 @@
 //{{ Section below this comment is automatically maintained
 //   and may be overwritten
 //{module {Block_upr_spi1}}
-module Block_read_spi ( clk,sclk,mosi,miso,cs ,rst,inport );	
+module Block_read_spi_v2 ( clk,sclk,mosi,miso,cs ,rst ,clr,inport );	
 
 parameter Nbit=8;	
 parameter param_adr=1; 
@@ -11,6 +11,7 @@ input  [Nbit-1:0] inport ;
 wire   [Nbit-1:0] inport ;
 
 output  miso;
+output clr;
 
 input clk ;
 wire clk ;	 
@@ -23,6 +24,7 @@ wire cs ;
 input rst ;
 wire rst ;	
 
+reg clr_reg=0;
 reg start=0;
 reg [Nbit-1:0] data_port=0; 
 reg [Nbit-1:0] data_in=0; 
@@ -83,16 +85,17 @@ if (rst)
 												else
 													if (sch==Nbit)
 													begin
-					  							  reg_out<='1;	
-													start<=0;		
+					  							    reg_out<='1;	
+													  start<=0;
+													clr_reg<=1;													
 													end
 																					
 									end
 							end
-				end	
+				end	else clr_reg<=0;
 end
 
   assign 	   miso =reg_out[Nbit];	
-
+  assign   	   clr  =clr_reg;
 	
 endmodule  

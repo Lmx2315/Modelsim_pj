@@ -1,7 +1,7 @@
 
 `timescale 1ns/1ps
 
-module tb_Block_read_spi_v2 (); /* this is automatically generated */
+module tb_spi_write (); /* this is automatically generated */
 
 	// clock
 	logic clk;
@@ -21,35 +21,35 @@ module tb_Block_read_spi_v2 (); /* this is automatically generated */
 	// (*NOTE*) replace reset, clock, others
 
 	parameter      Nbit = 32;
-	parameter param_adr = 1;
+	parameter param_adr = 1;//1-ца в старшем разряде признак "записи"
 	parameter     Dlitl = 5; //длительность интервала sclk относительно clk    
 
 	logic            sclk;
 	logic            mosi;
 	logic            miso;
 	logic            cs;
-	logic [Nbit-1:0] inport;
+	logic [Nbit-1:0] outport;
 	int 	         adr;
+	logic [Nbit-1:0] data;
 
-	Block_read_spi_v2 #(
+	spi_write #(
 			.Nbit(Nbit),
 			.param_adr(param_adr)
-		) inst_Block_read_spi (
+		) inst_Block_write_spi (
 			.clk    (clk),
 			.sclk   (sclk),
 			.mosi   (mosi),
 			.miso   (miso),
 			.cs     (cs),
-			.rst    (~srstb),
 			.clr    (),
-			.inport (inport)
+			.out    (outport)
 		);
+
 
 	task init();
 		sclk   <= '0;
 		mosi   <= '1;
 		cs     <= '1;
-		inport <= 32'hDEEDBEEF;
 		adr    <= 1;
 	endtask
 
@@ -58,7 +58,6 @@ module tb_Block_read_spi_v2 (); /* this is automatically generated */
 			sclk   <= '1;
 			mosi   <= '1;
 			cs     <= '1;
-			inport <= '0;
 			@(posedge clk);
 		end
 	endtask
@@ -113,57 +112,46 @@ endtask
 
 	initial begin
 		// do something
-
+		data=32'hdeedbeef;
 		init();
 		repeat(10)@(posedge clk);
-		inport <= 32'hDEEDBEEF;
-		repeat(10)@(posedge clk);
+		adr = 1|8'h80;
 		cs=0;
 		repeat(10)@(posedge clk);
 		SPI_WRITER(8,adr,Dlitl,mosi,sclk);
 		repeat(1)@(posedge clk);
-        SPI_READER(32,Dlitl,miso,sclk);
+        SPI_WRITER(32,data,Dlitl,mosi,sclk);
         repeat(10)@(posedge clk);
         cs=1;
-        #1000
-        inport <= 32'h44;
 
-        repeat(10)@(posedge clk);
+        #5000;
+
+        data=32'habcdef01;
+		init();
+		repeat(10)@(posedge clk);
+		adr = 2|8'h80;
 		cs=0;
 		repeat(10)@(posedge clk);
 		SPI_WRITER(8,adr,Dlitl,mosi,sclk);
 		repeat(1)@(posedge clk);
-        SPI_READER(32,Dlitl,miso,sclk);
+        SPI_WRITER(32,data,Dlitl,mosi,sclk);
         repeat(10)@(posedge clk);
         cs=1;
 
-		#1000
-        inport <= 32'h44;
-        adr    <= 3;
 
-        repeat(10)@(posedge clk);
+        #5000;
+
+        data=32'h23cdef01;
+		init();
+		repeat(10)@(posedge clk);
+		adr = 1|8'h80;
 		cs=0;
 		repeat(10)@(posedge clk);
 		SPI_WRITER(8,adr,Dlitl,mosi,sclk);
 		repeat(1)@(posedge clk);
-        SPI_READER(32,Dlitl,miso,sclk);
+        SPI_WRITER(32,data,Dlitl,mosi,sclk);
         repeat(10)@(posedge clk);
         cs=1;
-
-        #1000
-        inport <= 32'h45;
-        adr    <= 1;
-        
-        repeat(10)@(posedge clk);
-		cs=0;
-		repeat(10)@(posedge clk);
-		SPI_WRITER(8,adr,Dlitl,mosi,sclk);
-		repeat(1)@(posedge clk);
-        SPI_READER(32,Dlitl,miso,sclk);
-        repeat(10)@(posedge clk);
-        cs=1;
-
-
 	end
 
 	// dump wave
