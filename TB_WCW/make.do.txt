@@ -1,0 +1,9 @@
+quit -sim
+cd C:/Work_murmansk/Quartus/Modelsim_pj/TB_WCW
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_WCW/master_start.sv
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_WCW/tb_master_start.sv
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_WCW/dds_chirp.sv
+vsim -gui work.tb_master_start -novopt
+add wave -position end sim:/tb_master_start/inst_master_start/*
+add wave -position end sim:/tb_master_start/dds1/* -color Green -format Logic
+run 200 us

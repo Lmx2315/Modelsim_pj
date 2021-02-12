@@ -1,0 +1,7 @@
+quit -sim
+cd C:/Work_murmansk/Quartus/Modelsim_pj/TB_ETH
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_ETH/crc_form.v
+vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_ETH/tb_crc_form.sv
+vsim -gui work.tb_crc_form -novopt
+add wave -position end sim:/tb_crc_form/inst_crc_form/*
+run 50 us

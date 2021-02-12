@@ -25,7 +25,7 @@
 module crc_form ( upr,channel,af0,af1,clk ,rst ,fifo0 ,fifo1 ,rdreq0 ,rdreq1 ,fifo_empty0 ,fifo_empty1 ,end_tx ,q_ram ,adr_ram ,crc_buf,nbuf,full0,full1,fifo_clr,start );
 	
 parameter n_buf=360;//размер пакета (n octet / 4) 360 комплексных отсчётов I+Q (16+16=32бита)
-parameter z=50;
+parameter DELAY_PKG=125;
 
 output [15:0] nbuf ;//размер передаваемого пакета
 wire [15:0] nbuf ;
@@ -99,6 +99,7 @@ reg [31:0] timer_delay=0;
 reg [15:0] sch_delay=100;
 reg flag_rst=0;
 reg start_work=0;
+logic [15:0] pause=0;
 
 assign nbuf=(n_buf*4);	//
 assign fifo_clr=fifo_clr_reg; 
@@ -143,7 +144,7 @@ always @(posedge clk)
 		end 
 		else
 		begin
-				if (sch_delay<z) //введено временно для отладки!!!
+				if (1) //введено временно для отладки!!!
 				begin
 				timer_delay<=0;
 					if ((full0)||(full1))
@@ -192,17 +193,23 @@ always @(posedge clk)
 																end else
 															if (step==3)
 																begin
-																start_work<=0;
-																flag_fifo_AF<=0;
 																start_reg<=0;
-																step<=0;
-																sch<=16'hffff;	
-																crc_temp<=0;
-																n_fifo<=1;//n_fifo<=1;
-																if (upr[1]==1) sch_delay<=sch_delay+1;																
+																if (pause<DELAY_PKG) pause<=pause+1; 
+																else 
+																	begin
+																		pause<=0;
+																		step<=0;	
+																        start_work<=0;
+																        flag_fifo_AF<=0;
+																        																
+																        sch<=16'hffff;	
+																        crc_temp<=0;
+																        n_fifo<=1;//n_fifo<=1;
+																        if (upr[1]==1) sch_delay<=sch_delay+1;																
+																     end
 																end
 														end				
-												end else if (af0>358)  flag_fifo_AF<=1;//флаг поднимается только если в меж клоковом фифо более 300 отсчётов данных для отправки пакета по UDP
+												end else if (af0>(n_buf-2))  flag_fifo_AF<=1;//флаг поднимается только если в меж клоковом фифо более 300 отсчётов данных для отправки пакета по UDP
 											end else
 											if (n_fifo==1)
 											begin
@@ -236,24 +243,26 @@ always @(posedge clk)
 																end else
 															if (step==3)
 																begin
-																start_work<=0;
-																flag_fifo_AF<=0;
-																start_reg<=0;
-																step<=0;
-																sch<=16'hffff;	
-																crc_temp<=0;
-																n_fifo<=0;//														
+																	start_reg<=0;
+																	//if (pause<0) pause<=pause+1; 
+																    //else 
+																	begin
+																		pause<=0;
+																        start_work<=0;
+																        flag_fifo_AF<=0;
+																        
+																        step<=0;
+																        sch<=16'hffff;	
+																        crc_temp<=0;
+																        n_fifo<=0;//
+																     end														
 																end
 														end				
-												end else if (af1>358)  flag_fifo_AF<=1;
+												end else if (af1>(n_buf-2))  flag_fifo_AF<=1;//задерживаем отправку второго пакета на
 											end 
 							end
 					
 				end 
-					else
-					begin
-					if (timer_delay!=20000000) timer_delay<=timer_delay+1; else sch_delay<=0;//задержка 0.5 сек
-					end
 		end
 
 
