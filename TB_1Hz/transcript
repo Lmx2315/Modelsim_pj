@@ -1,0 +1,135 @@
+# //  ModelSim SE-64 10.6d Feb 24 2018
+# //
+# //  Copyright 1991-2018 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# do run.tcl
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/DDS_48_v1.v 
+# -- Compiling module DDS_48_v1
+# 
+# Top level modules:
+# 	DDS_48_v1
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/DDS_48_v1_nco_ii_0.v 
+# -- Compiling module DDS_48_v1_nco_ii_0
+# 
+# Top level modules:
+# 	DDS_48_v1_nco_ii_0
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/DMA_SPI.sv 
+# -- Compiling module DMA_SPI
+# 
+# Top level modules:
+# 	DMA_SPI
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/master_start.sv 
+# -- Compiling module master_start
+# 
+# Top level modules:
+# 	master_start
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/mem_wcw.v 
+# -- Compiling module mem_wcw
+# 
+# Top level modules:
+# 	mem_wcw
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv 
+# -- Compiling module tb_3
+# 
+# Top level modules:
+# 	tb_3
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/writer_com_mem.sv 
+# -- Compiling module wcm
+# 
+# Top level modules:
+# 	wcm
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 15:20:14 on Mar 24,2021
+# vlog -reportprogress 300 -work work C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/dds_chirp.sv 
+# -- Compiling module dds_chirp
+# 
+# Top level modules:
+# 	dds_chirp
+# End time: 15:20:14 on Mar 24,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -gui work.tb_3 -novopt -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver -L C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_ver 
+# Start time: 15:20:14 on Mar 24,2021
+# ** Warning: (vsim-8891) All optimizations are turned off because the -novopt switch is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features please see the User's Manual section on Preserving Object Visibility with vopt.
+# Refreshing C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/work.tb_3
+# Loading sv_std.std
+# Loading work.tb_3
+# Refreshing C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/work.DMA_SPI
+# Loading work.DMA_SPI
+# Refreshing C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/work.wcm
+# Loading work.wcm
+# Refreshing C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/work.mem_wcw
+# Loading work.mem_wcw
+# Loading C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver.altsyncram
+# Refreshing C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/work.dds_chirp
+# Loading work.dds_chirp
+# Refreshing C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/work.master_start
+# Loading work.master_start
+# Loading C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver.altsyncram_body
+# Loading C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver.ALTERA_DEVICE_FAMILIES
+# Loading C:/Work_murmansk/Quartus/Modelsim_pj/lib/verilog_libs/altera_mf_ver.ALTERA_MF_MEMORY_INITIALIZATION
+# ** Warning: (vsim-3015) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/writer_com_mem.sv(424): [PCDPC] - Port size (6) does not match connection size (8) for port 'rdaddress'. The port definition is at: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/mem_wcw.v(42).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3/wcm1/registre_MEM_inst File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/mem_wcw.v
+# ** Warning: (vsim-3015) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/writer_com_mem.sv(424): [PCDPC] - Port size (6) does not match connection size (8) for port 'wraddress'. The port definition is at: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/mem_wcw.v(44).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3/wcm1/registre_MEM_inst File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/mem_wcw.v
+# ** Warning: (vsim-3017) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(175): [TFMPC] - Too few port connections. Expected 30, found 28.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3/sync1 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/master_start.sv
+# ** Warning: (vsim-3722) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(175): [TFMPC] - Missing connection for port 'SYS_TIME_UPDATE_OK_CONTR'.
+# ** Warning: (vsim-3722) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(175): [TFMPC] - Missing connection for port 'En_ADC'.
+# ** Warning: (vsim-3839) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/writer_com_mem.sv(72): Variable '/tb_3/wcm1/DATA_TIME_REG', driven via a port connection, is multiply driven. See C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/writer_com_mem.sv(424).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3/wcm1 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/writer_com_mem.sv
+# ** Warning: (vsim-3839) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(91): Variable '/tb_3/RSR_WCW', driven via a port connection, is multiply driven. See C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(98).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv
+# ** Warning: (vsim-3839) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(90): Variable '/tb_3/wACK', driven via a port connection, is multiply driven. See C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(159).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv
+# ** Warning: (vsim-3839) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(89): Variable '/tb_3/wREQ', driven via a port connection, is multiply driven. See C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(175).
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv
+# ** Warning: (vsim-PLI-3003) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(366): [TOFD] - System task or function '$fsdbDumpfile' is not defined.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv
+# ** Warning: (vsim-PLI-3003) C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv(367): [TOFD] - System task or function '$fsdbDumpvars' is not defined.
+#    Time: 0 ps  Iteration: 0  Instance: /tb_3 File: C:/Work_murmansk/Quartus/Modelsim_pj/TB_1Hz/tb_3.sv
+# ** Warning: (vsim-WLF-5000) WLF file currently in use: vsim.wlf
+#           File in use by: Lmx  Hostname: LMX_PK  ProcessID: 13384
+#           Attempting to use alternate WLF file "./wlftcsjisy".
+# ** Warning: (vsim-WLF-5001) Could not open WLF file: vsim.wlf
+#           Using alternate file: ./wlftcsjisy
+# 0 ps
+# 31500 us
+# End time: 15:21:39 on Mar 24,2021, Elapsed time: 0:01:25
+# Errors: 0, Warnings: 14

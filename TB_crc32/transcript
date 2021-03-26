@@ -1,0 +1,97 @@
+# 
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 13:55:33 on Mar 14,2021
+# vlog -sv -reportprogress 300 -work work crc32_m8.sv 
+# -- Compiling module crc
+# 
+# Top level modules:
+# 	crc
+# End time: 13:55:33 on Mar 14,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# Model Technology ModelSim SE-64 vlog 10.6d Compiler 2018.02 Feb 24 2018
+# Start time: 13:55:33 on Mar 14,2021
+# vlog -sv -reportprogress 300 -work work tb_CRC32_eth.sv 
+# -- Compiling module tb_CRC32_eth
+# 
+# Top level modules:
+# 	tb_CRC32_eth
+# End time: 13:55:33 on Mar 14,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# No design specified
+# vsim -gui work.tb_CRC32_eth -novopt 
+# Start time: 13:55:34 on Mar 14,2021
+# ** Warning: (vsim-8891) All optimizations are turned off because the -novopt switch is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features please see the User's Manual section on Preserving Object Visibility with vopt.
+# //  ModelSim SE-64 10.6d Feb 24 2018
+# //
+# //  Copyright 1991-2018 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  ModelSim SE-64 and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Refreshing C:/Work/FPGA_072/Modelsim_pj/TB_crc32/work.tb_CRC32_eth
+# Loading sv_std.std
+# Loading work.tb_CRC32_eth
+# Refreshing C:/Work/FPGA_072/Modelsim_pj/TB_crc32/work.crc
+# Loading work.crc
+# configure wave not supported in batch mode
+#           0:55555555
+#           1:555555d5
+#           2:0010a47b
+#           3:ea800012
+#           4:34567890
+#           5:08004500
+#           6:002eb3fe
+#           7:00008011
+#           8:0540c0a8
+#           9:002cc0a8
+#          10:00040400
+#          11:0400001a
+#          12:2de80001
+#          13:02030405
+#          14:06070809
+#          15:0a0b0c0d
+#          16:0e0f1011
+# --------------
+# index:00000000 data:xxxxxxxx crc:xxxxxxxx revers:xxxxxxxx inv:xxxxxxxx inv_rev:xxxxxxxx rst:x
+# index:00000000 data:xxxxxxxx crc:00000000 revers:00000000 inv:ffffffff inv_rev:ffffffff rst:1
+# index:00000002 data:0010a47b crc:00000000 revers:00000000 inv:ffffffff inv_rev:ffffffff rst:0
+# index:00000003 data:ea800012 crc:xxxxxxxx revers:xxxxxxxx inv:xxxxxxxx inv_rev:xxxxxxxx rst:0
+# index:00000004 data:34567890 crc:534a84f3 revers:cf2152ca inv:acb57b0c inv_rev:30dead35 rst:0
+# index:00000005 data:08004500 crc:57af435a revers:5ac2f5ea inv:a850bca5 inv_rev:a53d0a15 rst:0
+# index:00000006 data:002eb3fe crc:f002741e revers:782e400f inv:0ffd8be1 inv_rev:87d1bff0 rst:0
+# index:00000007 data:00008011 crc:d87f59ac revers:359afe1b inv:2780a653 inv_rev:ca6501e4 rst:0
+# index:00000008 data:0540c0a8 crc:be868642 revers:4261617d inv:417979bd inv_rev:bd9e9e82 rst:0
+# index:00000009 data:002cc0a8 crc:add8e2a6 revers:65471bb5 inv:52271d59 inv_rev:9ab8e44a rst:0
+# index:0000000a data:00040400 crc:52fc3137 revers:ec8c3f4a inv:ad03cec8 inv_rev:1373c0b5 rst:0
+# index:0000000b data:0400001a crc:0f042de3 revers:c7b420f0 inv:f0fbd21c inv_rev:384bdf0f rst:0
+# index:0000000c data:2de80001 crc:0c80e71a revers:58e70130 inv:f37f18e5 inv_rev:a718fecf rst:0
+# index:0000000d data:02030405 crc:6a0266ef revers:f7664056 inv:95fd9910 inv_rev:0899bfa9 rst:0
+# index:0000000e data:06070809 crc:b20d3430 revers:0c2cb04d inv:4df2cbcf inv_rev:f3d34fb2 rst:0
+# index:0000000f data:0a0b0c0d crc:34787704 revers:20ee1e2c inv:cb8788fb inv_rev:df11e1d3 rst:0
+# index:00000010 data:0e0f1011 crc:c5d87769 revers:96ee1ba3 inv:3a278896 inv_rev:6911e45c rst:0
+# --------------
+# index:00000011 data:0e0f1011 crc:ba740be4 revers:27d02e5d inv:458bf41b inv_rev:d82fd1a2 rst:0
+# index:00000011 data:0e0f1011 crc:3273ee27 revers:e477ce4c inv:cd8c11d8 inv_rev:1b8831b3 rst:0
+# index:00000011 data:0e0f1011 crc:4ce9d862 revers:461b9732 inv:b316279d inv_rev:b9e468cd rst:0
+# index:00000011 data:0e0f1011 crc:b3cd60fa revers:5f06b3cd inv:4c329f05 inv_rev:a0f94c32 rst:0
+# index:00000011 data:0e0f1011 crc:3bf902a4 revers:25409fdc inv:c406fd5b inv_rev:dabf6023 rst:0
+# index:00000011 data:0e0f1011 crc:c0068257 revers:ea416003 inv:3ff97da8 inv_rev:15be9ffc rst:0
+# index:00000011 data:0e0f1011 crc:82c8741c revers:382e1341 inv:7d378be3 inv_rev:c7d1ecbe rst:0
+# index:00000011 data:0e0f1011 crc:76893cab revers:d53c916e inv:8976c354 inv_rev:2ac36e91 rst:0
+# index:00000011 data:0e0f1011 crc:7ff0c996 revers:69930ffe inv:800f3669 inv_rev:966cf001 rst:0
+# index:00000011 data:0e0f1011 crc:84246813 revers:c8162421 inv:7bdb97ec inv_rev:37e9dbde rst:0
+# index:00000011 data:0e0f1011 crc:f9db38a6 revers:651cdb9f inv:0624c759 inv_rev:9ae32460 rst:0
+# index:00000011 data:0e0f1011 crc:2087852e revers:74a1e104 inv:df787ad1 inv_rev:8b5e1efb rst:0
+# index:00000011 data:0e0f1011 crc:07e8e330 revers:0cc717e0 inv:f8171ccf inv_rev:f338e81f rst:0
+# index:00000011 data:0e0f1011 crc:43df5791 revers:89eafbc2 inv:bc20a86e inv_rev:7615043d rst:0
+# index:00000011 data:0e0f1011 crc:cf198b79 revers:9ed198f3 inv:30e67486 inv_rev:612e670c rst:0
+# ** Note: $finish    : tb_CRC32_eth.sv(74)
+#    Time: 31500 ps  Iteration: 1  Instance: /tb_CRC32_eth
+# End time: 13:55:35 on Mar 14,2021, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 1

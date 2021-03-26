@@ -1,0 +1,36 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/modeltech64_10.6d/win64
+vtb_CRC32_eth
+DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+!s110 1615551842
+!i10b 1
+!s100 ^AIW67dNH@Umh=`?ZHCTJ3
+I9CNjgY1iIBo37JaWSlL@e2
+VDg1SIo80bB@j0V0VzS_@n1
+!s105 tb_CRC32_eth_sv_unit
+S1
+R0
+w1615550221
+8C:\Work_murmansk\Quartus\Modelsim_pj\TB_crc32\tb_CRC32_eth.sv
+FC:\Work_murmansk\Quartus\Modelsim_pj\TB_crc32\tb_CRC32_eth.sv
+L0 4
+OL;L;10.6d;65
+r1
+!s85 0
+31
+!s108 1615551842.000000
+!s107 C:\Work_murmansk\Quartus\Modelsim_pj\TB_crc32\tb_CRC32_eth.sv|
+!s90 -sv|-work|C:\Work_murmansk\Quartus\Modelsim_pj\TB_crc32\syntax_check|-O0|C:\Work_murmansk\Quartus\Modelsim_pj\TB_crc32\tb_CRC32_eth.sv|
+!s101 -O0
+!i113 0
+o-sv -work {C:\Work_murmansk\Quartus\Modelsim_pj\TB_crc32\syntax_check} -O0 -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+tCvgOpt 0
+ntb_@c@r@c32_eth
