@@ -29,28 +29,29 @@ Z3 OL;L;10.6d;65
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_delay_96/delay_96.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_delay_96/delay_96.sv|
 !i113 0
-Z4 o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
-Z5 tCvgOpt 0
+o-work work -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+Z4 tCvgOpt 0
 vtb_delay_96
 R1
+!s110 1619431624
+!i10b 1
+!s100 GnD39;nBRCjGhk8`gU7PD1
+IJE<NUo]I^I`kj_5`7KU<J0
 R2
+!s105 tmp_no68s_sv_unit
+S1
+R0
+w1619431623
+8c:\temp\tmp_no68s.sv
+Fc:\temp\tmp_no68s.sv
+L0 4
+R3
 r1
 !s85 0
 31
-!i10b 1
-!s100 G2b;j3@kO0EL2fUKaf3Mi0
-I^EYlWiTicN`Jfdig1b1aR1
-!s105 tb_delay_96_sv_unit
-S1
-R0
-w1614598906
-8C:/Work_murmansk/Quartus/Modelsim_pj/TB_delay_96/tb_delay_96.sv
-FC:/Work_murmansk/Quartus/Modelsim_pj/TB_delay_96/tb_delay_96.sv
-L0 4
-R3
-!s108 1614598971.000000
-!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_delay_96/tb_delay_96.sv|
-!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_delay_96/tb_delay_96.sv|
+!s108 1619431624.000000
+!s107 c:\temp\tmp_no68s.sv|
+!s90 c:\temp\tmp_no68s.sv|
 !i113 0
+o-L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
 R4
-R5

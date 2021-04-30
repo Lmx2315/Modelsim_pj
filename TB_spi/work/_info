@@ -64,7 +64,7 @@ w1611560492
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v
 L0 25
 R2
-Z7 !s108 1611560506.000000
+!s108 1611560506.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/Block_write_spi.v|
 !i113 0
@@ -72,7 +72,7 @@ R4
 R5
 n@block_write_spi
 vspi_read
-Z8 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+Z7 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
 R1
 r1
 !s85 0
@@ -86,16 +86,16 @@ R0
 w1611311834
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_read.sv
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_read.sv
-Z9 L0 11
+Z8 L0 11
 R2
-Z10 !s108 1611311844.000000
+Z9 !s108 1611311844.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_read.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_read.sv|
 !i113 0
 R4
 R5
 vspi_write
-R8
+R7
 R1
 r1
 !s85 0
@@ -109,16 +109,16 @@ R0
 w1611316978
 8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_write.sv
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_write.sv
-R9
+R8
 R2
-Z11 !s108 1611316989.000000
+!s108 1611316989.000000
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_write.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/spi_write.sv|
 !i113 0
 R4
 R5
 vtb_Block_read_spi
-R8
+R7
 R1
 r1
 !s85 0
@@ -142,7 +142,7 @@ R4
 R5
 ntb_@block_read_spi
 vtb_Block_read_spi_v2
-R8
+R7
 R1
 r1
 !s85 0
@@ -166,31 +166,32 @@ R4
 R5
 ntb_@block_read_spi_v2
 vtb_Block_write_spi
-R8
+R7
+!s110 1619431441
+!i10b 1
+!s100 ZD7JC@hiJbQWAYjTHOg@:1
+ISG08EkU=?SBX3X;9i^mie1
 R1
+!s105 tmpuzlpk4_sv_unit
+S1
+R0
+w1619431441
+8c:\temp\tmpuzlpk4.sv
+Fc:\temp\tmpuzlpk4.sv
+L0 4
+R2
 r1
 !s85 0
 31
-!i10b 1
-!s100 ZD7JC@hiJbQWAYjTHOg@:1
-I>J9^YiBW4j_2f1HeQS7n]2
-!s105 tb_Block_write_spi_sv_unit
-S1
-R0
-w1611241794
-8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv
-FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv
-L0 4
-R2
-R7
-!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv|
-!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_Block_write_spi.sv|
+!s108 1619431441.000000
+!s107 c:\temp\tmpuzlpk4.sv|
+!s90 c:\temp\tmpuzlpk4.sv|
 !i113 0
-R4
+Z10 o-L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
 R5
 ntb_@block_write_spi
 vtb_spi_read
-R8
+R7
 R1
 r1
 !s85 0
@@ -206,32 +207,33 @@ w1611307677
 FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_read.sv
 L0 4
 R2
-R10
+R9
 !s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_read.sv|
 !s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_read.sv|
 !i113 0
 R4
 R5
 vtb_spi_write
-R8
+R7
+!s110 1619431477
+!i10b 1
+!s100 VBZUSIe86Y6QP^7zPkO:@2
+ITWUAja2jlNm_WkbDmdn873
 R1
+!s105 tmp6lk1ij_sv_unit
+S1
+R0
+w1619431477
+8c:\temp\tmp6lk1ij.sv
+Fc:\temp\tmp6lk1ij.sv
+L0 4
+R2
 r1
 !s85 0
 31
-!i10b 1
-!s100 UD=W<7UgmnmN[1>i[BPb]1
-I>RR2EG_kJ_2RXeVOeULXV0
-!s105 tb_spi_write_sv_unit
-S1
-R0
-w1611312404
-8C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_write.sv
-FC:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_write.sv
-L0 4
-R2
-R11
-!s107 C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_write.sv|
-!s90 -reportprogress|300|-work|work|C:/Work_murmansk/Quartus/Modelsim_pj/TB_spi/tb_spi_write.sv|
+!s108 1619431477.000000
+!s107 c:\temp\tmp6lk1ij.sv|
+!s90 c:\temp\tmp6lk1ij.sv|
 !i113 0
-R4
+R10
 R5
