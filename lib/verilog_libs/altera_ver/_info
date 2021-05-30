@@ -9,7 +9,7 @@ z2
 cModel Technology
 Z0 dC:/Work_murmansk/Quartus/Modelsim_pj/lib
 valt_bidir_buf
-Z1 !s110 1586338855
+Z1 !s110 1622040169
 !i10b 1
 !s100 ;V>1ae:dINfZl1hgG^CJK2
 Igg^o]izfEcE9P]z1=X]ME2
@@ -23,7 +23,7 @@ Z6 OL;L;10.6d;65
 r1
 !s85 0
 31
-Z7 !s108 1586338855.000000
+Z7 !s108 1622040169.000000
 !s107 c:/intelfpga/18.1/quartus/eda/sim_lib/altera_primitives.v|
 Z8 !s90 -work|altera_ver|-vlog01compat|c:/intelfpga/18.1/quartus/eda/sim_lib/altera_primitives.v|
 !i113 0

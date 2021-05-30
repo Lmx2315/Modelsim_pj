@@ -10,7 +10,7 @@ cModel Technology
 Z0 dC:/Work_murmansk/Quartus/Modelsim_pj/lib
 valtera_arriav_pll
 Z1 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
-Z2 !s110 1586338857
+Z2 !s110 1622040171
 !i10b 1
 !s100 =P7CDUZSG9W8kBfd_h_CR2
 I6I>dG7WmdgDZNe=_F<=mh1
@@ -26,7 +26,7 @@ Z8 OL;L;10.6d;65
 r1
 !s85 0
 31
-Z9 !s108 1586338857.000000
+Z9 !s108 1622040171.000000
 !s107 c:/intelfpga/18.1/quartus/eda/sim_lib/altera_lnsim.sv|
 Z10 !s90 -work|altera_lnsim_ver|-sv|c:/intelfpga/18.1/quartus/eda/sim_lib/altera_lnsim.sv|
 !i113 0

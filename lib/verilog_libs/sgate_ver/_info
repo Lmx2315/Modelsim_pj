@@ -9,7 +9,7 @@ z2
 cModel Technology
 Z0 dC:/Work_murmansk/Quartus/Modelsim_pj/lib
 vio_buf_opdrn
-Z1 !s110 1586338856
+Z1 !s110 1622040169
 !i10b 1
 !s100 =^<AH`I:TA`[9YUe=h1;_1
 IQEIn6:h3NbAN:[<b?4o9V3
@@ -23,7 +23,7 @@ Z6 OL;L;10.6d;65
 r1
 !s85 0
 31
-Z7 !s108 1586338856.000000
+Z7 !s108 1622040169.000000
 !s107 c:/intelfpga/18.1/quartus/eda/sim_lib/sgate.v|
 Z8 !s90 -work|sgate_ver|-vlog01compat|c:/intelfpga/18.1/quartus/eda/sim_lib/sgate.v|
 !i113 0

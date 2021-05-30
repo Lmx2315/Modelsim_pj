@@ -9,7 +9,7 @@ z2
 cModel Technology
 Z0 dC:/Work_murmansk/Quartus/Modelsim_pj/lib
 vlpm_abs
-Z1 !s110 1586338855
+Z1 !s110 1622040169
 !i10b 1
 !s100 O9i<YS?ECZC8XU2m2T>HQ0
 IG8BC3n?Yl[_UY:KC6VoaC2
@@ -23,7 +23,7 @@ Z6 OL;L;10.6d;65
 r1
 !s85 0
 31
-Z7 !s108 1586338855.000000
+Z7 !s108 1622040169.000000
 !s107 c:/intelfpga/18.1/quartus/eda/sim_lib/220model.v|
 Z8 !s90 -work|lpm_ver|-vlog01compat|c:/intelfpga/18.1/quartus/eda/sim_lib/220model.v|
 !i113 0
@@ -72,7 +72,7 @@ R8
 R9
 R10
 vlpm_bipad
-Z12 !s110 1586338856
+R1
 !i10b 1
 !s100 2eZaafdWMNbm_oGJD`IS61
 I;EHH[OCL9@;k_>WiczK:U2
@@ -283,7 +283,7 @@ R8
 R9
 R10
 vlpm_fifo
-R12
+R1
 !i10b 1
 !s100 MkW5lD_hnT<agW5lDCMNJ2
 IiGC=4RQonMC=HjFMTTEOU3
@@ -304,7 +304,7 @@ R8
 R9
 R10
 vlpm_fifo_dc
-R12
+R1
 !i10b 1
 !s100 OX@8oU3SO:LJ;3_=8UL@^3
 INKegBdZQD[F1G3aD[R;6G1
@@ -325,7 +325,7 @@ R8
 R9
 R10
 vlpm_fifo_dc_async
-R12
+R1
 !i10b 1
 !s100 W7]nBZXG1HNLF0lVB9i:n0
 IFPd9SZa`XiKUD`7m53=`]0
@@ -346,7 +346,7 @@ R8
 R9
 R10
 vlpm_fifo_dc_dffpipe
-R12
+R1
 !i10b 1
 !s100 <2OGni`F^Mh0HMAddVi2B3
 IG<kU<dVC^cX6@fbZ`_T9E1
@@ -367,7 +367,7 @@ R8
 R9
 R10
 vlpm_fifo_dc_fefifo
-R12
+R1
 !i10b 1
 !s100 RlCXejU>]z0ZLYIBZPn^`2
 I<=UbiY]43^YN[bZglaKlW0
@@ -410,7 +410,7 @@ R9
 R10
 n@l@p@m_@h@i@n@t_@e@v@a@l@u@a@t@i@o@n
 vlpm_inpad
-R12
+R1
 !i10b 1
 !s100 V5b_N<Y1MO:^NFkHi2nm:1
 IOhF5k7T3DcU13m3FWYBe00
@@ -558,7 +558,7 @@ R8
 R9
 R10
 vlpm_outpad
-R12
+R1
 !i10b 1
 !s100 co;D>HcBWR;nkbnW:TU;e3
 I]h>@^H_=lF0fSVmjS>M6f0
@@ -579,7 +579,7 @@ R8
 R9
 R10
 vlpm_ram_dp
-R12
+R1
 !i10b 1
 !s100 @ZY2^og4WbO?9Xj=SKCDI2
 IP?TmU>b4>5kOJ<WEVMUFY0
@@ -600,7 +600,7 @@ R8
 R9
 R10
 vlpm_ram_dq
-R12
+R1
 !i10b 1
 !s100 ZPNM`dJFE>ho=S95QY9V32
 IOA[G3i;h7zcLWdNfXW7O22
@@ -621,7 +621,7 @@ R8
 R9
 R10
 vlpm_ram_io
-R12
+R1
 !i10b 1
 !s100 gJ2W7zgl`a;W2CY34?2YX0
 In?zzT5;N>6^B8NXg66Mh31
@@ -642,7 +642,7 @@ R8
 R9
 R10
 vlpm_rom
-R12
+R1
 !i10b 1
 !s100 nF2Ej@GG7CioJC5oY3^^e3
 IE2zdCCK0^YOC0[[bAD>Hj1
@@ -663,7 +663,7 @@ R8
 R9
 R10
 vlpm_shiftreg
-R12
+R1
 !i10b 1
 !s100 OZ9lf>aZLR1GDH6;N3?RH3
 I5k1E:fW`oQCDk[nD`o7TE0
